@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>io.varietas</groupId>
+    <artifactId>instrumentum-simul</artifactId>
+    <version>0.0.0-SNAPSHOT</version>
+    <packaging>jar</packaging>
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+    </properties>
+    
+    <name>simul - The common library</name>
+    <description>The simul library contains all common interfaces and classes for the varietas projects.</description>
+    
+    <developers>
+        <developer>
+            <name>Michael Rhöse</name>
+            <email>michael.rhoese@fh-erfurt.de</email>
+            <roles>
+                <role>Project owner</role>
+                <role>Developer</role>
+                <role>Student</role>
+            </roles>
+        </developer>
+    </developers>
+
+    <licenses>
+        <license>
+            <name>Apache License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+    
+    <dependencies>
+        <!-- Dependencies for back-port to Java 7. -->
+        <dependency>
+            <groupId>net.sourceforge.streamsupport</groupId>
+            <artifactId>streamsupport-atomic</artifactId>
+            <version>1.5.2</version>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>net.sourceforge.streamsupport</groupId>
+            <artifactId>streamsupport-flow</artifactId>
+            <version>1.5.2</version>
+            <optional>true</optional>
+        </dependency>
+    </dependencies>
+    
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.5.1</version>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>net.orfjackal.retrolambda</groupId>
+                <artifactId>retrolambda-maven-plugin</artifactId>
+                <version>2.3.0</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>process-main</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <target>1.7</target>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.0.2</version>
+                <configuration>
+                    <archive>
+                        <addMavenDescriptor>false</addMavenDescriptor>
+                        <manifestEntries>
+                            <Archiver-Version/>
+                            <Created-By/>
+                            <Built-By/>
+                            <Build-Jdk/>
+                        </manifestEntries>
+                    </archive>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>

@@ -14,6 +14,7 @@
     
     <name>simul - The common library</name>
     <description>The simul library contains all common interfaces and classes for the varietas projects.</description>
+    <url>https://varietas.io</url>
     
     <developers>
         <developer>

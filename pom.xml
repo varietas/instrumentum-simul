@@ -48,20 +48,6 @@
         </dependencies>
     </dependencyManagement>
     
-    <dependencies>
-        <!-- Dependencies for back-port to Java 7. -->
-        <dependency>
-            <groupId>net.sourceforge.streamsupport</groupId>
-            <artifactId>streamsupport-atomic</artifactId>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
-            <groupId>net.sourceforge.streamsupport</groupId>
-            <artifactId>streamsupport-flow</artifactId>
-            <optional>true</optional>
-        </dependency>
-    </dependencies>
-    
     <build>
         <plugins>
             <plugin>

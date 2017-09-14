@@ -26,56 +26,49 @@ import java.util.Optional;
  *
  * @author Michael Rhöse
  * @version 1.0.0, 7/1/2016
+ * @param <CODE> Generic code type.
+ * @param <TYPE> Generic type for the value which is stored.
  */
-public interface SortedStorage<Code extends Serializable, Type> extends Storage<Type> {
-
-    /**
-     * Searches for a given entry all available entries. If is no class available an empty list will returned.
-     *
-     * @param entry Equal entries searched for.
-     * @return
-     */
-    public List<Type> findByTypes(final Type entry);
-
-    /**
-     * Searches for a given entry and {@link ClassMetaDataExtractionUtils.AnnotationCodes} all available entries. If is no class available an empty list will returned.
-     *
-     * @param entry Equal entries searched for.
-     * @param code Annotation code.
-     * @return
-     */
-    public List<Type> findByTypesAndAnnotationCode(final Type entry, final Code code);
+public interface SortedStorage<CODE extends Serializable, TYPE> extends Storage<TYPE> {
 
     /**
      * Stores a class in the storage. Returns -1 if the class is not stored otherwise the current number of stored classes will be returned.
      *
      * @param entry Class to be stored.
      * @param code Annotation type code where the class should be stored for.
-     * @return Number of stored classes or -1 for an error.
+     * @return Number of stored entries or -1 for an error.
      */
-    public int store(final Type entry, final Code code);
+    public int store(final TYPE entry, final CODE code);
 
     /**
      * Stores all classes from a given collection in the storage. Returns -1 if the classes are not stored otherwise the current number of stored classes will be returned.
      *
      * @param entries Classes to be stored.
      * @param code Annotation type code where the class should be stored for.
-     * @return Number of stored classes or -1 for an error.
+     * @return Number of stored entries or -1 for an error.
      */
-    public int storeAll(Collection<Type> entries, final Code code);
+    public int storeAll(Collection<TYPE> entries, final CODE code);
 
-    public Optional<Type> next(final Code code);
+    /**
+     * Gets the next entry for a code.
+     *
+     * @param code Code where the next entry has to be loaded.
+     * @return Next entry.
+     */
+    public Optional<TYPE> next(final CODE code);
 
     /**
      * All stored entries as list.
      *
      * @return
      */
-    public Map<Code, List<Type>> getStorage();
+    public Map<CODE, List<TYPE>> getStorage();
 
     /**
+     * Checks if a list of stored entries for a code is empty.
      *
-     * @return
+     * @param code Category code.
+     * @return True if list is empty, otherwise false.
      */
-    public Boolean isEmpty(Code code);
+    public Boolean isEmpty(CODE code);
 }

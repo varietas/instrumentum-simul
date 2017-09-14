@@ -23,8 +23,9 @@ import java.util.List;
  *
  * @author Michael Rhöse
  * @version 1.0.0, 7/3/2016
+ * @param <TYPE> Generic type for the value which is stored.
  */
-public interface UnsortedStorage<Type> extends Storage<Type> {
+public interface UnsortedStorage<TYPE> extends Storage<TYPE> {
 
     /**
      * Stores a class in the storage. Returns -1 if the class is not stored otherwise the current number of stored classes will be returned.
@@ -32,7 +33,7 @@ public interface UnsortedStorage<Type> extends Storage<Type> {
      * @param entry Entry to be stored.
      * @return Number of stored entries or -1 for an error.
      */
-    public int store(final Type entry);
+    public int store(final TYPE entry);
 
     /**
      * Stores all classes from a given collection in the storage. Returns -1 if the classes are not stored otherwise the current number of stored classes will be returned.
@@ -40,12 +41,12 @@ public interface UnsortedStorage<Type> extends Storage<Type> {
      * @param entries Entries to be stored.
      * @return Number of stored entries or -1 for an error.
      */
-    public int storeAll(Collection<Type> entries);
+    public int storeAll(Collection<TYPE> entries);
 
     /**
      * All stored entries as list.
      *
      * @return
      */
-    public List<Type> getStorage();
+    public List<TYPE> getStorage();
 }

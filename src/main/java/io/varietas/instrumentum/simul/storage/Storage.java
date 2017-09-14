@@ -20,19 +20,18 @@ import java.util.Optional;
 /**
  * <h2>Storage</h2>
  *
- * @param <Type> Generic type for the storage.
- *
  * @author Michael Rhöse
  * @version 1.0.0, 7/1/2016
+ * @param <TYPE> Generic type for the value which is stored.
  */
-public interface Storage<Type> {
+public interface Storage<TYPE> {
 
     /**
      * Loads the next entry from the storage. Important is that this entry will be removed from the storage.
      *
      * @return Next entry from the storage.
      */
-    public Optional<Type> next();
+    public Optional<TYPE> next();
 
     /**
      *

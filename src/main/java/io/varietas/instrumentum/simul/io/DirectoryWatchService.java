@@ -22,7 +22,10 @@
  */
 package io.varietas.instrumentum.simul.io;
 
+import io.varietas.instrumentum.simul.io.container.FolderInformation;
+import io.varietas.instrumentum.simul.io.listener.OnFileChangeListener;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.nio.file.WatchEvent;
 
 /**
@@ -73,35 +76,25 @@ public interface DirectoryWatchService extends Service {
      * @param globPatterns Zero or more file patterns to be matched against file names. If none provided, matches <em>any</em> file.
      * @throws IOException If <code>dirPath</code> is not a directory.
      */
-    void register(OnFileChangeListener listener, String dirPath, WatchEvent.Kind[] events, String... globPatterns) throws IOException;
+    void register(OnFileChangeListener listener, Path dirPath, WatchEvent.Kind[] events, String... globPatterns) throws IOException;
 
+    /* Suppress Exception */
     /**
-     * Interface definition for a callback to be invoked when a file under watch is changed.
+     * Notifies the implementation of <em>this</em> interface that <code>dirPath</code> should be monitored for file system events. If the changed file matches any of the <code>globPatterns</code>,
+     * <code>listener</code> should be notified.
+     *
+     * Possible patterns:
+     * <ul>
+     * <li>E.g. "*.log"</li>
+     * <li>E.g. "input-?.txt"</li>
+     * <li>E.g. "config.ini"</li>
+     * <li>As many patterns as you like</li>
+     * </ul>
+     *
+     * @param listener The listener.
+     * @param folderInformation Container which holds all information for a single folder.
+     * @param globPatterns Zero or more file patterns to be matched against file names. If none provided, matches <em>any</em> file.
+     * @throws IOException If <code>dirPath</code> is not a directory.
      */
-    interface OnFileChangeListener {
-
-        /**
-         * Called when the file is created.
-         *
-         * @param filePath The file path.
-         */
-        default void onFileCreate(String filePath) {
-        }
-
-        /**
-         * Called when the file is modified.
-         *
-         * @param filePath The file path.
-         */
-        default void onFileModify(String filePath) {
-        }
-
-        /**
-         * Called when the file is deleted.
-         *
-         * @param filePath The file path.
-         */
-        default void onFileDelete(String filePath) {
-        }
-    }
+    void register(OnFileChangeListener listener, FolderInformation folderInformation, String... globPatterns) throws IOException;
 }

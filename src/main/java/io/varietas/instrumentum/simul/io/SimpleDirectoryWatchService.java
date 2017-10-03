@@ -22,6 +22,8 @@
  */
 package io.varietas.instrumentum.simul.io;
 
+import io.varietas.instrumentum.simul.io.container.FolderInformation;
+import io.varietas.instrumentum.simul.io.listener.OnFileChangeListener;
 import java.io.IOException;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
@@ -40,6 +42,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * <h2>SimpleDirectoryWatchService</h2>
@@ -57,17 +60,17 @@ import java.util.stream.Collectors;
  *      new DirectoryWatchService.OnFileChangeListener() {
  *          {@literal @}Override
  *          public void onFileCreate(String filePath) {
- *              System.out.println("File " + filePath + " created.");
+ *              LOGGER.debug("File " + filePath + " created.");
  *          }
  *
  *          {@literal @}Override
  *          public void onFileModify(String filePath) {
- *              System.out.println("File " + filePath + " modified.");
+ *              LOGGER.debug("File " + filePath + " modified.");
  *          }
  *
  *          {@literal @}Override
  *          public void onFileDelete(String filePath) {
- *              System.out.println("File " + filePath + " deleted.");
+ *              LOGGER.debug("File " + filePath + " deleted.");
  *          }
  *      },
  *      "c:\\plugins",
@@ -82,6 +85,7 @@ import java.util.stream.Collectors;
  * @author Michael Rhöse
  * @version 1.0.0, 9/4/2015
  */
+@Slf4j
 public class SimpleDirectoryWatchService implements DirectoryWatchService, Runnable {
 
     private final WatchService watchService;
@@ -125,13 +129,7 @@ public class SimpleDirectoryWatchService implements DirectoryWatchService, Runna
     }
 
     public static boolean matchesAny(final Path input, final Set<PathMatcher> patterns) {
-        for (PathMatcher pattern : patterns) {
-            if (matches(input, pattern)) {
-                return true;
-            }
-        }
-
-        return false;
+        return patterns.stream().anyMatch((pattern) -> (matches(input, pattern)));
     }
 
     private Path getDirPath(final WatchKey key) {
@@ -189,10 +187,10 @@ public class SimpleDirectoryWatchService implements DirectoryWatchService, Runna
      */
     @Override
     public void register(final OnFileChangeListener listener, final String dirPath, final String... globPatterns) throws IOException {
-
+        Path dir = Paths.get(dirPath);
         this.register(
             listener,
-            dirPath,
+            dir,
             new WatchEvent.Kind[]{StandardWatchEventKinds.ENTRY_CREATE, StandardWatchEventKinds.ENTRY_MODIFY, StandardWatchEventKinds.ENTRY_DELETE},
             globPatterns);
     }
@@ -201,22 +199,21 @@ public class SimpleDirectoryWatchService implements DirectoryWatchService, Runna
      * {@inheritDoc}
      */
     @Override
-    public void register(final OnFileChangeListener listener, final String dirPath, final WatchEvent.Kind[] events, final String... globPatterns) throws IOException {
-        Path dir = Paths.get(dirPath);
+    public void register(final OnFileChangeListener listener, final Path dirPath, final WatchEvent.Kind[] events, final String... globPatterns) throws IOException {
 
-        if (!Files.isDirectory(dir)) {
+        if (!Files.isDirectory(dirPath)) {
             throw new IllegalArgumentException(dirPath + " is not a directory.");
         }
 
-        if (!dirPathToListenersMap.containsKey(dir)) {
+        if (!dirPathToListenersMap.containsKey(dirPath)) {
             // May throw
-            WatchKey key = dir.register(watchService, events);
+            WatchKey key = dirPath.register(watchService, events);
 
-            watchKeyToDirPathMap.put(key, dir);
-            dirPathToListenersMap.put(dir, newConcurrentSet());
+            watchKeyToDirPathMap.put(key, dirPath);
+            dirPathToListenersMap.put(dirPath, newConcurrentSet());
         }
 
-        getListeners(dir).add(listener);
+        getListeners(dirPath).add(listener);
 
         Set<PathMatcher> patterns = newConcurrentSet();
 
@@ -230,8 +227,14 @@ public class SimpleDirectoryWatchService implements DirectoryWatchService, Runna
 
         listenerToFilePatternsMap.put(listener, patterns);
 
-        System.out.println("Watching files matching " + Arrays.toString(globPatterns)
+        LOGGER.debug("Watching files matching " + Arrays.toString(globPatterns)
             + " under " + dirPath + " for changes.");
+    }
+
+    @Override
+    public void register(OnFileChangeListener listener, FolderInformation folderInformation, final String... globPatterns) throws IOException {
+        WatchEvent.Kind[] events = new WatchEvent.Kind[folderInformation.getWatchEventKindes().size()];
+        this.register(listener, folderInformation.getFolderPath(), folderInformation.getWatchEventKindes().toArray(events), globPatterns);
     }
 
     /**
@@ -263,14 +266,14 @@ public class SimpleDirectoryWatchService implements DirectoryWatchService, Runna
      */
     @Override
     public void run() {
-        System.out.println("Starting file watcher service.");
+        LOGGER.debug("Starting file watcher service.");
 
         while (isRunning.get()) {
             WatchKey key;
             try {
                 key = watchService.take();
             } catch (InterruptedException e) {
-                System.out.println(
+                LOGGER.debug(
                     DirectoryWatchService.class.getSimpleName()
                     + " service interrupted."
                 );
@@ -278,7 +281,7 @@ public class SimpleDirectoryWatchService implements DirectoryWatchService, Runna
             }
 
             if (null == getDirPath(key)) {
-                System.out.println("Watch key not recognized.");
+                LOGGER.debug("Watch key not recognized.");
                 continue;
             }
 
@@ -295,6 +298,6 @@ public class SimpleDirectoryWatchService implements DirectoryWatchService, Runna
         }
 
         isRunning.set(false);
-        System.out.println("Stopping file watcher service.");
+        LOGGER.debug("Stopping file watcher service.");
     }
 }

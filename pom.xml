@@ -48,6 +48,25 @@
         </dependencies>
     </dependencyManagement>
     
+    <dependencies>
+        <!-- Framework to reducing boilerplate code -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+        </dependency>
+        <!-- Dependency for logging with logback -->
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <optional>true</optional>
+        </dependency>
+        <dependency>                                    
+            <groupId>org.slf4j</groupId>                
+            <artifactId>jcl-over-slf4j</artifactId>
+            <optional>true</optional>
+        </dependency>
+    </dependencies>
+    
     <build>
         <plugins>
             <plugin>

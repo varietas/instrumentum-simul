@@ -166,18 +166,15 @@ public class SimpleDirectoryWatchService implements DirectoryWatchService, Runna
             Path file = pathEvent.context();
 
             if (eventKind.equals(StandardWatchEventKinds.ENTRY_CREATE)) {
-                matchedListeners(getDirPath(key), file)
-                    .forEach(listener -> listener.onFileCreate(file.toString()));
+                matchedListeners(getDirPath(key), file).forEach(listener -> listener.onFileCreate(file.toString()));
                 continue;
             }
             if (eventKind.equals(StandardWatchEventKinds.ENTRY_MODIFY)) {
-                matchedListeners(getDirPath(key), file)
-                    .forEach(listener -> listener.onFileModify(file.toString()));
+                matchedListeners(getDirPath(key), file).forEach(listener -> listener.onFileModify(file.toString()));
                 continue;
             }
             if (eventKind.equals(StandardWatchEventKinds.ENTRY_DELETE)) {
-                matchedListeners(getDirPath(key), file)
-                    .forEach(listener -> listener.onFileDelete(file.toString()));
+                matchedListeners(getDirPath(key), file).forEach(listener -> listener.onFileDelete(file.toString()));
             }
         }
     }
@@ -227,8 +224,7 @@ public class SimpleDirectoryWatchService implements DirectoryWatchService, Runna
 
         listenerToFilePatternsMap.put(listener, patterns);
 
-        LOGGER.debug("Watching files matching " + Arrays.toString(globPatterns)
-            + " under " + dirPath + " for changes.");
+        LOGGER.debug("Watching files matching {} under {} for changes.", Arrays.toString(globPatterns), dirPath);
     }
 
     @Override
@@ -272,11 +268,8 @@ public class SimpleDirectoryWatchService implements DirectoryWatchService, Runna
             WatchKey key;
             try {
                 key = watchService.take();
-            } catch (InterruptedException e) {
-                LOGGER.debug(
-                    DirectoryWatchService.class.getSimpleName()
-                    + " service interrupted."
-                );
+            } catch (InterruptedException ex) {
+                LOGGER.debug(DirectoryWatchService.class.getSimpleName() + " service interrupted.");
                 break;
             }
 

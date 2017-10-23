@@ -24,6 +24,7 @@ package io.varietas.instrumentum.simul.io;
 
 import io.varietas.instrumentum.simul.io.container.FolderInformation;
 import io.varietas.instrumentum.simul.io.listener.OnFileChangeListener;
+import io.varietas.instrumentum.simul.service.AbstractService;
 import java.io.IOException;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
@@ -40,7 +41,8 @@ import java.util.Collections;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 
@@ -86,10 +88,9 @@ import lombok.extern.slf4j.Slf4j;
  * @version 1.0.0, 9/4/2015
  */
 @Slf4j
-public class SimpleDirectoryWatchService implements DirectoryWatchService, Runnable {
+public class SimpleDirectoryWatchService extends AbstractService implements DirectoryWatchService {
 
     private final WatchService watchService;
-    private final AtomicBoolean isRunning;
     private final ConcurrentMap<WatchKey, Path> watchKeyToDirPathMap;
     private final ConcurrentMap<Path, Set<OnFileChangeListener>> dirPathToListenersMap;
     private final ConcurrentMap<OnFileChangeListener, Set<PathMatcher>> listenerToFilePatternsMap;
@@ -97,14 +98,15 @@ public class SimpleDirectoryWatchService implements DirectoryWatchService, Runna
     /**
      * A simple no argument constructor for creating a <code>SimpleDirectoryWatchService</code>.
      *
+     * @param scheduledExecutorService
      * @throws IOException If an I/O error occurs.
      */
-    public SimpleDirectoryWatchService() throws IOException {
-        watchService = FileSystems.getDefault().newWatchService();
-        isRunning = new AtomicBoolean(false);
-        watchKeyToDirPathMap = newConcurrentMap();
-        dirPathToListenersMap = newConcurrentMap();
-        listenerToFilePatternsMap = newConcurrentMap();
+    public SimpleDirectoryWatchService(final ScheduledExecutorService scheduledExecutorService) throws IOException {
+        super(scheduledExecutorService);
+        this.watchService = FileSystems.getDefault().newWatchService();
+        this.watchKeyToDirPathMap = newConcurrentMap();
+        this.dirPathToListenersMap = newConcurrentMap();
+        this.listenerToFilePatternsMap = newConcurrentMap();
     }
 
     @SuppressWarnings("unchecked")
@@ -234,63 +236,41 @@ public class SimpleDirectoryWatchService implements DirectoryWatchService, Runna
     }
 
     /**
-     * Start this <code>SimpleDirectoryWatchService</code> instance by spawning a new thread.
-     *
-     * @see #stop()
-     */
-    @Override
-    public void start() {
-        if (isRunning.compareAndSet(false, true)) {
-            Thread runnerThread = new Thread(this, DirectoryWatchService.class.getSimpleName());
-            runnerThread.start();
-        }
-    }
-
-    /**
-     * Stop this <code>SimpleDirectoryWatchService</code> thread. The killing happens lazily, giving the running thread an opportunity to finish the work at hand.
-     *
-     * @see #start()
-     */
-    @Override
-    public void stop() {
-        // Kill thread lazily
-        isRunning.set(false);
-    }
-
-    /**
      * {@inheritDoc}
      */
     @Override
     public void run() {
         LOGGER.debug("Starting file watcher service.");
 
-        while (isRunning.get()) {
-            WatchKey key;
-            try {
-                key = watchService.take();
-            } catch (InterruptedException ex) {
-                LOGGER.debug(DirectoryWatchService.class.getSimpleName() + " service interrupted.");
-                break;
-            }
+        WatchKey key;
+        try {
+            key = watchService.take();
+        } catch (InterruptedException ex) {
+            LOGGER.debug(DirectoryWatchService.class.getSimpleName() + " service interrupted.");
+            return;
+        }
 
-            if (null == getDirPath(key)) {
-                LOGGER.debug("Watch key not recognized.");
-                continue;
-            }
+        if (null == getDirPath(key)) {
+            LOGGER.debug("Watch key not recognized.");
+            return;
+        }
 
-            notifyListeners(key);
+        notifyListeners(key);
 
-            // Reset key to allow further events for this key to be processed.
-            boolean valid = key.reset();
-            if (!valid) {
-                watchKeyToDirPathMap.remove(key);
-                if (watchKeyToDirPathMap.isEmpty()) {
-                    break;
-                }
+        // Reset key to allow further events for this key to be processed.
+        boolean valid = key.reset();
+        if (!valid) {
+            watchKeyToDirPathMap.remove(key);
+            if (watchKeyToDirPathMap.isEmpty()) {
+                return;
             }
         }
 
-        isRunning.set(false);
         LOGGER.debug("Stopping file watcher service.");
+    }
+
+    @Override
+    protected ServiceConfiguration configuration() {
+        return new ServiceConfiguration("DirectoryWatchService", 1, TimeUnit.MILLISECONDS, false);
     }
 }

@@ -22,6 +22,7 @@
  */
 package io.varietas.instrumentum.simul.io;
 
+import io.varietas.instrumentum.simul.service.Service;
 import io.varietas.instrumentum.simul.io.container.FolderInformation;
 import io.varietas.instrumentum.simul.io.listener.OnFileChangeListener;
 import java.io.IOException;

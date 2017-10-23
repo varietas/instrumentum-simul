@@ -20,7 +20,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.varietas.instrumentum.simul.io;
+package io.varietas.instrumentum.simul.service;
 
 /**
  * <h2>Service</h2>
@@ -35,10 +35,8 @@ public interface Service {
 
     /**
      * Starts the service. This method blocks until the service has completely started.
-     *
-     * @throws java.lang.Exception Possible exception which is thrown by the method.
      */
-    void start() throws Exception;
+    void start();
 
     /**
      * Stops the service. This method blocks until the service has completely shut down.

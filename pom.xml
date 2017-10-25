@@ -65,6 +65,12 @@
             <artifactId>jcl-over-slf4j</artifactId>
             <optional>true</optional>
         </dependency>
+        <!-- Dependency for memory measure of Java objetcs -->
+        <dependency>
+            <groupId>org.ehcache</groupId>
+            <artifactId>sizeof</artifactId>
+            <version>0.3.0</version>
+        </dependency>
     </dependencies>
     
     <build>

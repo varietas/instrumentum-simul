@@ -16,7 +16,7 @@
 package io.varietas.instrumentum.simul.fsm.container;
 
 import io.varietas.instrumentum.simul.fsm.StateMachine;
-import io.varietas.instrumentum.simul.fsm.StateMachineBuilder;
+import io.varietas.instrumentum.simul.fsm.builder.StateMachineBuilder;
 import io.varietas.instrumentum.simul.fsm.annotation.TransitionChain;
 import java.util.List;
 import lombok.AllArgsConstructor;

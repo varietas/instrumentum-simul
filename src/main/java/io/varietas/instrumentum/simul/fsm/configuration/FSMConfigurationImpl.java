@@ -13,9 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.varietas.instrumentum.simul.fsm;
+package io.varietas.instrumentum.simul.fsm.configuration;
 
-import io.varietas.instrumentum.simul.fsm.container.ChainContainer;
 import io.varietas.instrumentum.simul.fsm.container.TransitionContainer;
 import java.util.List;
 import lombok.AllArgsConstructor;
@@ -24,7 +23,7 @@ import lombok.Getter;
 import lombok.ToString;
 
 /**
- * <h2>FSMConfiguration</h2>
+ * <h2>FSMConfigurationImpl</h2>
  *
  * This class represents a container to use FSM in a dependency injection framework like agrestis imputare. It allows the separate storing of configuration as singleton.
  *
@@ -35,15 +34,11 @@ import lombok.ToString;
 @EqualsAndHashCode
 @Getter
 @AllArgsConstructor
-public class FSMConfiguration {
+public class FSMConfigurationImpl implements FSMConfiguration{
     
     private final List<TransitionContainer> transitions;
-    
-    private final List<ChainContainer> chains;
     
     private final Class<? extends Enum> stateType;
 
     private final Class<? extends Enum> eventType;
-    
-    private final Class<? extends Enum> chainType;
 }

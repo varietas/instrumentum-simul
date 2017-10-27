@@ -15,7 +15,7 @@
  */
 package io.varietas.instrumentum.simul.fsm;
 
-import io.varietas.instrumentum.simul.fsm.container.ChainContainer;
+import io.varietas.instrumentum.simul.fsm.configuration.FSMConfiguration;
 import io.varietas.instrumentum.simul.fsm.container.TransitionContainer;
 import io.varietas.instrumentum.simul.fsm.error.InvalidTransitionError;
 import io.varietas.instrumentum.simul.fsm.error.TransitionInvocationException;
@@ -24,7 +24,7 @@ import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * <h2>AbstractSimpleStateMachine</h2>
+ * <h2>AbstractStateMachine</h2>
  *
  * This class represents an abstract implementation of the {@link StateMachine} interface. The default implementation contains the firing of single transitions.
  *
@@ -32,11 +32,11 @@ import lombok.extern.slf4j.Slf4j;
  * @version 1.0.0, 10/7/2017
  */
 @Slf4j
-public abstract class AbstractSimpleStateMachine implements StateMachine {
+public abstract class AbstractStateMachine implements StateMachine {
 
-    private final FSMConfiguration configuration;
+    protected final FSMConfiguration configuration;
 
-    public AbstractSimpleStateMachine(final FSMConfiguration configuration) {
+    public AbstractStateMachine(final FSMConfiguration configuration) {
         this.configuration = configuration;
     }
 
@@ -49,20 +49,6 @@ public abstract class AbstractSimpleStateMachine implements StateMachine {
     protected Optional<TransitionContainer> findTransitionContainer(final Enum transition) {
         return this.configuration.getTransitions().stream()
             .filter(transit -> transit.getOn().equals(transition))
-            .findFirst();
-    }
-
-    /**
-     * This method searches the container which contains all information required to performing transition operations.
-     *
-     * @param transitionChain Next transition chain kind.
-     * @param startState Start state of the current transition target for identification of the right chain.
-     * @return Expected container for the transition chain, otherwise an empty Optional.
-     */
-    protected Optional<ChainContainer> findChainContainer(final Enum transitionChain, final Enum startState) {
-        return this.configuration.getChains().stream()
-            .filter(chain -> chain.getOn().equals(transitionChain))
-            .filter(chain -> chain.getFrom().equals(startState))
             .findFirst();
     }
 

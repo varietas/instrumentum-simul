@@ -13,49 +13,34 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.varietas.instrumentum.simul.fsm;
+package io.varietas.instrumentum.simul.fsm.builder;
 
+import io.varietas.instrumentum.simul.fsm.StateMachine;
 import io.varietas.instrumentum.simul.fsm.annotation.StateMachineConfiguration;
-import io.varietas.instrumentum.simul.fsm.annotation.Transition;
 import io.varietas.instrumentum.simul.fsm.annotation.TransitionChain;
 import io.varietas.instrumentum.simul.fsm.annotation.TransitionChains;
-import io.varietas.instrumentum.simul.fsm.annotation.Transitions;
+import io.varietas.instrumentum.simul.fsm.configuration.CFSMConfigurationImpl;
 import io.varietas.instrumentum.simul.fsm.container.ChainContainer;
 import io.varietas.instrumentum.simul.fsm.container.TransitionContainer;
-import io.varietas.instrumentum.simul.fsm.error.MachineCreationException;
 import io.varietas.instrumentum.simul.fsm.error.TransitionChainCreationException;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * <h2>StateMachineBuilder</h2>
+ * <h2>ChainStateMachineBuilder</h2>
  *
  * @author Michael Rhöse
- * @version 1.0.0, 10/9/2017
+ * @version 1.0.0, 10/27/2017
  */
 @Slf4j
-public class StateMachineBuilder {
+public class ChainStateMachineBuilder extends StateMachineBuilder {
 
-    protected Class<? extends AbstractSimpleStateMachine> machineType;
-    @Getter
-    @Accessors(fluent = true, chain = true)
-    @Setter
-    protected FSMConfiguration configuration;
-
-    protected Class<? extends Enum> stateType;
-    protected Class<? extends Enum> eventType;
     protected Class<? extends Enum> chainType;
 
-    private final List<TransitionContainer> transitions = new ArrayList<>();
     private final List<ChainContainer> chains = new ArrayList<>();
 
     /**
@@ -65,7 +50,8 @@ public class StateMachineBuilder {
      * @param machineType State machine type where the configuration is present.
      * @return The instance of the builder for a fluent like API.
      */
-    public StateMachineBuilder extractConfiguration(final Class<? extends AbstractSimpleStateMachine> machineType) {
+    @Override
+    public ChainStateMachineBuilder extractConfiguration(final Class<? extends StateMachine> machineType) {
         this.machineType = machineType;
 
         StateMachineConfiguration machineConfiguration = this.machineType.getAnnotation(StateMachineConfiguration.class);
@@ -77,7 +63,7 @@ public class StateMachineBuilder {
         this.transitions.addAll(this.collectTransitions());
         this.chains.addAll(this.createChains());
 
-        this.configuration = new FSMConfiguration(
+        this.configuration = new CFSMConfigurationImpl(
             this.transitions,
             this.chains,
             this.stateType,
@@ -100,70 +86,7 @@ public class StateMachineBuilder {
 
         return this;
     }
-
-    /**
-     * Builds an instance of the {@link StateMachine}. The instance is initialised with the configuration of the type.
-     *
-     * @return Instance of the state machine.
-     * @throws MachineCreationException Thrown if an error occurred. Possible errors are typically reflection exceptions e.g. InstantiationException, IllegalAccessException and soon.
-     */
-    public StateMachine build() throws MachineCreationException {
-
-        try {
-            return this.machineType.getConstructor(StateMachineConfiguration.class).newInstance(this.configuration);
-        } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | SecurityException | IllegalArgumentException | InvocationTargetException ex) {
-            throw new MachineCreationException(ex.getMessage());
-        }
-    }
-
-    /**
-     * Collects available transitions from the {@link StateMachine}. Transitions are identified by the {@link Transition} annotation.
-     *
-     * @return List of all available transitions.
-     */
-    private List<TransitionContainer> collectTransitions() {
-        return Stream.of(this.machineType.getMethods())
-            .filter(method -> method.isAnnotationPresent(Transitions.class) || method.isAnnotationPresent(Transition.class))
-            .map(this::createTransitionContainer)
-            .flatMap(List::stream)
-            .distinct()
-            .collect(Collectors.toList());
-    }
-
-    /**
-     * Creates transition containers available on a single method. One method can used by multiple transitions. Each transition is configured by a single {@link Transition} annotation. So, multiple
-     * {@link Transition} annotations can be available on a single method.
-     *
-     * @param method Method where the transitions are configured.
-     * @return List of all available transitions as transition containers.
-     */
-    private List<TransitionContainer> createTransitionContainer(final Method method) {
-
-        if (method.isAnnotationPresent(Transitions.class)) {
-
-            return Arrays.asList(method.getAnnotation(Transitions.class).value()).stream()
-                .map((Transition transition) -> {
-                    Enum from = Enum.valueOf(this.stateType, transition.from());
-                    Enum to = Enum.valueOf(stateType, transition.to());
-                    Enum on = Enum.valueOf(this.eventType, transition.on());
-                    LOGGER.debug("Transition from '{}' to '{}' on '{}' will be created.", from.name(), to.name(), on.name());
-                    return new TransitionContainer<>(
-                        from,
-                        to,
-                        on,
-                        method);
-                })
-                .collect(Collectors.toList());
-        }
-
-        Transition transition = method.getAnnotation(Transition.class);
-        Enum from = Enum.valueOf(this.stateType, transition.from());
-        Enum to = Enum.valueOf(stateType, transition.to());
-        Enum on = Enum.valueOf(this.eventType, transition.on());
-        LOGGER.debug("Transition from '{}' to '{}' on '{}' created.", from.name(), to.name(), on.name());
-        return Arrays.asList(new TransitionContainer<>(from, to, on, method));
-    }
-
+    
     /**
      * The varietas.io transition implementation supports transition chains. These chains allows the definition of transition on programming time. That makes execution of chained transitions with a
      * single command possible. This method creates all available transition chains.

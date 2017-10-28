@@ -146,7 +146,7 @@ public class ChainStateMachineBuilder extends StateMachineBuilder {
      * @return List of all required transitions as containers.
      */
     private List<TransitionContainer> collectTransitionsForChain(final Enum from, final Enum to, final Enum on) {
-        final List<TransitionContainer> res = new ArrayList<>();
+        List<TransitionContainer> res = new ArrayList<>();
 
         List<TransitionContainer> nexts = this.transitions.stream().filter(transition -> transition.getFrom().equals(from)).collect(Collectors.toList());
 

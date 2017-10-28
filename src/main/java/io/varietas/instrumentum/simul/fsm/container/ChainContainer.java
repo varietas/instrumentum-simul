@@ -57,4 +57,6 @@ public class ChainContainer<STATE_TYPE extends Enum, TRANSITION_TYPE extends Enu
     private final CHAIN_TYPE on;
 
     private final List<TransitionContainer> chainParts;
+    
+    private List<Class<?>> listeners;
 }

@@ -21,7 +21,10 @@ import io.varietas.instrumentum.simul.fsm.container.ChainContainer;
 import io.varietas.instrumentum.simul.fsm.container.TransitionContainer;
 import io.varietas.instrumentum.simul.fsm.error.InvalidTransitionError;
 import io.varietas.instrumentum.simul.fsm.error.TransitionInvocationException;
+import java.lang.reflect.InvocationTargetException;
+import java.util.Objects;
 import java.util.Optional;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * <h2>AbstractChainStateMachine</h2>
@@ -29,7 +32,8 @@ import java.util.Optional;
  * @author Michael Rhöse
  * @version 1.0.0, 10/27/2017
  */
-public class AbstractChainStateMachine extends AbstractStateMachine implements ChainStateMachine {
+@Slf4j
+public abstract class AbstractChainStateMachine extends AbstractStateMachine implements ChainStateMachine {
 
     public AbstractChainStateMachine(FSMConfigurationImpl configuration) {
         super(configuration);
@@ -61,6 +65,23 @@ public class AbstractChainStateMachine extends AbstractStateMachine implements C
             throw new InvalidTransitionError(transitionChain, "Current state " + target.state().name() + " doesn't match required state " + chainContainer.get().getFrom().name() + ".");
         }
 
+        if (Objects.nonNull(chainContainer.get().getListeners())) {
+            chainContainer.get().getListeners().forEach(listener -> this.executeChainListener((Class<?>) listener, "before", chainContainer.get(), target));
+        }
+
         chainContainer.get().getChainParts().forEach(chainPart -> this.fire((TransitionContainer) chainPart, target));
+
+        if (Objects.nonNull(chainContainer.get().getListeners())) {
+            chainContainer.get().getListeners().forEach(listener -> this.executeChainListener((Class<?>) listener, "after", chainContainer.get(), target));
+        }
+    }
+
+    protected void executeChainListener(final Class<?> listener, final String methodName, final ChainContainer chainContainer, final Object target) {
+        try {
+            Object listenerInstance = listener.newInstance();
+            listener.getMethod(methodName, Enum.class, Object.class).invoke(listenerInstance, chainContainer.getOn(), target);
+        } catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | InstantiationException ex) {
+            LOGGER.error(ex.getLocalizedMessage());
+        }
     }
 }

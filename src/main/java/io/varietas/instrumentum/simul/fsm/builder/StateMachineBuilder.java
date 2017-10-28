@@ -19,6 +19,8 @@ import io.varietas.instrumentum.simul.fsm.StateMachine;
 import io.varietas.instrumentum.simul.fsm.configuration.FSMConfigurationImpl;
 import io.varietas.instrumentum.simul.fsm.annotation.StateMachineConfiguration;
 import io.varietas.instrumentum.simul.fsm.annotation.Transition;
+import io.varietas.instrumentum.simul.fsm.annotation.TransitionListener;
+import io.varietas.instrumentum.simul.fsm.annotation.TransitionListeners;
 import io.varietas.instrumentum.simul.fsm.annotation.Transitions;
 import io.varietas.instrumentum.simul.fsm.configuration.FSMConfiguration;
 import io.varietas.instrumentum.simul.fsm.container.TransitionContainer;
@@ -28,6 +30,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import lombok.Getter;
@@ -113,7 +116,7 @@ public class StateMachineBuilder {
     protected List<TransitionContainer> collectTransitions() {
         return Stream.of(this.machineType.getMethods())
             .filter(method -> method.isAnnotationPresent(Transitions.class) || method.isAnnotationPresent(Transition.class))
-            .map(this::createTransitionContainer)
+            .map(this::createTransitionContainers)
             .flatMap(List::stream)
             .distinct()
             .collect(Collectors.toList());
@@ -126,30 +129,37 @@ public class StateMachineBuilder {
      * @param method Method where the transitions are configured.
      * @return List of all available transitions as transition containers.
      */
-    private List<TransitionContainer> createTransitionContainer(final Method method) {
+    private List<TransitionContainer> createTransitionContainers(final Method method) {
 
-        if (method.isAnnotationPresent(Transitions.class)) {
+        final List<Class<?>> listeners = this.extractTransitionListener(method);
 
-            return Arrays.asList(method.getAnnotation(Transitions.class).value()).stream()
-                .map((Transition transition) -> {
-                    Enum from = Enum.valueOf(this.stateType, transition.from());
-                    Enum to = Enum.valueOf(stateType, transition.to());
-                    Enum on = Enum.valueOf(this.eventType, transition.on());
-                    LOGGER.debug("Transition from '{}' to '{}' on '{}' will be created.", from.name(), to.name(), on.name());
-                    return new TransitionContainer<>(
-                        from,
-                        to,
-                        on,
-                        method);
-                })
-                .collect(Collectors.toList());
-        }
+        return Arrays.asList(method.getAnnotationsByType(Transition.class)).stream()
+            .map((Transition transition) -> this.createTransitionContainer(transition, method, listeners))
+            .collect(Collectors.toList());
+    }
 
-        Transition transition = method.getAnnotation(Transition.class);
+    private TransitionContainer createTransitionContainer(final Transition transition, final Method method, final List<Class<?>> listeners) {
         Enum from = Enum.valueOf(this.stateType, transition.from());
         Enum to = Enum.valueOf(stateType, transition.to());
         Enum on = Enum.valueOf(this.eventType, transition.on());
-        LOGGER.debug("Transition from '{}' to '{}' on '{}' created.", from.name(), to.name(), on.name());
-        return Arrays.asList(new TransitionContainer<>(from, to, on, method));
+        LOGGER.debug("Transition from '{}' to '{}' on '{}' will be created.", from.name(), to.name(), on.name());
+        LOGGER.debug("{} listeners for transition {} added.", (Objects.nonNull(listeners) ? listeners.size() : 0), on.name());
+        return new TransitionContainer<>(
+            from,
+            to,
+            on,
+            method,
+            listeners
+        );
+    }
+
+    private List<Class<?>> extractTransitionListener(final Method method) {
+        if (!method.isAnnotationPresent(TransitionListeners.class) && !method.isAnnotationPresent(TransitionListener.class)) {
+            return null;
+        }
+
+        return Stream.of(method.getAnnotationsByType(TransitionListener.class))
+            .map(annot -> annot.value())
+            .collect(Collectors.toList());
     }
 }

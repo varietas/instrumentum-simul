@@ -16,6 +16,8 @@
 package io.varietas.instrumentum.simul.fsm.builder;
 
 import io.varietas.instrumentum.simul.fsm.StateMachine;
+import io.varietas.instrumentum.simul.fsm.annotation.ChainListener;
+import io.varietas.instrumentum.simul.fsm.annotation.ChainListeners;
 import io.varietas.instrumentum.simul.fsm.annotation.StateMachineConfiguration;
 import io.varietas.instrumentum.simul.fsm.annotation.TransitionChain;
 import io.varietas.instrumentum.simul.fsm.annotation.TransitionChains;
@@ -24,8 +26,9 @@ import io.varietas.instrumentum.simul.fsm.container.ChainContainer;
 import io.varietas.instrumentum.simul.fsm.container.TransitionContainer;
 import io.varietas.instrumentum.simul.fsm.error.TransitionChainCreationException;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import lombok.extern.slf4j.Slf4j;
@@ -86,7 +89,7 @@ public class ChainStateMachineBuilder extends StateMachineBuilder {
 
         return this;
     }
-    
+
     /**
      * The varietas.io transition implementation supports transition chains. These chains allows the definition of transition on programming time. That makes execution of chained transitions with a
      * single command possible. This method creates all available transition chains.
@@ -95,33 +98,43 @@ public class ChainStateMachineBuilder extends StateMachineBuilder {
      */
     private List<ChainContainer> createChains() {
 
-        if (this.machineType.isAnnotationPresent(TransitionChains.class)) {
-            return Stream.of(this.machineType.getAnnotation(TransitionChains.class
-            ).value())
-                .map(chain -> {
-                    Enum from = Enum.valueOf(this.stateType, chain.from());
-                    Enum to = Enum.valueOf(stateType, chain.to());
-                    Enum on = Enum.valueOf(this.chainType, chain.on());
-                    List<TransitionContainer> chainParts = this.collectTransitionsForChain(from, to, on);
-                    LOGGER.debug("Chain from '{}' to '{}' on '{}' will be created. {} chain parts collected.", from.name(), to.name(), on.name(), chainParts.size());
-                    return new ChainContainer<>(
-                        from,
-                        to,
-                        on,
-                        chainParts
-                    );
-                })
-                .distinct()
-                .collect(Collectors.toList());
+        final List<Class<?>> listeners = this.extractChainListener(this.machineType);
+
+        if (!this.machineType.isAnnotationPresent(TransitionChains.class) && this.machineType.isAnnotationPresent(TransitionChains.class)) {
+            return Collections.emptyList();
         }
 
-        TransitionChain chain = this.machineType.getAnnotation(TransitionChain.class);
+        return Stream.of(this.machineType.getAnnotationsByType(TransitionChain.class))
+            .map(chain -> this.createChain(chain, listeners))
+            .distinct()
+            .collect(Collectors.toList());
+
+    }
+
+    private ChainContainer createChain(final TransitionChain chain, final List<Class<?>> listeners) {
         Enum from = Enum.valueOf(this.stateType, chain.from());
         Enum to = Enum.valueOf(stateType, chain.to());
         Enum on = Enum.valueOf(this.chainType, chain.on());
         List<TransitionContainer> chainParts = this.collectTransitionsForChain(from, to, on);
         LOGGER.debug("Chain from '{}' to '{}' on '{}' will be created. {} chain parts collected.", from.name(), to.name(), on.name(), chainParts.size());
-        return Arrays.asList(new ChainContainer<>(from, to, on, chainParts));
+        LOGGER.debug("{} listeners for chain {} added.", (Objects.nonNull(listeners) ? listeners.size() : 0), on.name());
+        return new ChainContainer<>(
+            from,
+            to,
+            on,
+            chainParts,
+            listeners
+        );
+    }
+
+    private List<Class<?>> extractChainListener(final Class<?> type) {
+        if (!type.isAnnotationPresent(ChainListeners.class) && !type.isAnnotationPresent(ChainListener.class)) {
+            return null;
+        }
+
+        return Stream.of(type.getAnnotationsByType(ChainListener.class))
+            .map(annot -> annot.value())
+            .collect(Collectors.toList());
     }
 
     /**

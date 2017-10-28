@@ -17,6 +17,7 @@ package io.varietas.instrumentum.simul.fsm.container;
 
 import io.varietas.instrumentum.simul.fsm.annotation.Transition;
 import java.lang.reflect.Method;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -51,4 +52,6 @@ public class TransitionContainer<STATE_TYPE extends Enum, TRANSITION_TYPE extend
     private final TRANSITION_TYPE on;
 
     private final Method calledMethod;
+    
+    private List<Class<?>> listeners;
 }

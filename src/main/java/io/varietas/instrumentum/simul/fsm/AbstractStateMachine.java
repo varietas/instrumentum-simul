@@ -20,6 +20,7 @@ import io.varietas.instrumentum.simul.fsm.container.TransitionContainer;
 import io.varietas.instrumentum.simul.fsm.error.InvalidTransitionError;
 import io.varietas.instrumentum.simul.fsm.error.TransitionInvocationException;
 import java.lang.reflect.InvocationTargetException;
+import java.util.Objects;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 
@@ -81,16 +82,33 @@ public abstract class AbstractStateMachine implements StateMachine {
      * @param transition Container of transition which has to be performed.
      * @param target Transition target.
      */
-    protected void fire(TransitionContainer transition, StatedObject target) {
+    protected void fire(final TransitionContainer transition, final StatedObject target) {
         if (!this.isTransitionPossible(target.state(), transition)) {
             throw new InvalidTransitionError(transition.getOn(), "Current state " + target.state().name() + " doesn't match required state " + transition.getFrom().name() + ".");
         }
 
         try {
+            if (Objects.nonNull(transition.getListeners())) {
+                transition.getListeners().forEach(listener -> this.executeTransitionListener((Class<?>) listener, "before", transition, target));
+            }
+
             transition.getCalledMethod().invoke(this, target);
             target.state(transition.getTo());
+
+            if (Objects.nonNull(transition.getListeners())) {
+                transition.getListeners().forEach(listener -> this.executeTransitionListener((Class<?>) listener, "after", transition, target));
+            }
         } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
             throw new TransitionInvocationException(transition.getOn(), transition.getCalledMethod().getName(), ex.getLocalizedMessage());
+        }
+    }
+
+    protected void executeTransitionListener(final Class<?> listener, final String methodName, final TransitionContainer transition, final Object target) {
+        try {
+            Object listenerInstance = listener.newInstance();
+            listener.getMethod(methodName, Enum.class, Object.class).invoke(listenerInstance, transition.getOn(), target);
+        } catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | InstantiationException ex) {
+            LOGGER.error(ex.getLocalizedMessage());
         }
     }
 }

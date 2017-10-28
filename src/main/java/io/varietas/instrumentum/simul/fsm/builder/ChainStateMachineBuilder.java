@@ -116,6 +116,11 @@ public class ChainStateMachineBuilder extends StateMachineBuilder {
         Enum to = Enum.valueOf(stateType, chain.to());
         Enum on = Enum.valueOf(this.chainType, chain.on());
         List<TransitionContainer> chainParts = this.collectTransitionsForChain(from, to, on);
+
+        if (chainParts.isEmpty()) {
+            throw new TransitionChainCreationException(true, from.name(), to.name(), on.name());
+        }
+
         LOGGER.debug("Chain from '{}' to '{}' on '{}' will be created. {} chain parts collected.", from.name(), to.name(), on.name(), chainParts.size());
         LOGGER.debug("{} listeners for chain {} added.", (Objects.nonNull(listeners) ? listeners.size() : 0), on.name());
         return new ChainContainer<>(
@@ -133,7 +138,7 @@ public class ChainStateMachineBuilder extends StateMachineBuilder {
         }
 
         return Stream.of(type.getAnnotationsByType(ChainListener.class))
-            .map(annot -> annot.value())
+            .map(ChainListener::value)
             .collect(Collectors.toList());
     }
 
@@ -148,7 +153,9 @@ public class ChainStateMachineBuilder extends StateMachineBuilder {
     private List<TransitionContainer> collectTransitionsForChain(final Enum from, final Enum to, final Enum on) {
         List<TransitionContainer> res = new ArrayList<>();
 
-        List<TransitionContainer> nexts = this.transitions.stream().filter(transition -> transition.getFrom().equals(from)).collect(Collectors.toList());
+        List<TransitionContainer> nexts = this.transitions.stream()
+            .filter(transition -> transition.getFrom().equals(from))
+            .collect(Collectors.toList());
 
         if (nexts.isEmpty()) {
             throw new TransitionChainCreationException(true, from.name(), to.name(), on.name());
@@ -167,18 +174,14 @@ public class ChainStateMachineBuilder extends StateMachineBuilder {
             tempRes.add(next);
             LOGGER.debug("Subchain is started.");
             LOGGER.debug("State transition from '{}' to '{}' on '{}' added to chain.", nexts.get(0).getFrom().name(), nexts.get(0).getTo().name(), nexts.get(0).getOn().name());
-            isEnd = this.collectTransitionRecursively(next, on, to, tempRes, 1);
 
+            isEnd = this.collectTransitionRecursively(next, on, to, tempRes, 1);
             if (isEnd) {
                 res.addAll(tempRes);
                 LOGGER.debug("Subchain started on '{}' passes and is added to chain result.", from.name());
                 break;
             }
             LOGGER.debug("Subchain on '{}' not passes.", from.name());
-        }
-
-        if (!isEnd) {
-            throw new TransitionChainCreationException(true, from.name(), to.name(), on.name());
         }
 
         return res;
@@ -223,8 +226,8 @@ public class ChainStateMachineBuilder extends StateMachineBuilder {
             tempRes.add(next);
             LOGGER.debug("Subchain is started.");
             LOGGER.debug("State transition from '{}' to '{}' on '{}' added to chain.", next.getFrom().name(), next.getTo().name(), next.getOn().name());
-            boolean isEnd = this.collectTransitionRecursively(next, chain, abourt, tempRes, fallback + 1);
 
+            boolean isEnd = this.collectTransitionRecursively(next, chain, abourt, tempRes, fallback + 1);
             if (isEnd) {
                 res.addAll(tempRes);
                 LOGGER.debug("Subchain started on '{}' passes and is added to chain result.", entry.getFrom().name());

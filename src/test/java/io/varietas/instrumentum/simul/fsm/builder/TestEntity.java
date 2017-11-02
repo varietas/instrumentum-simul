@@ -15,21 +15,36 @@
  */
 package io.varietas.instrumentum.simul.fsm.builder;
 
-import io.varietas.instrumentum.simul.fsm.StateMachine;
-import io.varietas.instrumentum.simul.fsm.configuration.FSMConfiguration;
-import io.varietas.instrumentum.simul.fsm.error.MachineCreationException;
+import io.varietas.instrumentum.simul.fsm.StatedObject;
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
 /**
- * <h2>StateMachineBuilder</h2>
+ * <h2>TestEntity</h2>
  *
  * @author Michael Rhöse
  * @version 1.0.0, 10/31/2017
  */
-public interface StateMachineBuilder {
+@ToString
+@EqualsAndHashCode
+@AllArgsConstructor
+public class TestEntity implements StatedObject<State> {
 
-    StateMachineBuilder extractConfiguration(final Class<? extends StateMachine> machineType);
+    private State state;
+    @Getter
+    @Setter
+    private int value;
 
-    StateMachine build() throws MachineCreationException;
-    
-    <CONFIGURATION extends FSMConfiguration> CONFIGURATION configuration(); 
+    @Override
+    public State state() {
+        return this.state;
+    }
+
+    @Override
+    public void state(State state) {
+        this.state = state;
+    }
 }

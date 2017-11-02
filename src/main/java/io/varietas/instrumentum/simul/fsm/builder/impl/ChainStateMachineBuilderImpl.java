@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.varietas.instrumentum.simul.fsm.builder;
+package io.varietas.instrumentum.simul.fsm.builder.impl;
 
 import io.varietas.instrumentum.simul.fsm.StateMachine;
 import io.varietas.instrumentum.simul.fsm.annotation.ChainListener;
@@ -27,6 +27,7 @@ import io.varietas.instrumentum.simul.fsm.container.TransitionContainer;
 import io.varietas.instrumentum.simul.fsm.error.TransitionChainCreationException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -34,13 +35,13 @@ import java.util.stream.Stream;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * <h2>ChainStateMachineBuilder</h2>
+ * <h2>ChainStateMachineBuilderImpl</h2>
  *
  * @author Michael Rhöse
  * @version 1.0.0, 10/27/2017
  */
 @Slf4j
-public class ChainStateMachineBuilder extends StateMachineBuilder {
+public class ChainStateMachineBuilderImpl extends StateMachineBuilderImpl {
 
     protected Class<? extends Enum> chainType;
 
@@ -54,7 +55,7 @@ public class ChainStateMachineBuilder extends StateMachineBuilder {
      * @return The instance of the builder for a fluent like API.
      */
     @Override
-    public ChainStateMachineBuilder extractConfiguration(final Class<? extends StateMachine> machineType) {
+    public ChainStateMachineBuilderImpl extractConfiguration(final Class<? extends StateMachine> machineType) {
         this.machineType = machineType;
 
         StateMachineConfiguration machineConfiguration = this.machineType.getAnnotation(StateMachineConfiguration.class);
@@ -115,21 +116,28 @@ public class ChainStateMachineBuilder extends StateMachineBuilder {
         Enum from = Enum.valueOf(this.stateType, chain.from());
         Enum to = Enum.valueOf(stateType, chain.to());
         Enum on = Enum.valueOf(this.chainType, chain.on());
-        List<TransitionContainer> chainParts = this.collectTransitionsForChain(from, to, on);
+        List<TransitionContainer> chainParts = this.recursive(from, to, on);
 
         if (chainParts.isEmpty()) {
             throw new TransitionChainCreationException(true, from.name(), to.name(), on.name());
         }
 
-        LOGGER.debug("Chain from '{}' to '{}' on '{}' will be created. {} chain parts collected.", from.name(), to.name(), on.name(), chainParts.size());
-        LOGGER.debug("{} listeners for chain {} added.", (Objects.nonNull(listeners) ? listeners.size() : 0), on.name());
-        return new ChainContainer<>(
+        ChainContainer res = new ChainContainer<>(
             from,
             to,
             on,
             chainParts,
             listeners
         );
+
+        LOGGER.debug("Chain {}: {} -> {}", res.getOn(), res.getFrom(), res.getTo());
+        res.getChainParts().forEach(part -> {
+            TransitionContainer partContainer = ((TransitionContainer) part);
+            LOGGER.debug("  - {}: {} -> {}", partContainer.getOn(), partContainer.getFrom(), partContainer.getTo());
+        });
+        LOGGER.debug("{} listeners for chain {} added.", (Objects.nonNull(res.getListeners()) ? res.getListeners() : 0), res.getOn());
+
+        return res;
     }
 
     private List<Class<?>> extractChainListener(final Class<?> type) {
@@ -150,90 +158,78 @@ public class ChainStateMachineBuilder extends StateMachineBuilder {
      * @param on Event of the transition chain. Represents a simple identifier.
      * @return List of all required transitions as containers.
      */
-    private List<TransitionContainer> collectTransitionsForChain(final Enum from, final Enum to, final Enum on) {
-        List<TransitionContainer> res = new ArrayList<>();
+    private List<TransitionContainer> recursive(final Enum from, final Enum to, final Enum on) {
+        List<TransitionContainer> possibleParts = this.transitions.stream().filter(transition -> transition.getFrom().equals(from)).collect(Collectors.toList());
 
-        List<TransitionContainer> nexts = this.transitions.stream()
-            .filter(transition -> transition.getFrom().equals(from))
-            .collect(Collectors.toList());
-
-        if (nexts.isEmpty()) {
-            throw new TransitionChainCreationException(true, from.name(), to.name(), on.name());
-        }
-
-        if (nexts.size() == 1) {
-            res.add(nexts.get(0));
-            LOGGER.debug("State transition from '{}' to '{}' on '{}' added to chain.", nexts.get(0).getFrom().name(), nexts.get(0).getTo().name(), nexts.get(0).getOn().name());
-            this.collectTransitionRecursively(nexts.get(0), on, to, res, 1);
-            return res;
-        }
-
-        boolean isEnd = false;
-        for (TransitionContainer next : nexts) {
-            List<TransitionContainer> tempRes = new ArrayList<>();
-            tempRes.add(next);
-            LOGGER.debug("Subchain is started.");
-            LOGGER.debug("State transition from '{}' to '{}' on '{}' added to chain.", nexts.get(0).getFrom().name(), nexts.get(0).getTo().name(), nexts.get(0).getOn().name());
-
-            isEnd = this.collectTransitionRecursively(next, on, to, tempRes, 1);
-            if (isEnd) {
-                res.addAll(tempRes);
-                LOGGER.debug("Subchain started on '{}' passes and is added to chain result.", from.name());
-                break;
+        final List<List<TransitionContainer>> buffer = new ArrayList<>();
+        possibleParts.forEach((possiblePart) -> {
+            List<TransitionContainer> temp = new ArrayList<>();
+            temp.add(possiblePart);
+            if (!(!this.recursive(on, to, possiblePart, temp, 1))) {
+                buffer.add(temp);
             }
-            LOGGER.debug("Subchain on '{}' not passes.", from.name());
+        });
+
+        if (buffer.isEmpty()) {
+            ///< No parts found
+            return Collections.EMPTY_LIST;
         }
 
-        return res;
+        return buffer.stream().min(Comparator.comparingInt(List::size)).get();
     }
 
     /**
      * Collects all transitions required by transition chain from the already collected transitions in a recursively way. This method searches a way from the start state to the end state.
      *
-     * @param entry Currently used start transition.
      * @param chain Event of the chain.
      * @param abourt End state of the chain.
-     * @param res List of all collected transitions.
+     * @param possiblePart Currently used start transition.
+     * @param chainParts List of all collected transitions.
      * @param fallback Abort criteria. This is simply a counter which is increased each recursive step. If the counter greater than the current number of available transitions, the algorithm detects
      * no possible way from the start to the end.
      * @return True if the end state is located, otherwise false.
      */
-    private boolean collectTransitionRecursively(final TransitionContainer entry, final Enum chain, final Enum abourt, final List<TransitionContainer> res, final int fallback) {
-        List<TransitionContainer> nexts = this.transitions.stream().filter(transition -> transition.getFrom().equals(entry.getTo())).collect(Collectors.toList());
+    private boolean recursive(final Enum chain, final Enum abourt, final TransitionContainer possiblePart, final List<TransitionContainer> chainParts, int fallBack) {
 
-        if (entry.getTo().equals(abourt)) {
+        if (fallBack > this.transitions.size()) {
+            return false;
+        }
+
+        List<TransitionContainer> nextPossibles = this.transitions.stream().filter(transition -> transition.getFrom().equals(possiblePart.getTo())).collect(Collectors.toList());
+
+        if (possiblePart.getTo().equals(abourt)) {
             return true;
         }
 
-        if (nexts.isEmpty()) {
-            LOGGER.debug("There is no transition available from '{}' to '{}'.", entry.getFrom().name(), abourt.name());
+        if (nextPossibles.isEmpty()) {
+            LOGGER.trace("There is no transition available from '{}' to '{}'.", possiblePart.getFrom().name(), abourt.name());
             return false;
         }
 
-        if (fallback == this.transitions.size()) {
-            LOGGER.debug("All states visited without location of target state.");
-            return false;
-        }
+        if (nextPossibles.size() == 1) {
+            List<TransitionContainer> temp = new ArrayList<>();
 
-        if (nexts.size() == 1) {
-            res.add(nexts.get(0));
-            LOGGER.debug("State transition from '{}' to '{}' on '{}' added to chain.", nexts.get(0).getFrom().name(), nexts.get(0).getTo().name(), nexts.get(0).getOn().name());
-            return this.collectTransitionRecursively(nexts.get(0), chain, abourt, res, fallback + 1);
-        }
+            TransitionContainer toAdd = nextPossibles.get(0);
 
-        for (TransitionContainer next : nexts) {
-            List<TransitionContainer> tempRes = new ArrayList<>();
-            tempRes.add(next);
-            LOGGER.debug("Subchain is started.");
-            LOGGER.debug("State transition from '{}' to '{}' on '{}' added to chain.", next.getFrom().name(), next.getTo().name(), next.getOn().name());
-
-            boolean isEnd = this.collectTransitionRecursively(next, chain, abourt, tempRes, fallback + 1);
-            if (isEnd) {
-                res.addAll(tempRes);
-                LOGGER.debug("Subchain started on '{}' passes and is added to chain result.", entry.getFrom().name());
-                return true;
+            if (!this.recursive(chain, abourt, toAdd, temp, fallBack + 1)) {
+                return false;
             }
-            LOGGER.debug("Subchain started on '{}' not passes.", entry.getFrom().name());
+
+            chainParts.add(toAdd);
+            chainParts.addAll(temp);
+            return true;
+        }
+
+        for (TransitionContainer nextPossible : nextPossibles) {
+            List<TransitionContainer> temp = new ArrayList<>();
+
+            if (!this.recursive(chain, abourt, nextPossible, temp, fallBack + 1)) {
+                continue;
+            }
+
+            chainParts.add(nextPossible);
+            chainParts.addAll(temp);
+            return true;
         }
 
         return false;

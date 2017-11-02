@@ -16,7 +16,7 @@
 package io.varietas.instrumentum.simul.fsm.container;
 
 import io.varietas.instrumentum.simul.fsm.StateMachine;
-import io.varietas.instrumentum.simul.fsm.builder.StateMachineBuilder;
+import io.varietas.instrumentum.simul.fsm.builder.impl.StateMachineBuilderImpl;
 import io.varietas.instrumentum.simul.fsm.annotation.TransitionChain;
 import java.util.List;
 import lombok.AllArgsConstructor;
@@ -35,7 +35,7 @@ import lombok.ToString;
  * <li>the list of transitions, which are passed.</li>
  * </ul>
  *
- * The transitions are collected while the configuration is created automatically by the {@link StateMachineBuilder}. Its recommended that a configuration is created once per {@link StateMachine} and
+ * The transitions are collected while the configuration is created automatically by the {@link StateMachineBuilderImpl}. Its recommended that a configuration is created once per {@link StateMachine} and
  * shared between the instances.
  *
  * @author Michael Rhöse

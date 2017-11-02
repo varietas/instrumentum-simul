@@ -15,21 +15,15 @@
  */
 package io.varietas.instrumentum.simul.fsm.builder;
 
-import io.varietas.instrumentum.simul.fsm.StateMachine;
-import io.varietas.instrumentum.simul.fsm.configuration.FSMConfiguration;
-import io.varietas.instrumentum.simul.fsm.error.MachineCreationException;
-
 /**
- * <h2>StateMachineBuilder</h2>
+ * <h2>Chain</h2>
  *
  * @author Michael Rhöse
  * @version 1.0.0, 10/31/2017
  */
-public interface StateMachineBuilder {
-
-    StateMachineBuilder extractConfiguration(final Class<? extends StateMachine> machineType);
-
-    StateMachine build() throws MachineCreationException;
-    
-    <CONFIGURATION extends FSMConfiguration> CONFIGURATION configuration(); 
+public enum Chain {
+    INSTALLING,
+    UPDATED,
+    PARKING,
+    DELETION
 }

@@ -30,6 +30,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import lombok.extern.slf4j.Slf4j;
@@ -116,9 +117,9 @@ public class ChainStateMachineBuilderImpl extends StateMachineBuilderImpl {
         Enum from = Enum.valueOf(this.stateType, chain.from());
         Enum to = Enum.valueOf(stateType, chain.to());
         Enum on = Enum.valueOf(this.chainType, chain.on());
-        List<TransitionContainer> chainParts = this.recursive(from, to, on);
+        Optional<List<TransitionContainer>> chainParts = this.recursive(from, to);
 
-        if (chainParts.isEmpty()) {
+        if (!chainParts.isPresent()) {
             throw new TransitionChainCreationException(true, from.name(), to.name(), on.name());
         }
 
@@ -126,7 +127,7 @@ public class ChainStateMachineBuilderImpl extends StateMachineBuilderImpl {
             from,
             to,
             on,
-            chainParts,
+            chainParts.get(),
             listeners
         );
 
@@ -155,33 +156,30 @@ public class ChainStateMachineBuilderImpl extends StateMachineBuilderImpl {
      *
      * @param from Start state of the transition chain.
      * @param to End state of the transition chain.
-     * @param on Event of the transition chain. Represents a simple identifier.
      * @return List of all required transitions as containers.
      */
-    private List<TransitionContainer> recursive(final Enum from, final Enum to, final Enum on) {
-        List<TransitionContainer> possibleParts = this.transitions.stream().filter(transition -> transition.getFrom().equals(from)).collect(Collectors.toList());
+    private Optional<List<TransitionContainer>> recursive(final Enum from, final Enum to) {
 
-        final List<List<TransitionContainer>> buffer = new ArrayList<>();
-        possibleParts.forEach((possiblePart) -> {
-            List<TransitionContainer> temp = new ArrayList<>();
-            temp.add(possiblePart);
-            if (!(!this.recursive(on, to, possiblePart, temp, 1))) {
-                buffer.add(temp);
-            }
-        });
+        List<TransitionContainer> possibleParts = this.transitions.stream()
+            .filter(transition -> transition.getFrom().equals(from))
+            .collect(Collectors.toList());
 
-        if (buffer.isEmpty()) {
-            ///< No parts found
-            return Collections.EMPTY_LIST;
-        }
-
-        return buffer.stream().min(Comparator.comparingInt(List::size)).get();
+        return possibleParts.stream()
+            .map((possiblePart) -> {
+                List<TransitionContainer> temp = new ArrayList<>();
+                temp.add(possiblePart);
+                if (!this.recursive(to, possiblePart, temp, 1)) {
+                    return null;
+                }
+                return temp;
+            })
+            .filter(Objects::nonNull)
+            .min(Comparator.comparingInt(List::size));
     }
 
     /**
      * Collects all transitions required by transition chain from the already collected transitions in a recursively way. This method searches a way from the start state to the end state.
      *
-     * @param chain Event of the chain.
      * @param abourt End state of the chain.
      * @param possiblePart Currently used start transition.
      * @param chainParts List of all collected transitions.
@@ -189,17 +187,19 @@ public class ChainStateMachineBuilderImpl extends StateMachineBuilderImpl {
      * no possible way from the start to the end.
      * @return True if the end state is located, otherwise false.
      */
-    private boolean recursive(final Enum chain, final Enum abourt, final TransitionContainer possiblePart, final List<TransitionContainer> chainParts, int fallBack) {
+    private boolean recursive(final Enum abourt, final TransitionContainer possiblePart, final List<TransitionContainer> chainParts, final int fallBack) {
+
+        if (possiblePart.getTo().equals(abourt)) {
+            return true;
+        }
 
         if (fallBack > this.transitions.size()) {
             return false;
         }
 
-        List<TransitionContainer> nextPossibles = this.transitions.stream().filter(transition -> transition.getFrom().equals(possiblePart.getTo())).collect(Collectors.toList());
-
-        if (possiblePart.getTo().equals(abourt)) {
-            return true;
-        }
+        List<TransitionContainer> nextPossibles = this.transitions.stream()
+            .filter(transition -> transition.getFrom().equals(possiblePart.getTo()))
+            .collect(Collectors.toList());
 
         if (nextPossibles.isEmpty()) {
             LOGGER.trace("There is no transition available from '{}' to '{}'.", possiblePart.getFrom().name(), abourt.name());
@@ -211,24 +211,30 @@ public class ChainStateMachineBuilderImpl extends StateMachineBuilderImpl {
 
             TransitionContainer toAdd = nextPossibles.get(0);
 
-            if (!this.recursive(chain, abourt, toAdd, temp, fallBack + 1)) {
+            chainParts.add(toAdd);
+            if (!this.recursive(abourt, toAdd, temp, fallBack + 1)) {
                 return false;
             }
 
-            chainParts.add(toAdd);
             chainParts.addAll(temp);
             return true;
         }
 
-        for (TransitionContainer nextPossible : nextPossibles) {
-            List<TransitionContainer> temp = new ArrayList<>();
+        final List<List<TransitionContainer>> buffer = nextPossibles.stream()
+            .map((nextPossible) -> {
+                List<TransitionContainer> temp = new ArrayList<>();
+                temp.add(nextPossible);
+                if (!this.recursive(abourt, nextPossible, temp, fallBack + 1)) {
+                    return null;
+                }
+                return temp;
+            })
+            .filter(Objects::nonNull)
+            .collect(Collectors.toList());
 
-            if (!this.recursive(chain, abourt, nextPossible, temp, fallBack + 1)) {
-                continue;
-            }
-
-            chainParts.add(nextPossible);
-            chainParts.addAll(temp);
+        if (!buffer.isEmpty()) {
+            ///< No parts found
+            chainParts.addAll(buffer.stream().min(Comparator.comparingInt(List::size)).get());
             return true;
         }
 

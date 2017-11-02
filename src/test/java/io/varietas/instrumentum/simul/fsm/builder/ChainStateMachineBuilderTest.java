@@ -21,7 +21,9 @@ import io.varietas.instrumentum.simul.fsm.configuration.CFSMConfigurationImpl;
 import io.varietas.instrumentum.simul.fsm.configuration.FSMConfiguration;
 import io.varietas.instrumentum.simul.fsm.container.ChainContainer;
 import io.varietas.instrumentum.simul.fsm.container.TransitionContainer;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import org.assertj.core.api.Assertions;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -37,22 +39,22 @@ import org.junit.runners.JUnit4;
  */
 @RunWith(JUnit4.class)
 public class ChainStateMachineBuilderTest {
-    
+
     public ChainStateMachineBuilderTest() {
     }
-    
+
     @BeforeClass
     public static void setUpClass() {
     }
-    
+
     @AfterClass
     public static void tearDownClass() {
     }
-    
+
     @Before
     public void setUp() {
     }
-    
+
     @After
     public void tearDown() {
     }
@@ -61,7 +63,7 @@ public class ChainStateMachineBuilderTest {
      * Test of extractConfiguration method, of class ChainStateMachineBuilderImpl.
      */
     @Test
-    public void testExtractConfiguration() {
+    public void testExtractConfigurationWithoutTransitionListener() {
         Class<? extends StateMachine> machineType = ChainStateMachineWithoutListener.class;
         StateMachineBuilder instance = new ChainStateMachineBuilderImpl();
         FSMConfiguration expResult = new CFSMConfigurationImpl(
@@ -86,16 +88,61 @@ public class ChainStateMachineBuilderTest {
             Event.class,
             Chain.class
         );
-        
+
         FSMConfiguration result = instance.extractConfiguration(machineType).configuration();
-        
+
         Assertions.assertThat(expResult.getStateType()).isEqualTo(result.getStateType());
         Assertions.assertThat(expResult.getEventType()).isEqualTo(result.getEventType());
-        Assertions.assertThat(((CFSMConfigurationImpl)expResult).getChainType()).isEqualTo(((CFSMConfigurationImpl)result).getChainType());
+        Assertions.assertThat(((CFSMConfigurationImpl) expResult).getChainType()).isEqualTo(((CFSMConfigurationImpl) result).getChainType());
 
         Assertions.assertThat(expResult.getTransitions()).hasSameSizeAs(result.getTransitions());
         Assertions.assertThat(expResult.getTransitions()).hasSameElementsAs(result.getTransitions());
-        Assertions.assertThat(((CFSMConfigurationImpl)expResult).getChains()).hasSameSizeAs(((CFSMConfigurationImpl)result).getChains());
+        Assertions.assertThat(((CFSMConfigurationImpl) expResult).getChains()).hasSameSizeAs(((CFSMConfigurationImpl) result).getChains());
     }
-    
+
+    @Test
+    public void testExtractConfigurationWithTransitionListener() {
+        Class<? extends StateMachine> machineType = ChainStateMachineWithListener.class;
+        StateMachineBuilder instance = new ChainStateMachineBuilderImpl();
+
+        List<Class<?>> listeners = new ArrayList<Class<?>>() {
+            {
+                add(SimpleListener.class);
+            }
+        };
+
+        FSMConfiguration expResult = new CFSMConfigurationImpl(
+            Arrays.asList(
+                new TransitionContainer(State.REGISTERED, State.DELETED, Event.DELETE, null, listeners),
+                new TransitionContainer(State.UNREGISTERED, State.DELETED, Event.DELETE, null, listeners),
+                new TransitionContainer(State.AVAILABLE, State.REGISTERED, Event.REGISTER, null, listeners),
+                new TransitionContainer(State.REGISTERED, State.ACTIVATED, Event.ACTIVATE, null, listeners),
+                new TransitionContainer(State.PARKED, State.ACTIVATED, Event.ACTIVATE, null, listeners),
+                new TransitionContainer(State.ACTIVATED, State.DEACTIVATED, Event.DEACTIVATE, null, listeners),
+                new TransitionContainer(State.DEACTIVATED, State.UNREGISTERED, Event.UNREGISTER, null, listeners),
+                new TransitionContainer(State.PARKED, State.UNREGISTERED, Event.UNREGISTER, null, listeners),
+                new TransitionContainer(State.DEACTIVATED, State.PARKED, Event.PARK, null, listeners)
+            ),
+            Arrays.asList(
+                new ChainContainer(State.AVAILABLE, State.ACTIVATED, Chain.INSTALLING, null, null),
+                new ChainContainer(State.ACTIVATED, State.PARKED, Chain.PARKING, null, null),
+                new ChainContainer(State.ACTIVATED, State.DELETED, Chain.DELETION, null, null),
+                new ChainContainer(State.DELETED, State.DELETED, Chain.DELETION, null, null)
+            ),
+            State.class,
+            Event.class,
+            Chain.class
+        );
+
+        FSMConfiguration result = instance.extractConfiguration(machineType).configuration();
+
+        Assertions.assertThat(expResult.getStateType()).isEqualTo(result.getStateType());
+        Assertions.assertThat(expResult.getEventType()).isEqualTo(result.getEventType());
+        Assertions.assertThat(((CFSMConfigurationImpl) expResult).getChainType()).isEqualTo(((CFSMConfigurationImpl) result).getChainType());
+
+        Assertions.assertThat(expResult.getTransitions()).hasSameSizeAs(result.getTransitions());
+        Assertions.assertThat(expResult.getTransitions()).hasSameElementsAs(result.getTransitions());
+        Assertions.assertThat(((CFSMConfigurationImpl) expResult).getChains()).hasSameSizeAs(((CFSMConfigurationImpl) result).getChains());
+    }
+
 }

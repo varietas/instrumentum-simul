@@ -29,11 +29,11 @@ import java.lang.annotation.Target;
  * <pre>
  * <code>
  * 
- * public void before(Enum transition, Object target){
+ * public void before(TransitionTypes transition, Model target){
  *     // Do something.
  * }
  * 
- * public void after(Enum transition, Object target){
+ * public void after(TransitionTypes transition, Model target){
  *     // Do something.
  * }
  * </code>

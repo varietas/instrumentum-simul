@@ -28,23 +28,18 @@ public class MachineCreationException extends Exception {
 
     private Class<? extends StateMachine> machineType;
 
-    public MachineCreationException() {
+    public MachineCreationException(Class<? extends StateMachine> machineType) {
+        this.machineType = machineType;
     }
 
-    public MachineCreationException(String message) {
+    public MachineCreationException(Class<? extends StateMachine> machineType, String message) {
         super(message);
+        this.machineType = machineType;
     }
 
-    public MachineCreationException(String message, Throwable cause) {
+    public MachineCreationException(Class<? extends StateMachine> machineType, String message, Throwable cause) {
         super(message, cause);
-    }
-
-    public MachineCreationException(Throwable cause) {
-        super(cause);
-    }
-
-    public MachineCreationException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
-        super(message, cause, enableSuppression, writableStackTrace);
+        this.machineType = machineType;
     }
 
     @Override

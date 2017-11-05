@@ -53,5 +53,5 @@ public class TransitionContainer<STATE_TYPE extends Enum, TRANSITION_TYPE extend
 
     private final Method calledMethod;
     
-    private List<Class<?>> listeners;
+    private List<ListenerContainer> listeners;
 }

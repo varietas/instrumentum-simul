@@ -15,6 +15,7 @@
  */
 package io.varietas.instrumentum.simul.fsm.builder.impl;
 
+import io.varietas.instrumentum.simul.fsm.ChainStateMachine;
 import io.varietas.instrumentum.simul.fsm.StateMachine;
 import io.varietas.instrumentum.simul.fsm.annotation.ChainListener;
 import io.varietas.instrumentum.simul.fsm.annotation.ChainListeners;
@@ -23,9 +24,11 @@ import io.varietas.instrumentum.simul.fsm.annotation.TransitionChain;
 import io.varietas.instrumentum.simul.fsm.annotation.TransitionChains;
 import io.varietas.instrumentum.simul.fsm.configuration.CFSMConfigurationImpl;
 import io.varietas.instrumentum.simul.fsm.container.ChainContainer;
+import io.varietas.instrumentum.simul.fsm.container.ListenerContainer;
 import io.varietas.instrumentum.simul.fsm.container.TransitionContainer;
 import io.varietas.instrumentum.simul.fsm.error.TransitionChainCreationException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -33,6 +36,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -49,8 +53,8 @@ public class ChainStateMachineBuilderImpl extends StateMachineBuilderImpl {
     private final List<ChainContainer> chains = new ArrayList<>();
 
     /**
-     * Extracts the configuration from a given {@link StateMachine}. This process should do only once per state machine type and shared between the instances because the collection of information is a
-     * big process and can take a while.
+     * Extracts the configuration from a given {@link StateMachine}. This process should be done only once per state machine type and shared between the instances because the collection of information
+     * is a big process and can take a while.
      *
      * @param machineType State machine type where the configuration is present.
      * @return The instance of the builder for a fluent like API.
@@ -93,27 +97,40 @@ public class ChainStateMachineBuilderImpl extends StateMachineBuilderImpl {
     }
 
     /**
-     * The varietas.io transition implementation supports transition chains. These chains allows the definition of transition on programming time. That makes execution of chained transitions with a
+     * The varietas.io transition implementation supports transition chains. These chains allow the definition of transition on programming time. That makes execution of chained transitions with a
      * single command possible. This method creates all available transition chains.
      *
      * @return List of all available transition chains.
      */
     private List<ChainContainer> createChains() {
 
-        final List<Class<?>> listeners = this.extractChainListener(this.machineType);
+        final List<Pair> listeners = this.extractChainListener(this.machineType);
 
         if (!this.machineType.isAnnotationPresent(TransitionChains.class) && this.machineType.isAnnotationPresent(TransitionChains.class)) {
             return Collections.emptyList();
         }
 
         return Stream.of(this.machineType.getAnnotationsByType(TransitionChain.class))
-            .map(chain -> this.createChain(chain, listeners))
+            .map(chain -> {
+                List<ListenerContainer> requiredListeners = listeners.stream()
+                    .filter(listener -> listener.targetChains.contains("ALL") || listener.targetChains.contains(chain.on()))
+                    .map(listener -> listener.listener)
+                    .collect(Collectors.toList());
+                return this.createChain(chain, requiredListeners);
+            })
             .distinct()
             .collect(Collectors.toList());
 
     }
 
-    private ChainContainer createChain(final TransitionChain chain, final List<Class<?>> listeners) {
+    /**
+     * Creates a chain container with all required information.
+     *
+     * @param chain Target chain of the container.
+     * @param listeners Available listeners which have to be fired for this chain.
+     * @return Chain container with all relevant information.
+     */
+    private ChainContainer createChain(final TransitionChain chain, final List<ListenerContainer> listeners) {
         Enum from = Enum.valueOf(this.stateType, chain.from());
         Enum to = Enum.valueOf(stateType, chain.to());
         Enum on = Enum.valueOf(this.chainType, chain.on());
@@ -136,18 +153,28 @@ public class ChainStateMachineBuilderImpl extends StateMachineBuilderImpl {
             TransitionContainer partContainer = ((TransitionContainer) part);
             LOGGER.debug("  - {}: {} -> {}", partContainer.getOn(), partContainer.getFrom(), partContainer.getTo());
         });
-        LOGGER.debug("{} listeners for chain {} added.", (Objects.nonNull(res.getListeners()) ? res.getListeners() : 0), res.getOn());
+        LOGGER.debug("{} listeners for chain {} added.", (Objects.nonNull(res.getListeners()) ? res.getListeners().size() : 0), res.getOn());
 
         return res;
     }
 
-    private List<Class<?>> extractChainListener(final Class<?> type) {
+    /**
+     * Extracts all chain listeners from a given {@link ChainStateMachine}.
+     *
+     * @param type Chain state machine type.
+     * @return Collected chain listeners as list.
+     */
+    private List<Pair> extractChainListener(final Class<?> type) {
         if (!type.isAnnotationPresent(ChainListeners.class) && !type.isAnnotationPresent(ChainListener.class)) {
-            return null;
+            return Collections.EMPTY_LIST;
         }
 
         return Stream.of(type.getAnnotationsByType(ChainListener.class))
-            .map(ChainListener::value)
+            .map(annot -> {
+                Class<?> listener = annot.value();
+                ListenerContainer listenerContainer = new ListenerContainer(listener, this.existsMethod(listener, "before"), this.existsMethod(listener, "after"));
+                return new Pair(listenerContainer, Arrays.asList(annot.forChains()));
+            })
             .collect(Collectors.toList());
     }
 
@@ -239,5 +266,12 @@ public class ChainStateMachineBuilderImpl extends StateMachineBuilderImpl {
         }
 
         return false;
+    }
+
+    @AllArgsConstructor
+    private static class Pair {
+
+        public final ListenerContainer listener;
+        public final List<String> targetChains;
     }
 }

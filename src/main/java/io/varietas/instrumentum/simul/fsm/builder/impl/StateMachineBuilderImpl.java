@@ -24,6 +24,7 @@ import io.varietas.instrumentum.simul.fsm.annotation.TransitionListeners;
 import io.varietas.instrumentum.simul.fsm.annotation.Transitions;
 import io.varietas.instrumentum.simul.fsm.builder.StateMachineBuilder;
 import io.varietas.instrumentum.simul.fsm.configuration.FSMConfiguration;
+import io.varietas.instrumentum.simul.fsm.container.ListenerContainer;
 import io.varietas.instrumentum.simul.fsm.container.TransitionContainer;
 import io.varietas.instrumentum.simul.fsm.error.MachineCreationException;
 import java.lang.reflect.InvocationTargetException;
@@ -46,7 +47,7 @@ import lombok.extern.slf4j.Slf4j;
  * @version 1.0.0, 10/9/2017
  */
 @Slf4j
-public class StateMachineBuilderImpl implements StateMachineBuilder{
+public class StateMachineBuilderImpl implements StateMachineBuilder {
 
     protected Class<? extends StateMachine> machineType;
     @Getter
@@ -60,8 +61,8 @@ public class StateMachineBuilderImpl implements StateMachineBuilder{
     protected final List<TransitionContainer> transitions = new ArrayList<>();
 
     /**
-     * Extracts the configuration from a given {@link StateMachine}. This process should do only once per state machine type and shared between the instances because the collection of information is a
-     * big process and can take a while.
+     * Extracts the configuration from a given {@link StateMachine}. This process should be done only once per state machine type and shared between the instances because the collection of information
+     * is a big process and can take a while.
      *
      * @param machineType State machine type where the configuration is present.
      * @return The instance of the builder for a fluent like API.
@@ -105,9 +106,9 @@ public class StateMachineBuilderImpl implements StateMachineBuilder{
     public StateMachine build() throws MachineCreationException {
 
         try {
-            return this.machineType.getConstructor(StateMachineConfiguration.class).newInstance(this.configuration);
+            return this.machineType.getConstructor(FSMConfiguration.class).newInstance(this.configuration);
         } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | SecurityException | IllegalArgumentException | InvocationTargetException ex) {
-            throw new MachineCreationException(ex.getMessage());
+            throw new MachineCreationException(this.machineType, ex.getMessage());
         }
     }
 
@@ -134,14 +135,14 @@ public class StateMachineBuilderImpl implements StateMachineBuilder{
      */
     private List<TransitionContainer> createTransitionContainers(final Method method) {
 
-        final List<Class<?>> listeners = this.extractTransitionListener(method);
+        final List<ListenerContainer> listeners = this.extractTransitionListener(method);
 
         return Arrays.asList(method.getAnnotationsByType(Transition.class)).stream()
             .map((Transition transition) -> this.createTransitionContainer(transition, method, listeners))
             .collect(Collectors.toList());
     }
 
-    private TransitionContainer createTransitionContainer(final Transition transition, final Method method, final List<Class<?>> listeners) {
+    private TransitionContainer createTransitionContainer(final Transition transition, final Method method, final List<ListenerContainer> listeners) {
         Enum from = Enum.valueOf(this.stateType, transition.from());
         Enum to = Enum.valueOf(stateType, transition.to());
         Enum on = Enum.valueOf(this.eventType, transition.on());
@@ -156,13 +157,20 @@ public class StateMachineBuilderImpl implements StateMachineBuilder{
         );
     }
 
-    private List<Class<?>> extractTransitionListener(final Method method) {
+    private List<ListenerContainer> extractTransitionListener(final Method method) {
         if (!method.isAnnotationPresent(TransitionListeners.class) && !method.isAnnotationPresent(TransitionListener.class)) {
             return null;
         }
 
         return Stream.of(method.getAnnotationsByType(TransitionListener.class))
-            .map(annot -> annot.value())
+            .map(annot -> {
+                Class<?> listener = annot.value();
+                return new ListenerContainer(listener, this.existsMethod(listener, "before"), this.existsMethod(listener, "after"));
+            })
             .collect(Collectors.toList());
+    }
+
+    protected final boolean existsMethod(final Class<?> type, final String methodName) {
+        return Stream.of(type.getMethods()).filter(method -> method.getName().equals(methodName)).findFirst().isPresent();
     }
 }

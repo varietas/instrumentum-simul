@@ -16,12 +16,12 @@
 package io.varietas.instrumentum.simul.fsm;
 
 import io.varietas.instrumentum.simul.fsm.configuration.CFSMConfigurationImpl;
-import io.varietas.instrumentum.simul.fsm.configuration.FSMConfigurationImpl;
+import io.varietas.instrumentum.simul.fsm.configuration.FSMConfiguration;
 import io.varietas.instrumentum.simul.fsm.container.ChainContainer;
+import io.varietas.instrumentum.simul.fsm.container.ListenerContainer;
 import io.varietas.instrumentum.simul.fsm.container.TransitionContainer;
 import io.varietas.instrumentum.simul.fsm.error.InvalidTransitionError;
 import io.varietas.instrumentum.simul.fsm.error.TransitionInvocationException;
-import java.lang.reflect.InvocationTargetException;
 import java.util.Objects;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
@@ -35,7 +35,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public abstract class AbstractChainStateMachine extends AbstractStateMachine implements ChainStateMachine {
 
-    public AbstractChainStateMachine(FSMConfigurationImpl configuration) {
+    public AbstractChainStateMachine(FSMConfiguration configuration) {
         super(configuration);
     }
 
@@ -66,22 +66,13 @@ public abstract class AbstractChainStateMachine extends AbstractStateMachine imp
         }
 
         if (Objects.nonNull(chainContainer.get().getListeners())) {
-            chainContainer.get().getListeners().forEach(listener -> this.executeChainListener((Class<?>) listener, "before", chainContainer.get(), target));
+            chainContainer.get().getListeners().forEach(listener -> this.executeListener((ListenerContainer) listener, "before", chainContainer.get().getOn(), target));
         }
 
         chainContainer.get().getChainParts().forEach(chainPart -> this.fire((TransitionContainer) chainPart, target));
 
         if (Objects.nonNull(chainContainer.get().getListeners())) {
-            chainContainer.get().getListeners().forEach(listener -> this.executeChainListener((Class<?>) listener, "after", chainContainer.get(), target));
-        }
-    }
-
-    protected void executeChainListener(final Class<?> listener, final String methodName, final ChainContainer chainContainer, final Object target) {
-        try {
-            Object listenerInstance = listener.newInstance();
-            listener.getMethod(methodName, Enum.class, Object.class).invoke(listenerInstance, chainContainer.getOn(), target);
-        } catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | InstantiationException ex) {
-            LOGGER.error(ex.getLocalizedMessage());
+            chainContainer.get().getListeners().forEach(listener -> this.executeListener((ListenerContainer) listener, "after", chainContainer.get().getOn(), target));
         }
     }
 }

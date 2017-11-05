@@ -16,10 +16,12 @@
 package io.varietas.instrumentum.simul.fsm;
 
 import io.varietas.instrumentum.simul.fsm.configuration.FSMConfiguration;
+import io.varietas.instrumentum.simul.fsm.container.ListenerContainer;
 import io.varietas.instrumentum.simul.fsm.container.TransitionContainer;
 import io.varietas.instrumentum.simul.fsm.error.InvalidTransitionError;
 import io.varietas.instrumentum.simul.fsm.error.TransitionInvocationException;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.Objects;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
@@ -44,12 +46,13 @@ public abstract class AbstractStateMachine implements StateMachine {
     /**
      * This method searches the container which contains all information required to performing the transition operation.
      *
-     * @param transition Next transition kind.
+     * @param event Next transition kind.
+     * @param currentState Current state of target for identification if multiple transitions are available.
      * @return Expected container for the transition, otherwise an empty Optional.
      */
-    protected Optional<TransitionContainer> findTransitionContainer(final Enum transition) {
+    protected Optional<TransitionContainer> findTransitionContainer(final Enum event, final Enum currentState) {
         return this.configuration.getTransitions().stream()
-            .filter(transit -> transit.getOn().equals(transition))
+            .filter(transit -> transit.getOn().equals(event) && (transit.getFrom().equals(currentState) || transit.getTo().equals(currentState)))
             .findFirst();
     }
 
@@ -67,7 +70,7 @@ public abstract class AbstractStateMachine implements StateMachine {
     @Override
     public void fire(final Enum transition, final StatedObject target) throws TransitionInvocationException, InvalidTransitionError {
 
-        final Optional<TransitionContainer> transitionContainer = this.findTransitionContainer(transition);
+        final Optional<TransitionContainer> transitionContainer = this.findTransitionContainer(transition, target.state());
 
         if (!transitionContainer.isPresent()) {
             throw new InvalidTransitionError(transition, "Couldn't find transition.");
@@ -89,26 +92,36 @@ public abstract class AbstractStateMachine implements StateMachine {
 
         try {
             if (Objects.nonNull(transition.getListeners())) {
-                transition.getListeners().forEach(listener -> this.executeTransitionListener((Class<?>) listener, "before", transition, target));
+                transition.getListeners().forEach(listener -> this.executeListener((ListenerContainer) listener, "before", transition.getOn(), target));
             }
 
             transition.getCalledMethod().invoke(this, target);
             target.state(transition.getTo());
 
             if (Objects.nonNull(transition.getListeners())) {
-                transition.getListeners().forEach(listener -> this.executeTransitionListener((Class<?>) listener, "after", transition, target));
+                transition.getListeners().forEach(listener -> this.executeListener((ListenerContainer) listener, "after", transition.getOn(), target));
             }
         } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
             throw new TransitionInvocationException(transition.getOn(), transition.getCalledMethod().getName(), ex.getLocalizedMessage());
         }
     }
 
-    protected void executeTransitionListener(final Class<?> listener, final String methodName, final TransitionContainer transition, final Object target) {
+    protected void executeListener(final ListenerContainer listener, final String methodName, final Enum on, final Object target) {
+        
+        if(methodName.equals("before") && !listener.isBefore()){
+            return;
+        }
+        
+        if(methodName.equals("after") && !listener.isAfter()){
+            return;
+        }
+        
         try {
-            Object listenerInstance = listener.newInstance();
-            listener.getMethod(methodName, Enum.class, Object.class).invoke(listenerInstance, transition.getOn(), target);
+            Object listenerInstance = listener.getListener().newInstance();
+            Method method = listener.getListener().getMethod(methodName, on.getDeclaringClass(), target.getClass());
+            method.invoke(listenerInstance, on, target);
         } catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | InstantiationException ex) {
-            LOGGER.error(ex.getLocalizedMessage());
+            LOGGER.error("Couldn't call listener method '" + methodName + "'. " + ex.getMessage());
         }
     }
 }

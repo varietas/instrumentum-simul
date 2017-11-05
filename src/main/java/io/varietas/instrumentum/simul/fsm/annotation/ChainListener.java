@@ -28,11 +28,11 @@ import java.lang.annotation.Target;
  * <pre>
  * <code>
  *
- * public void before(Enum chain, Object target){
+ * public void before(ChainTypes chain, Model target){
  *     // Do something.
  * }
  *
- * public void after(Enum chain, Object target){
+ * public void after(ChainTypes chain, Model target){
  *     // Do something.
  * }
  * </code>
@@ -47,4 +47,6 @@ import java.lang.annotation.Target;
 public @interface ChainListener {
 
     Class<?> value();
+    
+    String[] forChains() default "ALL";
 }

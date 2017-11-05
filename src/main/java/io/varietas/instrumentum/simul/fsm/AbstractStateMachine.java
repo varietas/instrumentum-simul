@@ -125,7 +125,7 @@ public abstract class AbstractStateMachine implements StateMachine {
             Method method = listener.getListener().getMethod(methodName, on.getDeclaringClass(), target.getClass());
             method.invoke(listenerInstance, on, target);
         } catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | InstantiationException ex) {
-            LOGGER.error("Couldn't call listener method '" + methodName + "'. " + ex.getMessage());
+            LOGGER.error("Couldn't call listener method '{}'. {}: {}", methodName, ex.getClass().getSimpleName(), ((Objects.nonNull(ex.getMessage())) ? ex.getMessage() : "No message available"));
         }
     }
 }

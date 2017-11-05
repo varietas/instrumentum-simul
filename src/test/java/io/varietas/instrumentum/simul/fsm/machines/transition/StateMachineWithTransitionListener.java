@@ -40,40 +40,40 @@ public class StateMachineWithTransitionListener extends AbstractStateMachine {
 
     @TransitionListener(SimpleTransitionListener.class)
     @Transition(from = "AVAILABLE", on = "REGISTER", to = "REGISTERED")
-    public void fromAvailableToRegistered(final TestEntity context) {
+    public void fromAvailableToRegistered(final State from, final State to, final Event event, final TestEntity context) {
         context.setValue(context.getValue() + 1);
     }
 
     @TransitionListener(SimpleTransitionListener.class)
     @Transition(from = "REGISTERED", on = "ACTIVATE", to = "ACTIVATED")
     @Transition(from = "PARKED", on = "ACTIVATE", to = "ACTIVATED")
-    public void fromAnyToActivated(final TestEntity context) {
+    public void fromAnyToActivated(final State from, final State to, final Event event, final TestEntity context) {
         context.setValue(context.getValue() + 2);
     }
 
     @TransitionListener(SimpleTransitionListener.class)
     @Transition(from = "REGISTERED", on = "DELETE", to = "DELETED")
     @Transition(from = "UNREGISTERED", on = "DELETE", to = "DELETED")
-    public void fromAnyToDeleted(final TestEntity context) {
+    public void fromAnyToDeleted(final State from, final State to, final Event event, final TestEntity context) {
         context.setValue(context.getValue() - 7);
     }
 
     @TransitionListener(SimpleTransitionListener.class)
     @Transition(from = "ACTIVATED", on = "DEACTIVATE", to = "DEACTIVATED")
-    public void fromActivatedToDeactivated(final TestEntity context) {
+    public void fromActivatedToDeactivated(final State from, final State to, final Event event, final TestEntity context) {
         context.setValue(context.getValue() - 2);
     }
 
     @TransitionListener(SimpleTransitionListener.class)
     @Transition(from = "DEACTIVATED", on = "UNREGISTER", to = "UNREGISTERED")
     @Transition(from = "PARKED", on = "UNREGISTER", to = "UNREGISTERED")
-    public void fromAnyToUnregistered(final TestEntity context) {
+    public void fromAnyToUnregistered(final State from, final State to, final Event event, final TestEntity context) {
         context.setValue(context.getValue() - 1);
     }
 
     @TransitionListener(SimpleTransitionListener.class)
     @Transition(from = "DEACTIVATED", on = "PARK", to = "PARKED")
-    public void fromDeactivatedToParked(final TestEntity context) {
+    public void fromDeactivatedToParked(final State from, final State to, final Event event, final TestEntity context) {
         context.setValue(context.getValue() - 5);
     }
 }

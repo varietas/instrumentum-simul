@@ -91,31 +91,35 @@ public abstract class AbstractStateMachine implements StateMachine {
         }
 
         try {
+            LOGGER.trace("State change to {} entered.", transition.getOn());
+
             if (Objects.nonNull(transition.getListeners())) {
                 transition.getListeners().forEach(listener -> this.executeListener((ListenerContainer) listener, "before", transition.getOn(), target));
             }
 
-            transition.getCalledMethod().invoke(this, target);
+            transition.getCalledMethod().invoke(this, transition.getFrom(), transition.getTo(), transition.getOn(), target);
             target.state(transition.getTo());
 
             if (Objects.nonNull(transition.getListeners())) {
                 transition.getListeners().forEach(listener -> this.executeListener((ListenerContainer) listener, "after", transition.getOn(), target));
             }
+
+            LOGGER.trace("State change to {} finished.", transition.getOn());
         } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
             throw new TransitionInvocationException(transition.getOn(), transition.getCalledMethod().getName(), ex.getLocalizedMessage());
         }
     }
 
     protected void executeListener(final ListenerContainer listener, final String methodName, final Enum on, final Object target) {
-        
-        if(methodName.equals("before") && !listener.isBefore()){
+
+        if (methodName.equals("before") && !listener.isBefore()) {
             return;
         }
-        
-        if(methodName.equals("after") && !listener.isAfter()){
+
+        if (methodName.equals("after") && !listener.isAfter()) {
             return;
         }
-        
+
         try {
             Object listenerInstance = listener.getListener().newInstance();
             Method method = listener.getListener().getMethod(methodName, on.getDeclaringClass(), target.getClass());

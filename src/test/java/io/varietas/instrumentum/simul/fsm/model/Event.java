@@ -13,38 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.varietas.instrumentum.simul.fsm.builder;
-
-import io.varietas.instrumentum.simul.fsm.StatedObject;
-import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+package io.varietas.instrumentum.simul.fsm.model;
 
 /**
- * <h2>TestEntity</h2>
+ * <h2>Event</h2>
  *
  * @author Michael Rhöse
  * @version 1.0.0, 10/31/2017
  */
-@ToString
-@EqualsAndHashCode
-@AllArgsConstructor
-public class TestEntity implements StatedObject<State> {
-
-    private State state;
-    @Getter
-    @Setter
-    private int value;
-
-    @Override
-    public State state() {
-        return this.state;
-    }
-
-    @Override
-    public void state(State state) {
-        this.state = state;
-    }
+public enum Event {
+    REGISTER,
+    ACTIVATE,
+    DEACTIVATE,
+    UNREGISTER,
+    DELETE,
+    PARK,
 }

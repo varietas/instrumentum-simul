@@ -13,24 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.varietas.instrumentum.simul.fsm.builder;
+package io.varietas.instrumentum.simul.fsm.listener;
 
+import io.varietas.instrumentum.simul.fsm.model.Chain;
+import io.varietas.instrumentum.simul.fsm.model.TestEntity;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * <h2>UpdateTransitionListener</h2>
+ * <h2>SimpleChainListener</h2>
  *
  * @author Michael Rhöse
  * @version 1.0.0, 10/27/2017
  */
 @Slf4j
-public class SimpleListener {
+public class SimpleChainListener {
 
-    public void after(final Enum transition, final TestEntity target) {
-        target.setValue(target.getValue() - 80);
+    public void after(final Chain chain, final TestEntity target) {
+        target.setValue(target.getValue() - 100);
     }
 
-    public void before(final Enum transition, final TestEntity target) {
-        target.setValue(target.getValue() + 80);
+    public void before(final Chain chain, final TestEntity target) {
+        target.setValue(target.getValue() + 100);
     }
 }

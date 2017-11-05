@@ -13,19 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.varietas.instrumentum.simul.fsm.builder;
+package io.varietas.instrumentum.simul.fsm.listener;
+
+import io.varietas.instrumentum.simul.fsm.model.Event;
+import io.varietas.instrumentum.simul.fsm.model.TestEntity;
+import lombok.extern.slf4j.Slf4j;
 
 /**
- * <h2>Event</h2>
+ * <h2>SimpleTransitionListener</h2>
  *
  * @author Michael Rhöse
- * @version 1.0.0, 10/31/2017
+ * @version 1.0.0, 10/27/2017
  */
-public enum Event {
-    REGISTER,
-    ACTIVATE,
-    DEACTIVATE,
-    UNREGISTER,
-    DELETE,
-    PARK,
+@Slf4j
+public class SimpleTransitionListener {
+
+    public void after(final Event transition, final TestEntity target) {
+        target.setValue(target.getValue() - 80);
+    }
+
+    public void before(final Event transition, final TestEntity target) {
+        target.setValue(target.getValue() + 80);
+    }
 }

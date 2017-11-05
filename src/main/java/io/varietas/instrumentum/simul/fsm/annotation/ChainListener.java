@@ -47,6 +47,6 @@ import java.lang.annotation.Target;
 public @interface ChainListener {
 
     Class<?> value();
-    
+
     String[] forChains() default "ALL";
 }

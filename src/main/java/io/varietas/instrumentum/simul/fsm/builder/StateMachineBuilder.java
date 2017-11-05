@@ -30,6 +30,6 @@ public interface StateMachineBuilder {
     StateMachineBuilder extractConfiguration(final Class<? extends StateMachine> machineType);
 
     StateMachine build() throws MachineCreationException;
-    
-    <CONFIGURATION extends FSMConfiguration> CONFIGURATION configuration(); 
+
+    <CONFIGURATION extends FSMConfiguration> CONFIGURATION configuration();
 }

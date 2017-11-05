@@ -26,7 +26,7 @@ package io.varietas.instrumentum.simul.io.listener;
  * <h2>OnFileChangeListener</h2>
  *
  * Interface definition for a callback to be invoked when a file under watch is changed.
- * 
+ *
  * @author Hindol Adhya
  * @author Michael Rhöse
  * @version 1.0.0, 10/1/2017

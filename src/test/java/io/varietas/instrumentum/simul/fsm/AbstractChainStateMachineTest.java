@@ -23,10 +23,10 @@ import org.junit.Test;
  * @author Michael Rhöse
  */
 public class AbstractChainStateMachineTest {
-    
+
     public AbstractChainStateMachineTest() {
     }
-    
+
     @BeforeClass
     public static void setUpClass() {
     }

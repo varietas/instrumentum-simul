@@ -34,10 +34,10 @@ import lombok.ToString;
 @EqualsAndHashCode
 @Getter
 @AllArgsConstructor
-public class FSMConfigurationImpl implements FSMConfiguration{
-    
+public class FSMConfigurationImpl implements FSMConfiguration {
+
     private final List<TransitionContainer> transitions;
-    
+
     private final Class<? extends Enum> stateType;
 
     private final Class<? extends Enum> eventType;

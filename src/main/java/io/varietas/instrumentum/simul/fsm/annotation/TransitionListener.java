@@ -28,11 +28,11 @@ import java.lang.annotation.Target;
  * Transition listeners allow the execution of methods before and/or after a transition. Attention: There is no interface available. The methods have to be written as shown below:
  * <pre>
  * <code>
- * 
+ *
  * public void before(TransitionTypes transition, Model target){
  *     // Do something.
  * }
- * 
+ *
  * public void after(TransitionTypes transition, Model target){
  *     // Do something.
  * }

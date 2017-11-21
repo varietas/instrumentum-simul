@@ -5,14 +5,14 @@
     <artifactId>instrumentum-simul</artifactId>
     <version>1.0.0-SNAPSHOT</version>
     <packaging>jar</packaging>
+    
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
     </properties>
     
-    <name>simul - The common library</name>
+    <name>|VCI| simul - The common library</name>
     <description>The simul library contains all common interfaces and classes for the varietas projects.</description>
     <url>https://varietas.io</url>
     

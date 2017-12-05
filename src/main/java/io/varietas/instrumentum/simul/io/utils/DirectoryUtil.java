@@ -16,12 +16,11 @@
 package io.varietas.instrumentum.simul.io.utils;
 
 import io.varietas.instrumentum.simul.io.container.FolderInformation;
-import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.WatchEvent;
-import java.util.Optional;
 
 /**
  * <h2>DirectoryUtil</h2>
@@ -41,27 +40,28 @@ public class DirectoryUtil {
      * @return An optional object. The optional contains a plugin folder object or an "is empty" object.
      * @throws IOException Thrown for all possible input/output failures.
      */
-    public static Optional<FolderInformation> createPluginFolderInformation(String folderPath, WatchEvent.Kind<?>... events) throws IOException {
-        File watchedFolder = new File(folderPath);
-        Path folder = Paths.get(watchedFolder.toURI());
+    public static FolderInformation createPluginFolderInformation(String folderPath, WatchEvent.Kind<?>... events) throws IOException {
+
+        Path folder = Paths.get(folderPath);
         FolderInformation folderInformation = new FolderInformation(folder, Boolean.FALSE, Boolean.FALSE);
 
-        if (!watchedFolder.exists()) {
-            return Optional.empty();
-        }
-        folderInformation.setExist(Boolean.TRUE);
+        folderInformation.setExist(Files.exists(folder));
 
-        if (!watchedFolder.isDirectory()) {
-            return Optional.empty();
+        if (!folderInformation.getExist()) {
+            folder = Files.createDirectory(folder);
         }
 
-        folderInformation.setDirectory(Boolean.TRUE);
+        folderInformation.setDirectory(Files.isDirectory(folder));
+
+        if (!folderInformation.getDirectory()) {
+            throw new IOException("Target of path '" + folder.toString() + "' is no directory.");
+        }
 
         folderInformation.setWatchService(folder.getFileSystem().newWatchService());
         folderInformation.setWatchEventKindes(events);
 
         folderInformation.getFolderPath().register(folderInformation.getWatchService(), events);
 
-        return Optional.of(folderInformation);
+        return folderInformation;
     }
 }

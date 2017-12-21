@@ -21,6 +21,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.WatchEvent;
+import java.util.Objects;
 
 /**
  * <h2>DirectoryUtil</h2>
@@ -40,7 +41,7 @@ public class DirectoryUtil {
      * @return An optional object. The optional contains a plugin folder object or an "is empty" object.
      * @throws IOException Thrown for all possible input/output failures.
      */
-    public static FolderInformation createPluginFolderInformation(String folderPath, WatchEvent.Kind<?>... events) throws IOException {
+    public static FolderInformation createFolderInformation(String folderPath, WatchEvent.Kind<?>... events) throws IOException {
 
         Path folder = Paths.get(folderPath);
         FolderInformation folderInformation = new FolderInformation(folder, Boolean.FALSE, Boolean.FALSE);
@@ -57,10 +58,13 @@ public class DirectoryUtil {
             throw new IOException("Target of path '" + folder.toString() + "' is no directory.");
         }
 
-        folderInformation.setWatchService(folder.getFileSystem().newWatchService());
-        folderInformation.setWatchEventKindes(events);
+        if (Objects.nonNull(events)) {
 
-        folderInformation.getFolderPath().register(folderInformation.getWatchService(), events);
+            folderInformation.setWatchService(folder.getFileSystem().newWatchService());
+            folderInformation.setWatchEventKindes(events);
+
+            folderInformation.getFolderPath().register(folderInformation.getWatchService(), events);
+        }
 
         return folderInformation;
     }

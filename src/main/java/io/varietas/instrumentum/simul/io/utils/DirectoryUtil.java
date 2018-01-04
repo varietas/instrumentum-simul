@@ -58,7 +58,7 @@ public class DirectoryUtil {
             throw new IOException("Target of path '" + folder.toString() + "' is no directory.");
         }
 
-        if (Objects.nonNull(events)) {
+        if (Objects.nonNull(events) && events.length != 0) {
 
             folderInformation.setWatchService(folder.getFileSystem().newWatchService());
             folderInformation.setWatchEventKindes(events);

@@ -41,7 +41,7 @@
             <dependency>
                 <groupId>io.varietas</groupId>
                 <artifactId>varietas-bom</artifactId>
-                <version>1.0.0</version>
+                <version>1.0.1</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -53,6 +53,7 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
+            <scope>compile</scope>
         </dependency>
         <!-- Dependency for logging with logback. -->
         <dependency>
@@ -63,7 +64,6 @@
         <dependency>                                    
             <groupId>org.slf4j</groupId>                
             <artifactId>jcl-over-slf4j</artifactId>
-            <optional>true</optional>
         </dependency>
         
         <dependency>

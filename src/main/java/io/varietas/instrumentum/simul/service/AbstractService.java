@@ -21,11 +21,14 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
+import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 
 /**
  * <h2>AbstractService</h2>
+ * <p>
+ * This class represents the common of services. It implements the #start() and #stop() method of the {@link Service} interface.
  *
  * @author Michael Rhöse
  * @version 1.0.0, 10/22/2017
@@ -33,14 +36,11 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @ToString
 @EqualsAndHashCode
+@RequiredArgsConstructor
 public abstract class AbstractService implements Service, Runnable {
 
     private final ScheduledExecutorService scheduledExecutorService;
     private ScheduledFuture scheduledFuture = null;
-
-    public AbstractService(ScheduledExecutorService scheduledExecutorService) {
-        this.scheduledExecutorService = scheduledExecutorService;
-    }
 
     /**
      * Start this <code>Service</code> instance by spawning a new thread.
@@ -72,8 +72,21 @@ public abstract class AbstractService implements Service, Runnable {
         LOGGER.debug("Service '{}' already stopped.", this.configuration().serviceName);
     }
 
+    /**
+     * Returns the configuration of the service instance. The method must be implemented by each service type.
+     *
+     * @return The service configuration.
+     */
     protected abstract ServiceConfiguration configuration();
 
+    /**
+     * <h2>ServiceConfiguration</h2>
+     * <p>
+     * This class is a container to store and access the service configuration.
+     *
+     * @author Michael Rhöse
+     * @version 1.0.0, 10/22/2017
+     */
     @AllArgsConstructor
     protected static class ServiceConfiguration {
 

@@ -65,11 +65,11 @@ public class FolderInformation {
     }
 
     public FolderInformation(
-        final Path folderPath,
-        final WatchService watchService,
-        final Boolean isDirectory,
-        final Boolean isExist,
-        final WatchEvent.Kind<?>... watchEventKindes
+            final Path folderPath,
+            final WatchService watchService,
+            final Boolean isDirectory,
+            final Boolean isExist,
+            final WatchEvent.Kind<?>... watchEventKindes
     ) {
         this.folderPath = folderPath;
         this.watchService = watchService;

@@ -31,6 +31,7 @@ public interface UnsortedStorage<TYPE> extends Storage<TYPE> {
      * Stores a class in the storage. Returns -1 if the class is not stored otherwise the current number of stored classes will be returned.
      *
      * @param entry Entry to be stored.
+     *
      * @return Number of stored entries or -1 for an error.
      */
     public int store(final TYPE entry);
@@ -39,6 +40,7 @@ public interface UnsortedStorage<TYPE> extends Storage<TYPE> {
      * Stores all classes from a given collection in the storage. Returns -1 if the classes are not stored otherwise the current number of stored classes will be returned.
      *
      * @param entries Entries to be stored.
+     *
      * @return Number of stored entries or -1 for an error.
      */
     public int storeAll(Collection<TYPE> entries);

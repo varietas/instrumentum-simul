@@ -8,10 +8,10 @@
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -48,13 +48,11 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * <h2>SimpleDirectoryWatchService</h2>
- *
  * <p>
  * A simple class which can monitor files and notify interested parties (i.e. listeners) of file changes.</p>
- *
  * <p>
  * This class is kept lean by only keeping methods that are actually being called.</p>
- *
+ * <p>
  * <u>Usage</u>
  * <pre>
  * <code>DirectoryWatchService watchService = new SimpleDirectoryWatchService(); // May throw
@@ -99,6 +97,7 @@ public class SimpleDirectoryWatchService extends AbstractService implements Dire
      * A simple no argument constructor for creating a <code>SimpleDirectoryWatchService</code>.
      *
      * @param scheduledExecutorService
+     *
      * @throws IOException If an I/O error occurs.
      */
     public SimpleDirectoryWatchService(final ScheduledExecutorService scheduledExecutorService) throws IOException {
@@ -148,9 +147,9 @@ public class SimpleDirectoryWatchService extends AbstractService implements Dire
 
     private Set<OnFileChangeListener> matchedListeners(final Path dir, final Path file) {
         return getListeners(dir)
-            .stream()
-            .filter(listener -> matchesAny(file, getPatterns(listener)))
-            .collect(Collectors.toSet());
+                .stream()
+                .filter(listener -> matchesAny(file, getPatterns(listener)))
+                .collect(Collectors.toSet());
     }
 
     private void notifyListeners(final WatchKey key) {
@@ -188,10 +187,10 @@ public class SimpleDirectoryWatchService extends AbstractService implements Dire
     public void register(final OnFileChangeListener listener, final String dirPath, final String... globPatterns) throws IOException {
         Path dir = Paths.get(dirPath);
         this.register(
-            listener,
-            dir,
-            new WatchEvent.Kind[]{StandardWatchEventKinds.ENTRY_CREATE, StandardWatchEventKinds.ENTRY_MODIFY, StandardWatchEventKinds.ENTRY_DELETE},
-            globPatterns);
+                listener,
+                dir,
+                new WatchEvent.Kind[]{StandardWatchEventKinds.ENTRY_CREATE, StandardWatchEventKinds.ENTRY_MODIFY, StandardWatchEventKinds.ENTRY_DELETE},
+                globPatterns);
     }
 
     /**

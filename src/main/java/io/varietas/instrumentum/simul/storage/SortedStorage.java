@@ -35,7 +35,8 @@ public interface SortedStorage<CODE extends Serializable, TYPE> extends Storage<
      * Stores a class in the storage. Returns -1 if the class is not stored otherwise the current number of stored classes will be returned.
      *
      * @param entry Class to be stored.
-     * @param code Annotation type code where the class should be stored for.
+     * @param code  Annotation type code where the class should be stored for.
+     *
      * @return Number of stored entries or -1 for an error.
      */
     public int store(final TYPE entry, final CODE code);
@@ -44,7 +45,8 @@ public interface SortedStorage<CODE extends Serializable, TYPE> extends Storage<
      * Stores all classes from a given collection in the storage. Returns -1 if the classes are not stored otherwise the current number of stored classes will be returned.
      *
      * @param entries Classes to be stored.
-     * @param code Annotation type code where the class should be stored for.
+     * @param code    Annotation type code where the class should be stored for.
+     *
      * @return Number of stored entries or -1 for an error.
      */
     public int storeAll(Collection<TYPE> entries, final CODE code);
@@ -53,6 +55,7 @@ public interface SortedStorage<CODE extends Serializable, TYPE> extends Storage<
      * Gets the next entry for a code.
      *
      * @param code Code where the next entry has to be loaded.
+     *
      * @return Next entry.
      */
     public Optional<TYPE> next(final CODE code);
@@ -68,6 +71,7 @@ public interface SortedStorage<CODE extends Serializable, TYPE> extends Storage<
      * Checks if a list of stored entries for a code is empty.
      *
      * @param code Category code.
+     *
      * @return True if list is empty, otherwise false.
      */
     public Boolean isEmpty(CODE code);

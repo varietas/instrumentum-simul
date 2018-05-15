@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Michael Rhöse.
+ * Copyright 2018 Michael Rhöse.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,23 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.varietas.instrumentum.simul.utils;
-
-import java.util.Objects;
-
 /**
- * <h2>StringUtil</h2>
+ * <h2>io.varietas.instrumentum.simul.io</h2>
+ * <p>
+ * The simul I/O package contains useful functionality for working with files. Essentially, the package is a wrapper for the Java NIO framework.
  *
  * @author Michael Rhöse
- * @version 1.0.0, 12/21/2017
+ * @version 1.0.0, 05/15/2018
  */
-public class StringUtil {
-
-    public static final boolean isNullOrEmpty(final String string) {
-        if (Objects.isNull(string)) {
-            return true;
-        }
-
-        return string.isEmpty();
-    }
-}
+package io.varietas.instrumentum.simul.io;

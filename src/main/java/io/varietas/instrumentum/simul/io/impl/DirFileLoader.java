@@ -17,7 +17,13 @@ package io.varietas.instrumentum.simul.io.impl;
 
 import io.varietas.instrumentum.simul.io.container.DataSource;
 import io.varietas.instrumentum.simul.io.container.FileLoadResult;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.IOUtils;
 
 /**
  * <h2>DirFileLoader</h2>
@@ -39,7 +45,21 @@ public class DirFileLoader extends AbstractLoader {
 
     @Override
     protected FileLoadResult performLoading() {
-        ///< TODO: Implement this.
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+
+        FileLoadResult<Byte[]> res = new FileLoadResult<>();
+        try {
+            Optional<Path> target = Files.list(Paths.get(this.source.getPath())).filter(path -> path.toString().contains(this.source.getTarget())).findFirst();
+
+            if (!target.isPresent()) {
+                throw new NullPointerException("Target for resource loading is missing: " + this.source.getTarget());
+            }
+
+            byte[] file = IOUtils.toByteArray(Files.newInputStream(target.get()));
+            res.statusCode(200).message("OK").name(this.source.getTarget()).value(file);
+        } catch (IOException | NullPointerException ex) {
+            res.statusCode(500).message("FAILED: " + ex.getLocalizedMessage()).name(this.source.getTarget());
+        }
+
+        return res;
     }
 }

@@ -8,10 +8,10 @@
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -31,9 +31,9 @@ import java.nio.file.WatchEvent;
 
 /**
  * <h2>DirectoryWatchService</h2>
- *
+ * <p>
  * Interface definition of a simple directory watch service.
- *
+ * <p>
  * Implementations of this interface allow interested parties to <em>listen</em>
  * to file system events coming from a specific directory.
  *
@@ -46,23 +46,28 @@ public interface DirectoryWatchService extends Service {
     @Override
     void start();
 
-    /* Suppress Exception */
+    /*
+     * Suppress Exception
+     */
     /**
      * Notifies the implementation of <em>this</em> interface that <code>dirPath</code> should be monitored for file system events. If the changed file matches any of the <code>globPatterns</code>,
      * <code>listener</code> should be notified.
      *
-     * @param listener The listener.
-     * @param dirPath The directory path.
+     * @param listener     The listener.
+     * @param dirPath      The directory path.
      * @param globPatterns Zero or more file patterns to be matched against file names. If none provided, matches <em>any</em> file.
+     *
      * @throws IOException If <code>dirPath</code> is not a directory.
      */
     void register(OnFileChangeListener listener, String dirPath, String... globPatterns) throws IOException;
 
-    /* Suppress Exception */
+    /*
+     * Suppress Exception
+     */
     /**
      * Notifies the implementation of <em>this</em> interface that <code>dirPath</code> should be monitored for file system events. If the changed file matches any of the <code>globPatterns</code>,
      * <code>listener</code> should be notified.
-     *
+     * <p>
      * Possible patterns:
      * <ul>
      * <li>E.g. "*.log"</li>
@@ -71,19 +76,22 @@ public interface DirectoryWatchService extends Service {
      * <li>As many patterns as you like</li>
      * </ul>
      *
-     * @param listener The listener.
-     * @param dirPath The directory path.
-     * @param events The events which are registered for the directory.
+     * @param listener     The listener.
+     * @param dirPath      The directory path.
+     * @param events       The events which are registered for the directory.
      * @param globPatterns Zero or more file patterns to be matched against file names. If none provided, matches <em>any</em> file.
+     *
      * @throws IOException If <code>dirPath</code> is not a directory.
      */
     void register(OnFileChangeListener listener, Path dirPath, WatchEvent.Kind[] events, String... globPatterns) throws IOException;
 
-    /* Suppress Exception */
+    /*
+     * Suppress Exception
+     */
     /**
      * Notifies the implementation of <em>this</em> interface that <code>dirPath</code> should be monitored for file system events. If the changed file matches any of the <code>globPatterns</code>,
      * <code>listener</code> should be notified.
-     *
+     * <p>
      * Possible patterns:
      * <ul>
      * <li>E.g. "*.log"</li>
@@ -92,9 +100,10 @@ public interface DirectoryWatchService extends Service {
      * <li>As many patterns as you like</li>
      * </ul>
      *
-     * @param listener The listener.
+     * @param listener          The listener.
      * @param folderInformation Container which holds all information for a single folder.
-     * @param globPatterns Zero or more file patterns to be matched against file names. If none provided, matches <em>any</em> file.
+     * @param globPatterns      Zero or more file patterns to be matched against file names. If none provided, matches <em>any</em> file.
+     *
      * @throws IOException If <code>dirPath</code> is not a directory.
      */
     void register(OnFileChangeListener listener, FolderInformation folderInformation, String... globPatterns) throws IOException;

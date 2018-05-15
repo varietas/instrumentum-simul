@@ -25,7 +25,7 @@ import java.util.Objects;
 
 /**
  * <h2>DirectoryUtil</h2>
- *
+ * <p>
  * Contains useful methods to work with the IO capability of varietas.io.
  *
  * @author Michael Rhöse
@@ -37,8 +37,10 @@ public class DirectoryUtil {
      * Creates a {@link FolderInformation} for a given folder path. This functionality should be available everywhere it is needed so a static method is the means of choice.
      *
      * @param folderPath The path of the folder the folder information is for.
-     * @param events One or more events registered for this folder.
+     * @param events     One or more events registered for this folder.
+     *
      * @return An optional object. The optional contains a plugin folder object or an "is empty" object.
+     *
      * @throws IOException Thrown for all possible input/output failures.
      */
     public static FolderInformation createFolderInformation(String folderPath, WatchEvent.Kind<?>... events) throws IOException {

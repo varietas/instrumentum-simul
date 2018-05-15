@@ -33,6 +33,7 @@ public class DataSource {
     private short id;
     private String name;
     private String path;
+    private String target;
     private Types type;
     private String username;
     private char[] password;

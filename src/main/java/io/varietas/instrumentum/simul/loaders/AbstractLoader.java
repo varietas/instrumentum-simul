@@ -13,34 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.varietas.instrumentum.simul.io.container;
-
-import lombok.Getter;
-import lombok.Setter;
-import lombok.experimental.Accessors;
+package io.varietas.instrumentum.simul.loaders;
 
 /**
- * <h2>FileLoadResult</h2>
+ * <h2>AbstractLoader</h2>
  *
  * @author Michael Rhöse
  * @version 1.0.0, 11/17/2017
  */
-@Setter
-@Accessors(fluent = true)
-public class FileLoadResult<TYPE> {
+import io.varietas.instrumentum.simul.io.containers.DataSource;
+import io.varietas.instrumentum.simul.io.containers.FileLoadResult;
+import lombok.AllArgsConstructor;
 
-    @Getter
-    private int statusCode;
+@AllArgsConstructor
+public abstract class AbstractLoader implements Loader {
 
-    @Getter
-    private String message;
+    protected final DataSource source;
 
-    @Getter
-    private String name;
+    public abstract DataSource.Types processedType();
 
-    private Object value;
-
-    public <TYPE> TYPE mappedValue() {
-        return (TYPE) this.value;
+    @Override
+    public FileLoadResult load() {
+        return this.performLoading();
     }
+
+    protected abstract FileLoadResult performLoading();
 }

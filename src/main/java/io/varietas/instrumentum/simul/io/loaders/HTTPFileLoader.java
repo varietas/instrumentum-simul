@@ -13,10 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.varietas.instrumentum.simul.io.impl;
+package io.varietas.instrumentum.simul.io.loaders;
 
-import io.varietas.instrumentum.simul.io.container.DataSource;
-import io.varietas.instrumentum.simul.io.container.FileLoadResult;
+import io.varietas.instrumentum.simul.io.containers.DataSource;
+import io.varietas.instrumentum.simul.io.containers.FileLoadResult;
+import io.varietas.instrumentum.simul.loaders.AbstractLoader;
 import lombok.extern.slf4j.Slf4j;
 
 /**

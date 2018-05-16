@@ -20,27 +20,40 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.varietas.instrumentum.simul.service;
+package io.varietas.instrumentum.simul.io.listeners;
 
 /**
- * <h2>Service</h2>
+ * <h2>OnFileChangeListener</h2>
  * <p>
- * Interface definition for services. This services are tasks that are manageable by {@link java.util.concurrent.ExecutorService} and give you a basic structure for implementing start and stop
- * routines.
+ * Interface definition for a callback to be invoked when a file under watch is changed.
  *
  * @author Hindol Adhya
  * @author Michael Rhöse
- * @version 1.0.0, 9/4/2015
+ * @version 1.0.0, 10/1/2017
  */
-public interface Service {
+public interface OnFileChangeListener {
 
     /**
-     * Starts the service. This method blocks until the service has completely started.
+     * Called when the file is created.
+     *
+     * @param filePath The file path.
      */
-    void start();
+    default void onFileCreate(String filePath) {
+    }
 
     /**
-     * Stops the service. This method blocks until the service has completely shut down.
+     * Called when the file is modified.
+     *
+     * @param filePath The file path.
      */
-    void stop();
+    default void onFileModify(String filePath) {
+    }
+
+    /**
+     * Called when the file is deleted.
+     *
+     * @param filePath The file path.
+     */
+    default void onFileDelete(String filePath) {
+    }
 }

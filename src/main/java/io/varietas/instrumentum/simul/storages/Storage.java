@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Michael Rhöse.
+ * Copyright 2016 varietas.io
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,16 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.varietas.instrumentum.simul.io;
+package io.varietas.instrumentum.simul.storages;
+
+import java.util.Optional;
 
 /**
- * <h2>Loader</h2>
+ * <h2>Storage</h2>
  *
  * @author Michael Rhöse
- * @version 1.0.0, 11/17/2017
- * @param <RESULT_TYPE> Generic type of the loaded result.
+ * @version 1.0.0, 7/1/2016
+ * @param <TYPE> Generic type for the value which is stored.
  */
-public interface Loader<RESULT_TYPE> {
+public interface Storage<TYPE> {
 
-    RESULT_TYPE load();
+    /**
+     * Loads the next entry from the storage. Important is that this entry will be removed from the storage.
+     *
+     * @return Next entry from the storage.
+     */
+    public Optional<TYPE> next();
+
+    /**
+     *
+     * @return
+     */
+    public Boolean isEmpty();
 }

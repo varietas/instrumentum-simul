@@ -13,10 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.varietas.instrumentum.simul.io.impl;
+package io.varietas.instrumentum.simul.io.loaders;
 
-import io.varietas.instrumentum.simul.io.container.DataSource;
-import io.varietas.instrumentum.simul.io.container.FileLoadResult;
+import io.varietas.instrumentum.simul.io.containers.DataSource;
+import io.varietas.instrumentum.simul.io.containers.FileLoadResult;
+import io.varietas.instrumentum.simul.loaders.AbstractLoader;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -55,9 +56,18 @@ public class DirFileLoader extends AbstractLoader {
             }
 
             byte[] file = IOUtils.toByteArray(Files.newInputStream(target.get()));
-            res.statusCode(200).message("OK").name(this.source.getTarget()).value(file);
+
+            res
+                    .name(this.source.getTarget())
+                    .statusCode(200)
+                    .message("OK")
+                    .value(file);
+
         } catch (IOException | NullPointerException ex) {
-            res.statusCode(500).message("FAILED: " + ex.getLocalizedMessage()).name(this.source.getTarget());
+            res
+                    .name(this.source.getTarget())
+                    .statusCode(500)
+                    .message("FAILED: " + ex.getLocalizedMessage());
         }
 
         return res;

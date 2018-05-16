@@ -22,9 +22,9 @@
  */
 package io.varietas.instrumentum.simul.io;
 
-import io.varietas.instrumentum.simul.service.Service;
-import io.varietas.instrumentum.simul.io.container.FolderInformation;
-import io.varietas.instrumentum.simul.io.listener.OnFileChangeListener;
+import io.varietas.instrumentum.simul.services.Service;
+import io.varietas.instrumentum.simul.io.containers.FolderInformation;
+import io.varietas.instrumentum.simul.io.listeners.OnFileChangeListener;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.WatchEvent;

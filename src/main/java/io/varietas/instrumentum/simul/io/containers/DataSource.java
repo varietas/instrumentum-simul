@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 varietas.io
+ * Copyright 2017 Michael Rhöse.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,29 +13,40 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.varietas.instrumentum.simul.storage;
+package io.varietas.instrumentum.simul.io.containers;
 
-import java.util.Optional;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 /**
- * <h2>Storage</h2>
+ * <h2>DataSource</h2>
  *
  * @author Michael Rhöse
- * @version 1.0.0, 7/1/2016
- * @param <TYPE> Generic type for the value which is stored.
+ * @version 1.0.0, 11/17/2017
  */
-public interface Storage<TYPE> {
+@Setter
+@Getter
+@NoArgsConstructor
+public class DataSource {
+
+    private short id;
+    private String name;
+    private String path;
+    private String target;
+    private Types type;
+    private String username;
+    private char[] password;
 
     /**
-     * Loads the next entry from the storage. Important is that this entry will be removed from the storage.
+     * <h2>Types</h2>
      *
-     * @return Next entry from the storage.
+     * @author Michael Rhöse
+     * @version 1.0.0, 11/17/2017
      */
-    public Optional<TYPE> next();
-
-    /**
-     *
-     * @return
-     */
-    public Boolean isEmpty();
+    public static enum Types {
+        FTP,
+        HTTP,
+        DIR
+    }
 }

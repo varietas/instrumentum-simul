@@ -15,7 +15,7 @@
  */
 package io.varietas.instrumentum.simul.io.utils;
 
-import io.varietas.instrumentum.simul.io.container.FolderInformation;
+import io.varietas.instrumentum.simul.io.containers.FolderInformation;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;

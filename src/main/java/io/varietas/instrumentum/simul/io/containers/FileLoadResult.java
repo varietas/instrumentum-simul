@@ -13,40 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.varietas.instrumentum.simul.io.container;
+package io.varietas.instrumentum.simul.io.containers;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import io.varietas.instrumentum.simul.loaders.containers.impl.AbstractLoadResult;
 import lombok.Setter;
+import lombok.experimental.Accessors;
 
 /**
- * <h2>DataSource</h2>
+ * <h2>FileLoadResult</h2>
+ *
+ * The file load result is used for file loader from different locations.
  *
  * @author Michael Rhöse
  * @version 1.0.0, 11/17/2017
+ * @param <TYPE> Generic type of the loading result.
  */
-@Setter
-@Getter
-@NoArgsConstructor
-public class DataSource {
+public class FileLoadResult<TYPE> extends AbstractLoadResult<TYPE> {
 
-    private short id;
+    @Setter
+    @Accessors(fluent = true)
     private String name;
-    private String path;
-    private String target;
-    private Types type;
-    private String username;
-    private char[] password;
 
-    /**
-     * <h2>Types</h2>
-     *
-     * @author Michael Rhöse
-     * @version 1.0.0, 11/17/2017
-     */
-    public static enum Types {
-        FTP,
-        HTTP,
-        DIR
+    public String getName() {
+        return name;
     }
 }

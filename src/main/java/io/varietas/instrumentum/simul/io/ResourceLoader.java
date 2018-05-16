@@ -15,8 +15,9 @@
  */
 package io.varietas.instrumentum.simul.io;
 
-import io.varietas.instrumentum.simul.io.container.DataSource;
-import io.varietas.instrumentum.simul.io.container.FileLoadResult;
+import io.varietas.instrumentum.simul.loaders.Loader;
+import io.varietas.instrumentum.simul.io.containers.DataSource;
+import io.varietas.instrumentum.simul.io.containers.FileLoadResult;
 
 /**
  * <h2>ResourceLoader</h2>

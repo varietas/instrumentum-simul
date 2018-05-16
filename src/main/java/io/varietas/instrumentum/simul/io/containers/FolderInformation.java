@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.varietas.instrumentum.simul.io.container;
+package io.varietas.instrumentum.simul.io.containers;
 
 import java.nio.file.Path;
 import java.nio.file.WatchEvent;

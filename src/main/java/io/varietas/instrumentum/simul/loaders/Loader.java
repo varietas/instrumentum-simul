@@ -13,30 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.varietas.instrumentum.simul.io.impl;
+package io.varietas.instrumentum.simul.loaders;
+
+import io.varietas.instrumentum.simul.loaders.containers.LoadResult;
 
 /**
- * <h2>AbstractLoader</h2>
+ * <h2>Loader</h2>
+ *
+ * The loader API is used to abstract the loading of anything from anywhere. Simul uses the loader API for handling the resources from different locations. But it is also possible to use it for
+ * explicit objects.
  *
  * @author Michael Rhöse
  * @version 1.0.0, 11/17/2017
+ * @param <RESULT_TYPE> Generic type of the loaded result.
  */
-import io.varietas.instrumentum.simul.io.Loader;
-import io.varietas.instrumentum.simul.io.container.DataSource;
-import io.varietas.instrumentum.simul.io.container.FileLoadResult;
-import lombok.AllArgsConstructor;
+public interface Loader<RESULT_TYPE extends LoadResult> {
 
-@AllArgsConstructor
-abstract class AbstractLoader implements Loader {
-
-    protected final DataSource source;
-
-    public abstract DataSource.Types processedType();
-
-    @Override
-    public FileLoadResult load() {
-        return this.performLoading();
-    }
-
-    protected abstract FileLoadResult performLoading();
+    /**
+     * Performs the loading process and returns the 
+     * @return 
+     */
+    RESULT_TYPE load();
 }

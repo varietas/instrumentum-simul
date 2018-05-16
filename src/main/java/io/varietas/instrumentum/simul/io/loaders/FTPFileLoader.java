@@ -13,10 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.varietas.instrumentum.simul.io.impl;
+package io.varietas.instrumentum.simul.io.loaders;
 
-import io.varietas.instrumentum.simul.io.container.DataSource;
-import io.varietas.instrumentum.simul.io.container.FileLoadResult;
+import io.varietas.instrumentum.simul.io.containers.DataSource;
+import io.varietas.instrumentum.simul.io.containers.FileLoadResult;
+import io.varietas.instrumentum.simul.loaders.AbstractLoader;
 import java.io.IOException;
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -44,7 +45,7 @@ class FTPFileLoader extends AbstractLoader {
 
     @Override
     protected FileLoadResult performLoading() {
-        final FileLoadResult result = new FileLoadResult();
+        final FileLoadResult res = new FileLoadResult();
 
         final FTPClient client = new FTPClient();
         try {
@@ -63,17 +64,19 @@ class FTPFileLoader extends AbstractLoader {
             // Download file from FTP server.
             client.retrieveFileStream(this.source.getName()).read(data);
 
-            result.name(this.source.getName());
-            result.value(data);
-            result.message(client.getReplyString());
-            result.statusCode(Integer.valueOf(client.getStatus()));
+            res
+                    .name(this.source.getName())
+                    .value(data)
+                    .message(client.getReplyString())
+                    .statusCode(Integer.valueOf(client.getStatus()));
 
         } catch (IOException | NullPointerException | NumberFormatException ex) {
 
-            result.name(this.source.getName());
-            result.value(null);
-            result.message(ex.getLocalizedMessage());
-            result.statusCode(500);
+            res
+                    .name(this.source.getName())
+                    .value(null)
+                    .message(ex.getLocalizedMessage())
+                    .statusCode(500);
 
         } finally {
             try {
@@ -83,6 +86,6 @@ class FTPFileLoader extends AbstractLoader {
             }
         }
 
-        return result;
+        return res;
     }
 }

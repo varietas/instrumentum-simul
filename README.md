@@ -4,4 +4,5 @@ Jenkins Status: [![Build Status](https://ci.varietas.io/job/varietas---instrumen
 
 ## About varietas.io
 Branching: [Git Branching Model](https://team.varietas.io/documents/1)
+
 Versioning: [Explicit Versioning](https://team.varietas.io/documents/2)

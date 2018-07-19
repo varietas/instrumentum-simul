@@ -21,7 +21,7 @@ import java.util.Optional;
  * <h2>Storage</h2>
  *
  * @author Michael Rhöse
- * @version 1.0.0, 7/1/2016
+ * @version 1.0.0.0, 7/1/2016
  * @param <TYPE> Generic type for the value which is stored.
  */
 public interface Storage<TYPE> {

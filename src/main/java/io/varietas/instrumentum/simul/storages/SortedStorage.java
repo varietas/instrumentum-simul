@@ -25,7 +25,7 @@ import java.util.Optional;
  * <h2>SortedStorage</h2>
  *
  * @author Michael Rhöse
- * @version 1.0.0, 7/1/2016
+ * @version 1.0.0.0, 7/1/2016
  * @param <CODE> Generic code type.
  * @param <TYPE> Generic type for the value which is stored.
  */

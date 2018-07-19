@@ -21,7 +21,7 @@ import java.util.Objects;
  * <h2>StringUtil</h2>
  *
  * @author Michael Rhöse
- * @version 1.0.0, 12/21/2017
+ * @version 1.0.0.0, 12/21/2017
  */
 public class StringUtil {
 
@@ -31,5 +31,9 @@ public class StringUtil {
         }
 
         return string.isEmpty();
+    }
+
+    public static final boolean isNonNullOrEmpty(final String string) {
+        return !StringUtil.isNullOrEmpty(string);
     }
 }

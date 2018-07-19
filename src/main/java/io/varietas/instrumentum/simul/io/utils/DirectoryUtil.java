@@ -29,7 +29,7 @@ import java.util.Objects;
  * Contains useful methods to work with the IO capability of varietas.io.
  *
  * @author Michael Rhöse
- * @version 1.0.0, 10/1/2017
+ * @version 1.0.0.0, 10/1/2017
  */
 public class DirectoryUtil {
 

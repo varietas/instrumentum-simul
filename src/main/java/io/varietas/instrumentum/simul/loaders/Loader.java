@@ -24,7 +24,7 @@ import io.varietas.instrumentum.simul.loaders.containers.LoadResult;
  * explicit objects.
  *
  * @author Michael Rhöse
- * @version 1.0.0, 11/17/2017
+ * @version 1.0.0.0, 11/17/2017
  * @param <RESULT_TYPE> Generic type of the loaded result.
  */
 public interface Loader<RESULT_TYPE extends LoadResult> {

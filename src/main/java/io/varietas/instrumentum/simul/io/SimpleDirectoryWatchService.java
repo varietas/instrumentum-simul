@@ -83,7 +83,7 @@ import lombok.extern.slf4j.Slf4j;
  *
  * @author Hindol Adhya
  * @author Michael Rhöse
- * @version 1.0.0, 9/4/2015
+ * @version 1.0.0.0, 9/4/2015
  */
 @Slf4j
 public class SimpleDirectoryWatchService extends AbstractService implements DirectoryWatchService {

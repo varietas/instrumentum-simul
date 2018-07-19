@@ -16,8 +16,12 @@
 package io.varietas.instrumentum.simul.io.containers;
 
 import io.varietas.instrumentum.simul.loaders.containers.impl.AbstractLoadResult;
-import lombok.Setter;
-import lombok.experimental.Accessors;
+import lombok.Builder;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NonNull;
+import lombok.ToString;
+import lombok.experimental.FieldDefaults;
 
 /**
  * <h2>FileLoadResult</h2>
@@ -25,16 +29,21 @@ import lombok.experimental.Accessors;
  * The file load result is used for file loader from different locations.
  *
  * @author Michael Rhöse
- * @version 1.0.0, 11/17/2017
+ * @version 1.0.0.0, 11/17/2017
  * @param <TYPE> Generic type of the loading result.
  */
+@ToString(callSuper = true)
+@EqualsAndHashCode(callSuper = true)
+@FieldDefaults(makeFinal = true)
 public class FileLoadResult<TYPE> extends AbstractLoadResult<TYPE> {
 
-    @Setter
-    @Accessors(fluent = true)
+    @Getter
+    @NonNull
     private String name;
 
-    public String getName() {
-        return name;
+    @Builder(builderMethodName = "of")
+    private FileLoadResult(final String name, final int statusCode, final String message, final TYPE value) {
+        super(statusCode, message, value);
+        this.name = name;
     }
 }

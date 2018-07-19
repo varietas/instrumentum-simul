@@ -39,7 +39,7 @@ import java.nio.file.WatchEvent;
  *
  * @author Hindol Adhya
  * @author Michael Rhöse
- * @version 1.0.0, 9/4/2015
+ * @version 1.0.0.0, 9/4/2015
  */
 public interface DirectoryWatchService extends Service {
 

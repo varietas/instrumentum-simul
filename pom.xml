@@ -5,17 +5,17 @@
     <artifactId>instrumentum-simul</artifactId>
     <version>1.0.0-SNAPSHOT</version>
     <packaging>jar</packaging>
-    
+
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
     </properties>
-    
+
     <name>|VCI| simul - The common library</name>
     <description>The simul library contains all common interfaces and classes for the varietas projects.</description>
     <url>https://varietas.io</url>
-    
+
     <developers>
         <developer>
             <name>Michael Rhöse</name>
@@ -35,7 +35,7 @@
             <distribution>repo</distribution>
         </license>
     </licenses>
-    
+
     <dependencyManagement>
         <dependencies>
             <dependency>
@@ -47,12 +47,13 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
-    
+
     <dependencies>
         <!-- Framework to reducing boilerplate code. -->
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
+            <version>1.16.18</version>
             <scope>compile</scope>
         </dependency>
         <!-- Dependency for logging with logback. -->
@@ -61,23 +62,23 @@
             <artifactId>logback-classic</artifactId>
             <optional>true</optional>
         </dependency>
-        <dependency>                                    
-            <groupId>org.slf4j</groupId>                
+        <dependency>
+            <groupId>org.slf4j</groupId>
             <artifactId>jcl-over-slf4j</artifactId>
         </dependency>
-        
+
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
             <version>2.6</version>
         </dependency>
-        
+
         <!-- Dependency for network operations. -->
         <dependency>
             <groupId>commons-net</groupId>
             <artifactId>commons-net</artifactId>
         </dependency>
-        
+
         <!-- Test dependencies -->
         <dependency>
             <groupId>org.assertj</groupId>
@@ -90,7 +91,7 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
-    
+
     <build>
         <plugins>
             <plugin>

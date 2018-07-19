@@ -15,21 +15,23 @@
  */
 package io.varietas.instrumentum.simul.io.loaders;
 
+import io.varietas.instrumentum.simul.io.ResourceLoader;
 import io.varietas.instrumentum.simul.loaders.Loader;
 import io.varietas.instrumentum.simul.io.containers.DataSource;
 import io.varietas.instrumentum.simul.io.containers.FileLoadResult;
 import java.util.Objects;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
-import io.varietas.instrumentum.simul.io.ResourceLoader;
 
 /**
  * <h2>ResourceLoaderImpl</h2>
  *
  * @author Michael Rhöse
- * @version 1.0.0, 11/17/2017
+ * @version 1.0.0.0, 11/17/2017
  */
-public class ResourceLoaderImpl implements ResourceLoader {
+@RequiredArgsConstructor(staticName = "of")
+public class ResourceLoaderFactory implements ResourceLoader {
 
     @Setter
     @Accessors(fluent = true)
@@ -37,18 +39,23 @@ public class ResourceLoaderImpl implements ResourceLoader {
 
     @Override
     public FileLoadResult load() {
+
+        if (Objects.isNull(this.source)) {
+            throw new NullPointerException("Source is required and must be configured before calling #load().");
+        }
+
         Loader<FileLoadResult> loader;
 
         switch (source.getType()) {
             case FTP:
-                loader = new FTPFileLoader(this.source);
+                loader = FTPFileLoader.of(this.source);
                 break;
             case HTTP:
-                loader = new HTTPFileLoader(this.source);
+                loader = HTTPFileLoader.of(this.source);
                 break;
             default:
                 ///< DataSource.Types.DIR is default.
-                loader = new DirFileLoader(this.source);
+                loader = DirFileLoader.of(this.source);
                 break;
         }
 

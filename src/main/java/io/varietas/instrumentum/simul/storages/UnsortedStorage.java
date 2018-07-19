@@ -22,7 +22,7 @@ import java.util.List;
  * <h2>UnsortedStorage</h2>
  *
  * @author Michael Rhöse
- * @version 1.0.0, 7/3/2016
+ * @version 1.0.0.0, 7/3/2016
  * @param <TYPE> Generic type for the value which is stored.
  */
 public interface UnsortedStorage<TYPE> extends Storage<TYPE> {

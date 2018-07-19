@@ -18,14 +18,19 @@ package io.varietas.instrumentum.simul.io;
 import io.varietas.instrumentum.simul.loaders.Loader;
 import io.varietas.instrumentum.simul.io.containers.DataSource;
 import io.varietas.instrumentum.simul.io.containers.FileLoadResult;
+import io.varietas.instrumentum.simul.io.loaders.ResourceLoaderFactory;
 
 /**
  * <h2>ResourceLoader</h2>
  *
  * @author Michael Rhöse
- * @version 1.0.0, 11/17/2017
+ * @version 1.0.0.0, 11/17/2017
  */
 public interface ResourceLoader extends Loader<FileLoadResult> {
 
     ResourceLoader source(DataSource source);
+
+    default ResourceLoader LoaderFactory() {
+        return ResourceLoaderFactory.of();
+    }
 }

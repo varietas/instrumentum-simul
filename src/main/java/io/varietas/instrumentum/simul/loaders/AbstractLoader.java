@@ -19,15 +19,17 @@ package io.varietas.instrumentum.simul.loaders;
  * <h2>AbstractLoader</h2>
  *
  * @author Michael Rhöse
- * @version 1.0.0, 11/17/2017
+ * @version 1.0.0.0, 11/17/2017
  */
 import io.varietas.instrumentum.simul.io.containers.DataSource;
 import io.varietas.instrumentum.simul.io.containers.FileLoadResult;
-import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
-@AllArgsConstructor
+@RequiredArgsConstructor
 public abstract class AbstractLoader implements Loader {
 
+    @Getter
     protected final DataSource source;
 
     public abstract DataSource.Types processedType();

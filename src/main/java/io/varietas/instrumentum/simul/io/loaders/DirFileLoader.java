@@ -18,6 +18,7 @@ package io.varietas.instrumentum.simul.io.loaders;
 import io.varietas.instrumentum.simul.io.containers.DataSource;
 import io.varietas.instrumentum.simul.io.containers.FileLoadResult;
 import io.varietas.instrumentum.simul.loaders.AbstractLoader;
+import io.varietas.instrumentum.simul.loaders.Loader;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -30,13 +31,17 @@ import org.apache.commons.io.IOUtils;
  * <h2>DirFileLoader</h2>
  *
  * @author Michael Rhöse
- * @version 1.0.0, 11/19/2017
+ * @version 1.0.0.0, 11/19/2017
  */
 @Slf4j
-public class DirFileLoader extends AbstractLoader {
+final class DirFileLoader extends AbstractLoader {
 
-    public DirFileLoader(DataSource source) {
+    private DirFileLoader(final DataSource source) {
         super(source);
+    }
+
+    public static Loader of(final DataSource source) {
+        return new DirFileLoader(source);
     }
 
     @Override
@@ -47,9 +52,11 @@ public class DirFileLoader extends AbstractLoader {
     @Override
     protected FileLoadResult performLoading() {
 
-        FileLoadResult<Byte[]> res = new FileLoadResult<>();
+        FileLoadResult.FileLoadResultBuilder<byte[]> resultBuilder = FileLoadResult.of();
         try {
-            Optional<Path> target = Files.list(Paths.get(this.source.getPath())).filter(path -> path.toString().contains(this.source.getTarget())).findFirst();
+            Optional<Path> target = Files.list(Paths.get(this.source.getPath()))
+                    .filter(path -> path.getFileName().endsWith(this.source.getTarget()))
+                    .findFirst();
 
             if (!target.isPresent()) {
                 throw new NullPointerException("Target for resource loading is missing: " + this.source.getTarget());
@@ -57,19 +64,19 @@ public class DirFileLoader extends AbstractLoader {
 
             byte[] file = IOUtils.toByteArray(Files.newInputStream(target.get()));
 
-            res
-                    .name(this.source.getTarget())
+            resultBuilder
+                    .name(this.source.getName())
                     .statusCode(200)
                     .message("OK")
                     .value(file);
 
         } catch (IOException | NullPointerException ex) {
-            res
-                    .name(this.source.getTarget())
+            resultBuilder
+                    .name(this.source.getName())
                     .statusCode(500)
                     .message("FAILED: " + ex.getLocalizedMessage());
         }
 
-        return res;
+        return resultBuilder.build();
     }
 }

@@ -31,7 +31,7 @@ import lombok.extern.slf4j.Slf4j;
  * This class represents the common of services. It implements the #start() and #stop() method of the {@link Service} interface.
  *
  * @author Michael Rhöse
- * @version 1.0.0, 10/22/2017
+ * @version 1.0.0.0, 10/22/2017
  */
 @Slf4j
 @ToString
@@ -85,7 +85,7 @@ public abstract class AbstractService implements Service, Runnable {
      * This class is a container to store and access the service configuration.
      *
      * @author Michael Rhöse
-     * @version 1.0.0, 10/22/2017
+     * @version 1.0.0.0, 10/22/2017
      */
     @AllArgsConstructor
     protected static class ServiceConfiguration {

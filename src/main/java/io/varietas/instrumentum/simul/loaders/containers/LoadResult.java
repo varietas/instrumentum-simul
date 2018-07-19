@@ -23,7 +23,7 @@ import java.util.Optional;
  * The load result is a container to store all important and required information of a loading process and its result.
  *
  * @author Michael Rhöse
- * @version 1.0.0, 05/16/2018
+ * @version 1.0.0.0, 05/16/2018
  * @param <TYPE> Generic type of the loading result.
  */
 public interface LoadResult<TYPE> {

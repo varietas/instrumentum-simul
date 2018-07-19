@@ -13,12 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+package io.varietas.instrumentum.simul.io.loaders;
+
 /**
- * <h2>io.varietas.instrumentum.simul.io</h2>
+ * <h2>NewClass</h2>
  * <p>
- * The simul I/O package contains useful functionality for working with files. Essentially, the package is a wrapper for the Java NIO framework.
+ * {description}
  *
  * @author Michael Rhöse
- * @version 1.0.0.0, 05/15/2018
+ * @version 1.0.0.0, 07/19/2018
  */
-package io.varietas.instrumentum.simul.io;
+public class NewClass {
+
+}

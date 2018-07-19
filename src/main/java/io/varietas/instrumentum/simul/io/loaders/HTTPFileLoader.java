@@ -18,19 +18,30 @@ package io.varietas.instrumentum.simul.io.loaders;
 import io.varietas.instrumentum.simul.io.containers.DataSource;
 import io.varietas.instrumentum.simul.io.containers.FileLoadResult;
 import io.varietas.instrumentum.simul.loaders.AbstractLoader;
+import io.varietas.instrumentum.simul.loaders.Loader;
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.IOUtils;
 
 /**
  * <h2>HTTPFileLoader</h2>
  *
+ * The HTTP file loader is inspired by the post <a href="http://www.codejava.net/java-se/networking/use-httpurlconnection-to-download-file-from-an-http-url">here</a>.
+ *
  * @author Michael Rhöse
- * @version 1.0.0, 11/19/2017
+ * @version 1.0.0.0, 11/19/2017
  */
 @Slf4j
-public class HTTPFileLoader extends AbstractLoader {
+final class HTTPFileLoader extends AbstractLoader {
 
-    public HTTPFileLoader(DataSource source) {
+    private HTTPFileLoader(final DataSource source) {
         super(source);
+    }
+
+    public static Loader of(final DataSource source) {
+        return new HTTPFileLoader(source);
     }
 
     @Override
@@ -40,7 +51,48 @@ public class HTTPFileLoader extends AbstractLoader {
 
     @Override
     protected FileLoadResult performLoading() {
-        ///< TODO: Implement this.
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+
+        final FileLoadResult.FileLoadResultBuilder<byte[]> resultBuilder = FileLoadResult.of();
+        try {
+            URL url = new URL(this.source.getPath());
+            HttpURLConnection httpConn = (HttpURLConnection) url.openConnection();
+            int responseCode = httpConn.getResponseCode();
+
+            if (responseCode == HttpURLConnection.HTTP_OK) {
+                String fileName = "";
+                String disposition = httpConn.getHeaderField("Content-Disposition");
+
+                if (disposition != null) {
+                    int index = disposition.indexOf("filename=");
+                    if (index > 0) {
+                        fileName = disposition.substring(index + 10, disposition.length() - 1);
+                    }
+                } else {
+                    fileName = this.source.getName();
+                }
+
+                byte[] file = IOUtils.toByteArray(httpConn);
+
+                resultBuilder
+                        .statusCode(200)
+                        .name(fileName)
+                        .message("OK")
+                        .value(file);
+            } else {
+                resultBuilder
+                        .statusCode(400)
+                        .name(this.source.getTarget())
+                        .message("No file to download. Server replied HTTP code: " + responseCode);
+            }
+            httpConn.disconnect();
+
+        } catch (IOException ex) {
+            resultBuilder
+                    .statusCode(500)
+                    .name(this.source.getTarget())
+                    .message("Error while closing client connection: " + ex.getLocalizedMessage());
+        }
+
+        return resultBuilder.build();
     }
 }

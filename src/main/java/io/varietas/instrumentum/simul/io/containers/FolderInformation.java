@@ -28,7 +28,7 @@ import lombok.Setter;
  * <h2>FolderInformation</h2>
  *
  * @author Michael Rhöse
- * @version 1.0.0, 10/1/2017
+ * @version 1.0.0.0, 10/1/2017
  */
 public class FolderInformation {
 

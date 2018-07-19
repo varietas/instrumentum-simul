@@ -18,9 +18,11 @@ package io.varietas.instrumentum.simul.loaders.containers.impl;
 import io.varietas.instrumentum.simul.loaders.containers.LoadResult;
 import java.util.Objects;
 import java.util.Optional;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.Setter;
-import lombok.experimental.Accessors;
+import lombok.NonNull;
+import lombok.experimental.FieldDefaults;
 
 /**
  * <h2>AbstractLoadResult</h2>
@@ -28,19 +30,24 @@ import lombok.experimental.Accessors;
  * The abstract load result contains the basic properties and functionality of load results.
  *
  * @author Michael Rhöse
- * @version 1.0.0, 05/16/2018
+ * @version 1.0.0.0, 05/16/2018
  * @param <TYPE> Generic type of the loading result.
  */
-@Setter
-@Accessors(fluent = true)
+@AllArgsConstructor(access = AccessLevel.PROTECTED)
+@FieldDefaults(makeFinal = true)
 public abstract class AbstractLoadResult<TYPE> implements LoadResult<TYPE> {
 
+    @Getter
     protected int statusCode;
 
+    @Getter
+    @NonNull
     protected String message;
 
+    @NonNull
     private Object value;
 
+    @Override
     public Optional<TYPE> mappedValue() {
 
         if (Objects.isNull(this.value)) {
@@ -48,15 +55,5 @@ public abstract class AbstractLoadResult<TYPE> implements LoadResult<TYPE> {
         }
 
         return Optional.of((TYPE) this.value);
-    }
-
-    @Override
-    public int getStatusCode() {
-        return statusCode;
-    }
-
-    @Override
-    public String getMessage() {
-        return message;
     }
 }

@@ -18,10 +18,13 @@ package io.varietas.instrumentum.simul.io.loaders;
 import io.varietas.instrumentum.simul.io.containers.DataSource;
 import io.varietas.instrumentum.simul.io.containers.FileLoadResult;
 import io.varietas.instrumentum.simul.loaders.AbstractLoader;
+import io.varietas.instrumentum.simul.loaders.Loader;
+import io.varietas.instrumentum.simul.utils.StringUtil;
 import java.io.IOException;
 import java.util.Optional;
 import java.util.stream.Stream;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPFile;
 
@@ -29,13 +32,17 @@ import org.apache.commons.net.ftp.FTPFile;
  * <h2>FTPFileLoader</h2>
  *
  * @author Michael Rhöse
- * @version 1.0.0, 11/17/2017
+ * @version 1.0.0.0, 11/17/2017
  */
 @Slf4j
-class FTPFileLoader extends AbstractLoader {
+final class FTPFileLoader extends AbstractLoader {
 
-    public FTPFileLoader(final DataSource source) {
+    private FTPFileLoader(final DataSource source) {
         super(source);
+    }
+
+    public static Loader of(final DataSource source) {
+        return new FTPFileLoader(source);
     }
 
     @Override
@@ -45,12 +52,13 @@ class FTPFileLoader extends AbstractLoader {
 
     @Override
     protected FileLoadResult performLoading() {
-        final FileLoadResult res = new FileLoadResult();
+        FileLoadResult.FileLoadResultBuilder<byte[]> resultBuilder = FileLoadResult.of();
 
         final FTPClient client = new FTPClient();
         try {
             client.connect(this.source.getPath());
-            if (!this.source.getUsername().isEmpty()) {
+
+            if (!StringUtil.isNonNullOrEmpty(this.source.getUsername())) {
                 client.login(this.source.getUsername(), String.valueOf(this.source.getPassword()));
             }
 
@@ -60,23 +68,20 @@ class FTPFileLoader extends AbstractLoader {
                 throw new NullPointerException("Couldn't find file '" + this.source.getName() + "' on repository '" + this.source.getId() + "'.");
             }
 
-            final byte[] data = new byte[(int) remoteFile.get().getSize()];
-            // Download file from FTP server.
-            client.retrieveFileStream(this.source.getName()).read(data);
+            final byte[] data = IOUtils.toByteArray(client.retrieveFileStream(this.source.getName()));
 
-            res
+            resultBuilder
                     .name(this.source.getName())
+                    .statusCode(200)
                     .value(data)
-                    .message(client.getReplyString())
-                    .statusCode(Integer.valueOf(client.getStatus()));
+                    .message(client.getReplyString());
 
         } catch (IOException | NullPointerException | NumberFormatException ex) {
 
-            res
+            resultBuilder
                     .name(this.source.getName())
-                    .value(null)
-                    .message(ex.getLocalizedMessage())
-                    .statusCode(500);
+                    .statusCode(500)
+                    .message("FAILED: " + ex.getLocalizedMessage());
 
         } finally {
             try {
@@ -86,6 +91,6 @@ class FTPFileLoader extends AbstractLoader {
             }
         }
 
-        return res;
+        return resultBuilder.build();
     }
 }

@@ -19,18 +19,28 @@ import io.varietas.instrumentum.simul.loaders.Loader;
 import io.varietas.instrumentum.simul.io.containers.DataSource;
 import io.varietas.instrumentum.simul.io.containers.FileLoadResult;
 import io.varietas.instrumentum.simul.io.loaders.ResourceLoaderFactory;
+import io.varietas.instrumentum.simul.loaders.LoaderFactory;
 
 /**
  * <h2>ResourceLoader</h2>
+ *
+ * The resource loader allows an easy access to the resource loading subsystem of simul. The usage is quite simple:
+ *
+ * <pre>
+ * <code>
+ *   DataSource source;
+ *   FileLoadResult result = ResourceLoader.of(source).load();
+ * </code>
+ * </pre>
+ *
+ * @see FileLoadResult
  *
  * @author Michael Rhöse
  * @version 1.0.0.0, 11/17/2017
  */
 public interface ResourceLoader extends Loader<FileLoadResult> {
 
-    ResourceLoader source(DataSource source);
-
-    default ResourceLoader LoaderFactory() {
-        return ResourceLoaderFactory.of();
+    default LoaderFactory of(final DataSource source) {
+        return ResourceLoaderFactory.of(source);
     }
 }

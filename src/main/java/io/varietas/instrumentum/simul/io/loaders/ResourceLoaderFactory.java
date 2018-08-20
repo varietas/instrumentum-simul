@@ -15,27 +15,29 @@
  */
 package io.varietas.instrumentum.simul.io.loaders;
 
-import io.varietas.instrumentum.simul.io.ResourceLoader;
 import io.varietas.instrumentum.simul.loaders.Loader;
 import io.varietas.instrumentum.simul.io.containers.DataSource;
 import io.varietas.instrumentum.simul.io.containers.FileLoadResult;
+import io.varietas.instrumentum.simul.loaders.LoaderFactory;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
-import lombok.experimental.Accessors;
 
 /**
- * <h2>ResourceLoaderImpl</h2>
+ * <h2>ResourceLoaderFactory</h2>
+ *
+ * The resource loader factory is the loader factory implementation for resource loading. It is used to mask the instantiation of a specific file loader.
+ *
+ * @see LoaderFactory
+ * @see FileLoadResult
+ * @see io.varietas.instrumentum.simul.io.ResourceLoader
  *
  * @author Michael Rhöse
  * @version 1.0.0.0, 11/17/2017
  */
 @RequiredArgsConstructor(staticName = "of")
-public class ResourceLoaderFactory implements ResourceLoader {
+public class ResourceLoaderFactory implements LoaderFactory<FileLoadResult> {
 
-    @Setter
-    @Accessors(fluent = true)
-    private DataSource source;
+    private final DataSource source;
 
     @Override
     public FileLoadResult load() {
@@ -57,10 +59,6 @@ public class ResourceLoaderFactory implements ResourceLoader {
                 ///< DataSource.Types.DIR is default.
                 loader = DirFileLoader.of(this.source);
                 break;
-        }
-
-        if (Objects.isNull(loader)) {
-            throw new NullPointerException("Couldn't find actual loader for source type " + this.source.getType() + ".");
         }
 
         return loader.load();

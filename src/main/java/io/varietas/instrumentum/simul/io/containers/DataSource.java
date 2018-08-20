@@ -98,10 +98,10 @@ public class DataSource {
     }
 
     public static DataSource FTP(final int id, final String name, final String path, final String target) {
-        return DataSource.of(id, name, path, target, DataSource.Types.HTTP, null, null);
+        return DataSource.of(id, name, path, target, DataSource.Types.FTP, null, null);
     }
 
     public static DataSource SECURED_FTP(final int id, final String name, final String path, final String target, final String username, final String password) {
-        return DataSource.of(id, name, path, target, DataSource.Types.HTTP, username, password);
+        return DataSource.of(id, name, path, target, DataSource.Types.FTP, username, password);
     }
 }

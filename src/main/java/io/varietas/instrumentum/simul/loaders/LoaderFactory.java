@@ -13,17 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package io.varietas.instrumentum.simul.loaders;
 
-package io.varietas.instrumentum.simul.io.loaders;
+import io.varietas.instrumentum.simul.loaders.containers.LoadResult;
 
 /**
- * <h2>NewClass</h2>
+ * <h2>LoaderFactory</h2>
  * <p>
  * {description}
  *
  * @author Michael Rhöse
- * @version 1.0.0.0, 07/19/2018
+ * @version 1.0.0.0, 08/20/2018
  */
-public class NewClass {
+public interface LoaderFactory<LOAD_RESULT extends LoadResult> {
 
+    LOAD_RESULT load();
 }

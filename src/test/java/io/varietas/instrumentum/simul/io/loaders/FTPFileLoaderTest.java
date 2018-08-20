@@ -58,7 +58,7 @@ public class FTPFileLoaderTest {
 
         FileLoadResult result = instance.performLoading();
         Assertions.assertThat(result.getStatusCode()).isEqualTo(200);
-        Assertions.assertThat(result.getMessage()).isEqualTo("150 Opening BINARY mode data connection for 100KB.zip (102400 bytes). ");
+        Assertions.assertThat(result.getMessage()).contains("150 Opening BINARY mode data connection for 100KB.zip (102400 bytes).");
         Assertions.assertThat(result.mappedValue()).isPresent();
     }
 

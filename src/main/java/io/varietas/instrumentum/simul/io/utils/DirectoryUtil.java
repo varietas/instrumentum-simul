@@ -21,7 +21,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.WatchEvent;
+import java.nio.file.WatchService;
+import java.util.Arrays;
 import java.util.Objects;
+import lombok.experimental.UtilityClass;
 
 /**
  * <h2>DirectoryUtil</h2>
@@ -31,43 +34,53 @@ import java.util.Objects;
  * @author Michael Rhöse
  * @version 1.0.0.0, 10/1/2017
  */
+@UtilityClass
 public class DirectoryUtil {
 
     /**
      * Creates a {@link FolderInformation} for a given folder path. This functionality should be available everywhere it is needed so a static method is the means of choice.
      *
-     * @param folderPath The path of the folder the folder information is for.
+     * @param folderPath The path of the folder where the folder information is for.
      * @param events     One or more events registered for this folder.
      *
-     * @return An optional object. The optional contains a plugin folder object or an "is empty" object.
+     * @return The folder information instance for the given folder path.
      *
      * @throws IOException Thrown for all possible input/output failures.
      */
-    public static FolderInformation createFolderInformation(String folderPath, WatchEvent.Kind<?>... events) throws IOException {
+    public static FolderInformation createFolderInformation(final String folderPath, final WatchEvent.Kind<?>... events) throws IOException {
+
+        final FolderInformation.FolderInformationBuilder builder = FolderInformation.builder();
 
         Path folder = Paths.get(folderPath);
-        FolderInformation folderInformation = new FolderInformation(folder, Boolean.FALSE, Boolean.FALSE);
 
-        folderInformation.setExist(Files.exists(folder));
+        final boolean exists = Files.exists(folder);
 
-        if (!folderInformation.getExist()) {
+        if (!exists) {
             folder = Files.createDirectory(folder);
         }
 
-        folderInformation.setDirectory(Files.isDirectory(folder));
+        final boolean directory = Files.isDirectory(folder);
 
-        if (!folderInformation.getDirectory()) {
+        builder.exist(exists);
+        builder.directory(directory);
+
+        if (!directory) {
             throw new IOException("Target of path '" + folder.toString() + "' is no directory.");
         }
 
         if (Objects.nonNull(events) && events.length != 0) {
 
-            folderInformation.setWatchService(folder.getFileSystem().newWatchService());
-            folderInformation.setWatchEventKindes(events);
+            final WatchService watchService = folder.getFileSystem().newWatchService();
 
-            folderInformation.getFolderPath().register(folderInformation.getWatchService(), events);
+            builder
+                    .watchService(watchService)
+                    .watchEventKindes(Arrays.asList(events));
+
+            folder.register(watchService, events);
         }
 
-        return folderInformation;
+        return builder
+                .folderPath(folder)
+                .build();
     }
 }

@@ -18,11 +18,12 @@ package io.varietas.instrumentum.simul.io.containers;
 import java.nio.file.Path;
 import java.nio.file.WatchEvent;
 import java.nio.file.WatchService;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.Singular;
 
 /**
  * <h2>FolderInformation</h2>
@@ -30,57 +31,27 @@ import lombok.Setter;
  * @author Michael Rhöse
  * @version 1.0.0.0, 10/1/2017
  */
+@Data
+@Builder
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class FolderInformation {
 
-    @Setter
-    @Getter
     Path folderPath;
-    @Setter
-    @Getter
+
     WatchService watchService;
-    @Getter
+
+    @Singular
     List<WatchEvent.Kind<?>> watchEventKindes;
-    @Setter
-    @Getter
+
+    /**
+     * This flag signals the reason for a possible failing. Folder information can only be created for paths that pointed to folders.
+     */
     Boolean directory;
-    @Setter
-    @Getter
+
+    /**
+     * This flag signals the existing for a given path before creation of this folder information.
+     */
     Boolean exist;
-
-    public FolderInformation() {
-        this.watchEventKindes = new ArrayList<>();
-    }
-
-    public FolderInformation(final Path folderPath, final Boolean isDirectory, final Boolean isExist) {
-        this.folderPath = folderPath;
-        this.directory = isDirectory;
-        this.exist = isExist;
-        this.watchEventKindes = new ArrayList<>();
-    }
-
-    public FolderInformation(final Path folderPath, final WatchService watchService, final WatchEvent.Kind<?>... watchEventKindes) {
-        this.folderPath = folderPath;
-        this.watchService = watchService;
-        this.watchEventKindes = Arrays.asList(watchEventKindes);
-    }
-
-    public FolderInformation(
-            final Path folderPath,
-            final WatchService watchService,
-            final Boolean isDirectory,
-            final Boolean isExist,
-            final WatchEvent.Kind<?>... watchEventKindes
-    ) {
-        this.folderPath = folderPath;
-        this.watchService = watchService;
-        this.watchEventKindes = Arrays.asList(watchEventKindes);
-        this.directory = isDirectory;
-        this.exist = isExist;
-    }
-
-    public void setWatchEventKindes(final WatchEvent.Kind<?>... watchEventKindes) {
-        this.watchEventKindes.addAll(Arrays.asList(watchEventKindes));
-    }
 
     public String getFolderUrl() {
         return this.folderPath.toString();

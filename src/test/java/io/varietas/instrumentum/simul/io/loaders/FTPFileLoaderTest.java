@@ -17,7 +17,10 @@ package io.varietas.instrumentum.simul.io.loaders;
 
 import io.varietas.instrumentum.simul.io.containers.DataSource;
 import io.varietas.instrumentum.simul.io.containers.FileLoadResult;
+import org.assertj.core.api.Assertions;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.JUnit4;
 
 /**
  * <h2>FTPFileLoaderTest</h2>
@@ -25,9 +28,13 @@ import org.junit.Test;
  * @author Michael Rhöse
  * @version 1.0.0.0, 07/19/2018
  */
+@RunWith(JUnit4.class)
 public class FTPFileLoaderTest {
 
+    private final DataSource dataSource;
+
     public FTPFileLoaderTest() {
+        this.dataSource = DataSource.FTP(0, "", "speedtest.tele2.net", "100KB.zip");
     }
 
     /**
@@ -36,12 +43,10 @@ public class FTPFileLoaderTest {
     @Test
     public void testProcessedType() {
         System.out.println("processedType");
-        FTPFileLoader instance = null;
-        DataSource.Types expResult = null;
+        FTPFileLoader instance = (FTPFileLoader) FTPFileLoader.of(dataSource);
+        DataSource.Types expResult = DataSource.Types.FTP;
         DataSource.Types result = instance.processedType();
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        Assertions.assertThat(result).isEqualTo(expResult);
     }
 
     /**
@@ -49,13 +54,12 @@ public class FTPFileLoaderTest {
      */
     @Test
     public void testPerformLoading() {
-        System.out.println("performLoading");
-        FTPFileLoader instance = null;
-        FileLoadResult expResult = null;
+        FTPFileLoader instance = (FTPFileLoader) FTPFileLoader.of(this.dataSource);
+
         FileLoadResult result = instance.performLoading();
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        Assertions.assertThat(result.getStatusCode()).isEqualTo(200);
+        Assertions.assertThat(result.getMessage()).isEqualTo("150 Opening BINARY mode data connection for 100KB.zip (102400 bytes). ");
+        Assertions.assertThat(result.mappedValue()).isPresent();
     }
 
 }

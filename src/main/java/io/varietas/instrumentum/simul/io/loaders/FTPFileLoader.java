@@ -55,20 +55,25 @@ final class FTPFileLoader extends AbstractLoader {
         FileLoadResult.FileLoadResultBuilder<byte[]> resultBuilder = FileLoadResult.of();
 
         final FTPClient client = new FTPClient();
+
         try {
             client.connect(this.source.getPath());
 
-            if (!StringUtil.isNonNullOrEmpty(this.source.getUsername())) {
-                client.login(this.source.getUsername(), String.valueOf(this.source.getPassword()));
+            if (StringUtil.isNonNullOrEmpty(this.source.getUsername())) {
+                client.login(this.source.getUsername(), this.source.getPassword());
+            } else {
+                client.login("anonymous", "");
             }
 
-            Optional<FTPFile> remoteFile = Stream.of(client.listFiles()).filter(file -> file.getName().equals(this.source.getName())).findFirst();
+            client.enterLocalPassiveMode();
+
+            Optional<FTPFile> remoteFile = Stream.of(client.listFiles()).filter(file -> file.getName().equals(this.source.getTarget())).findFirst();
 
             if (!remoteFile.isPresent()) {
-                throw new NullPointerException("Couldn't find file '" + this.source.getName() + "' on repository '" + this.source.getId() + "'.");
+                throw new NullPointerException("Couldn't find file '" + this.source.getTarget() + "' on repository '" + this.source.getId() + "'.");
             }
 
-            final byte[] data = IOUtils.toByteArray(client.retrieveFileStream(this.source.getName()));
+            final byte[] data = IOUtils.toByteArray(client.retrieveFileStream(this.source.getTarget()));
 
             resultBuilder
                     .name(this.source.getName())

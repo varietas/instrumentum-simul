@@ -59,20 +59,20 @@ final class DirFileLoader extends AbstractLoader {
                     .findFirst();
 
             if (!target.isPresent()) {
-                throw new NullPointerException("Target for resource loading is missing: " + this.source.getTarget());
+                throw new NullPointerException("Couldn't find file '" + this.source.getTarget() + "' on repository '" + this.source.getId() + "'.");
             }
 
             byte[] file = IOUtils.toByteArray(Files.newInputStream(target.get()));
 
             resultBuilder
-                    .name(this.source.getName())
+                    .name(this.source.getTarget())
                     .statusCode(200)
                     .message("OK")
                     .value(file);
 
         } catch (IOException | NullPointerException ex) {
             resultBuilder
-                    .name(this.source.getName())
+                    .name(this.source.getTarget())
                     .statusCode(500)
                     .message("FAILED: " + ex.getLocalizedMessage());
         }

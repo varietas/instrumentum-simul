@@ -22,6 +22,7 @@ import io.varietas.instrumentum.simul.loaders.Loader;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.Objects;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 
@@ -53,9 +54,11 @@ final class HTTPFileLoader extends AbstractLoader {
     protected FileLoadResult performLoading() {
 
         final FileLoadResult.FileLoadResultBuilder<byte[]> resultBuilder = FileLoadResult.of();
+        HttpURLConnection httpConn = null;
         try {
             URL url = new URL(this.source.getPath());
-            HttpURLConnection httpConn = (HttpURLConnection) url.openConnection();
+
+            httpConn = (HttpURLConnection) url.openConnection();
             int responseCode = httpConn.getResponseCode();
 
             if (responseCode == HttpURLConnection.HTTP_OK) {
@@ -84,13 +87,16 @@ final class HTTPFileLoader extends AbstractLoader {
                         .name(this.source.getTarget())
                         .message("No file to download. Server replied HTTP code: " + responseCode);
             }
-            httpConn.disconnect();
 
         } catch (IOException ex) {
             resultBuilder
                     .statusCode(500)
                     .name(this.source.getTarget())
                     .message("Error while closing client connection: " + ex.getLocalizedMessage());
+        } finally {
+            if (Objects.nonNull(httpConn)) {
+                httpConn.disconnect();
+            }
         }
 
         return resultBuilder.build();

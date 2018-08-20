@@ -94,7 +94,7 @@ public class DataSource {
     }
 
     public static DataSource SECURED_HTTP(final int id, final String name, final String path, final String target, final String username, final String password) {
-        return DataSource.of(id, name, path, target, DataSource.Types.HTTP, null, null).setUsername(username).setPassword(password);
+        return DataSource.of(id, name, path, target, DataSource.Types.HTTP, username, password);
     }
 
     public static DataSource FTP(final int id, final String name, final String path, final String target) {
@@ -102,6 +102,6 @@ public class DataSource {
     }
 
     public static DataSource SECURED_FTP(final int id, final String name, final String path, final String target, final String username, final String password) {
-        return DataSource.of(id, name, path, target, DataSource.Types.HTTP, null, null).setUsername(username).setPassword(password);
+        return DataSource.of(id, name, path, target, DataSource.Types.HTTP, username, password);
     }
 }

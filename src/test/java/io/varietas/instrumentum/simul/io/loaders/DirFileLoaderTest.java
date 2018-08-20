@@ -17,9 +17,10 @@ package io.varietas.instrumentum.simul.io.loaders;
 
 import io.varietas.instrumentum.simul.io.containers.DataSource;
 import io.varietas.instrumentum.simul.io.containers.FileLoadResult;
-import lombok.extern.slf4j.Slf4j;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.JUnit4;
 
 /**
  * <h2>DirFileLoaderTest</h2>
@@ -27,7 +28,7 @@ import org.junit.Test;
  * @author Michael Rhöse
  * @version 1.0.0.0, 07/19/2018
  */
-@Slf4j
+@RunWith(JUnit4.class)
 public class DirFileLoaderTest {
 
     private final DataSource dataSource;
@@ -41,7 +42,6 @@ public class DirFileLoaderTest {
      */
     @Test
     public void testProcessedType() {
-
         DirFileLoader instance = (DirFileLoader) DirFileLoader.of(this.dataSource);
         DataSource.Types expResult = DataSource.Types.DIR;
         DataSource.Types result = instance.processedType();
@@ -53,12 +53,11 @@ public class DirFileLoaderTest {
      */
     @Test
     public void testPerformLoading() {
-
         DirFileLoader instance = (DirFileLoader) DirFileLoader.of(this.dataSource);
 
         FileLoadResult result = instance.performLoading();
         Assertions.assertThat(result.getStatusCode()).isEqualTo(200);
-        Assertions.assertThat(result.mappedValue()).isNotNull();
+        Assertions.assertThat(result.mappedValue()).isPresent();
     }
 
 }

@@ -26,14 +26,10 @@ import java.util.Objects;
 public class StringUtil {
 
     public static final boolean isNullOrEmpty(final String string) {
-        if (Objects.isNull(string)) {
-            return true;
-        }
-
-        return string.isEmpty();
+        return Objects.isNull(string) || string.isEmpty();
     }
 
     public static final boolean isNonNullOrEmpty(final String string) {
-        return !StringUtil.isNullOrEmpty(string);
+        return !Objects.isNull(string) && !string.isEmpty();
     }
 }

@@ -44,7 +44,6 @@ public abstract class AbstractLoadResult<TYPE> implements LoadResult<TYPE> {
     @NonNull
     protected String message;
 
-    @NonNull
     private Object value;
 
     @Override

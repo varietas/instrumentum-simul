@@ -17,7 +17,10 @@ package io.varietas.instrumentum.simul.io.loaders;
 
 import io.varietas.instrumentum.simul.io.containers.DataSource;
 import io.varietas.instrumentum.simul.io.containers.FileLoadResult;
+import org.assertj.core.api.Assertions;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.JUnit4;
 
 /**
  * <h2>HTTPFileLoaderTest</h2>
@@ -25,9 +28,13 @@ import org.junit.Test;
  * @author Michael Rhöse
  * @version 1.0.0.0, 07/19/2018
  */
+@RunWith(JUnit4.class)
 public class HTTPFileLoaderTest {
 
+    private final DataSource dataSource;
+
     public HTTPFileLoaderTest() {
+        this.dataSource = DataSource.HTTP(0, "", "http://speedtest.tele2.net", "100KB.zip");
     }
 
     /**
@@ -36,12 +43,10 @@ public class HTTPFileLoaderTest {
     @Test
     public void testProcessedType() {
         System.out.println("processedType");
-        HTTPFileLoader instance = null;
-        DataSource.Types expResult = null;
+        HTTPFileLoader instance = (HTTPFileLoader) HTTPFileLoader.of(dataSource);
+        DataSource.Types expResult = DataSource.Types.HTTP;
         DataSource.Types result = instance.processedType();
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        Assertions.assertThat(result).isEqualTo(expResult);
     }
 
     /**
@@ -49,13 +54,12 @@ public class HTTPFileLoaderTest {
      */
     @Test
     public void testPerformLoading() {
-        System.out.println("performLoading");
-        HTTPFileLoader instance = null;
-        FileLoadResult expResult = null;
+        HTTPFileLoader instance = (HTTPFileLoader) HTTPFileLoader.of(this.dataSource);
+
         FileLoadResult result = instance.performLoading();
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        Assertions.assertThat(result.getStatusCode()).isEqualTo(200);
+        Assertions.assertThat(result.getMessage()).isEqualTo("OK");
+        Assertions.assertThat(result.mappedValue()).isPresent();
     }
 
 }

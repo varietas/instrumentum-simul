@@ -34,7 +34,7 @@ import org.apache.commons.io.IOUtils;
  * @version 1.0.0.0, 11/19/2017
  */
 @Slf4j
-final class DirFileLoader extends AbstractLoader {
+final class DirFileLoader extends AbstractLoader<FileLoadResult> {
 
     private DirFileLoader(final DataSource source) {
         super(source);

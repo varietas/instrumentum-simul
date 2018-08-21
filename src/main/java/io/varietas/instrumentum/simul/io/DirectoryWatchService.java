@@ -43,9 +43,6 @@ import java.nio.file.WatchEvent;
  */
 public interface DirectoryWatchService extends Service {
 
-    @Override
-    void start();
-
     /*
      * Suppress Exception
      */

@@ -15,19 +15,20 @@
  */
 package io.varietas.instrumentum.simul.loaders;
 
+import io.varietas.instrumentum.simul.io.containers.DataSource;
+import io.varietas.instrumentum.simul.loaders.containers.LoadResult;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
 /**
  * <h2>AbstractLoader</h2>
  *
  * @author Michael Rhöse
  * @version 1.0.0.0, 11/17/2017
+ * @param <RESULT_TYPE> Generic type of the loaded result.
  */
-import io.varietas.instrumentum.simul.io.containers.DataSource;
-import io.varietas.instrumentum.simul.io.containers.FileLoadResult;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-
 @RequiredArgsConstructor
-public abstract class AbstractLoader implements Loader {
+public abstract class AbstractLoader<RESULT_TYPE extends LoadResult> implements Loader<RESULT_TYPE> {
 
     @Getter
     protected final DataSource source;
@@ -35,9 +36,9 @@ public abstract class AbstractLoader implements Loader {
     public abstract DataSource.Types processedType();
 
     @Override
-    public FileLoadResult load() {
+    public final RESULT_TYPE load() {
         return this.performLoading();
     }
 
-    protected abstract FileLoadResult performLoading();
+    protected abstract RESULT_TYPE performLoading();
 }

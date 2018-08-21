@@ -22,6 +22,9 @@
  */
 package io.varietas.instrumentum.simul.services;
 
+import java.util.concurrent.TimeUnit;
+import lombok.AllArgsConstructor;
+
 /**
  * <h2>Service</h2>
  * <p>
@@ -32,15 +35,29 @@ package io.varietas.instrumentum.simul.services;
  * @author Michael Rhöse
  * @version 1.0.0.0, 9/4/2015
  */
-public interface Service {
+public interface Service extends Runnable {
 
     /**
-     * Starts the service. This method blocks until the service has completely started.
+     * Returns the configuration of the service instance. The method must be implemented by each service type.
+     *
+     * @return The service configuration.
      */
-    void start();
+    public ServiceConfiguration configuration();
 
     /**
-     * Stops the service. This method blocks until the service has completely shut down.
+     * <h2>ServiceConfiguration</h2>
+     * <p>
+     * This class is a container to store and access the service configuration.
+     *
+     * @author Michael Rhöse
+     * @version 1.0.0.0, 10/22/2017
      */
-    void stop();
+    @AllArgsConstructor
+    public static class ServiceConfiguration {
+
+        final String serviceName;
+        final int perios;
+        final TimeUnit unit;
+        final boolean shutdownNow;
+    }
 }

@@ -35,7 +35,7 @@ import org.apache.commons.io.IOUtils;
  * @version 1.0.0.0, 11/19/2017
  */
 @Slf4j
-final class HTTPFileLoader extends AbstractLoader {
+final class HTTPFileLoader extends AbstractLoader<FileLoadResult> {
 
     private HTTPFileLoader(final DataSource source) {
         super(source);

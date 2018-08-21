@@ -24,7 +24,7 @@ package io.varietas.instrumentum.simul.io;
 
 import io.varietas.instrumentum.simul.io.containers.FolderInformation;
 import io.varietas.instrumentum.simul.io.listeners.OnFileChangeListener;
-import io.varietas.instrumentum.simul.services.AbstractService;
+import io.varietas.instrumentum.simul.services.Service;
 import java.io.IOException;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
@@ -41,7 +41,6 @@ import java.util.Collections;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
@@ -86,7 +85,7 @@ import lombok.extern.slf4j.Slf4j;
  * @version 1.0.0.0, 9/4/2015
  */
 @Slf4j
-public class SimpleDirectoryWatchService extends AbstractService implements DirectoryWatchService {
+public class SimpleDirectoryWatchService implements Service, DirectoryWatchService {
 
     private final WatchService watchService;
     private final ConcurrentMap<WatchKey, Path> watchKeyToDirPathMap;
@@ -96,12 +95,9 @@ public class SimpleDirectoryWatchService extends AbstractService implements Dire
     /**
      * A simple no argument constructor for creating a <code>SimpleDirectoryWatchService</code>.
      *
-     * @param scheduledExecutorService
-     *
      * @throws IOException If an I/O error occurs.
      */
-    public SimpleDirectoryWatchService(final ScheduledExecutorService scheduledExecutorService) throws IOException {
-        super(scheduledExecutorService);
+    public SimpleDirectoryWatchService() throws IOException {
         this.watchService = FileSystems.getDefault().newWatchService();
         this.watchKeyToDirPathMap = newConcurrentMap();
         this.dirPathToListenersMap = newConcurrentMap();
@@ -269,7 +265,7 @@ public class SimpleDirectoryWatchService extends AbstractService implements Dire
     }
 
     @Override
-    protected ServiceConfiguration configuration() {
+    public ServiceConfiguration configuration() {
         return new ServiceConfiguration("DirectoryWatchService", 1, TimeUnit.MILLISECONDS, false);
     }
 }

@@ -35,7 +35,7 @@ import org.apache.commons.net.ftp.FTPFile;
  * @version 1.0.0.0, 11/17/2017
  */
 @Slf4j
-final class FTPFileLoader extends AbstractLoader {
+final class FTPFileLoader extends AbstractLoader<FileLoadResult> {
 
     private FTPFileLoader(final DataSource source) {
         super(source);

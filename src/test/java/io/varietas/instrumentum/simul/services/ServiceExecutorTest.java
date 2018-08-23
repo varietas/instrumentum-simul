@@ -15,8 +15,13 @@
  */
 package io.varietas.instrumentum.simul.services;
 
+import io.varietas.instrumentum.simul.io.SimpleDirectoryWatchService;
+import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+import org.assertj.core.api.Assertions;
 import org.junit.Test;
 
 /**
@@ -25,36 +30,52 @@ import org.junit.Test;
  */
 public class ServiceExecutorTest {
 
-    public ServiceExecutorTest() {
+    private final List<Service> services;
+
+    public ServiceExecutorTest() throws IOException {
+        this.services = Collections.singletonList(new SimpleDirectoryWatchService());
     }
 
     /**
      * Test of of method, of class ServiceExecutor.
      */
     @Test
-    public void testOf_List() {
-        System.out.println("of");
-        List<Service> services = null;
-        ServiceExecutor expResult = null;
-        ServiceExecutor result = ServiceExecutor.of(services);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+    public void testOf_List() throws IOException {
+
+        ServiceExecutor result = ServiceExecutor.of(this.services);
+        Assertions.assertThat(result).isNotNull();
     }
 
     /**
      * Test of of method, of class ServiceExecutor.
      */
     @Test
-    public void testOf_ScheduledExecutorService_List() {
-        System.out.println("of");
-        ScheduledExecutorService scheduledExecutorService = null;
-        List<Service> services = null;
-        ServiceExecutor expResult = null;
-        ServiceExecutor result = ServiceExecutor.of(scheduledExecutorService, services);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+    public void testOf_ScheduledExecutorService_List() throws IOException {
+
+        ScheduledExecutorService executor = Executors.newScheduledThreadPool(0);
+        ServiceExecutor result = ServiceExecutor.of(executor, this.services);
+        Assertions.assertThat(result).isNotNull();
+    }
+
+    /**
+     * Test of of method, of class ServiceExecutor.
+     */
+    @Test
+    public void testOf_ScheduledExecutorService_ListFailsNullList() throws IOException {
+
+        ScheduledExecutorService executor = Executors.newScheduledThreadPool(0);
+        Assertions.assertThatThrownBy(() -> ServiceExecutor.of(executor, null))
+                .hasCauseExactlyInstanceOf(InstantiationException.class);
+    }
+
+    /**
+     * Test of of method, of class ServiceExecutor.
+     */
+    @Test
+    public void testOf_ScheduledExecutorService_ListFailsNullExecutorService() throws IOException {
+
+        Assertions.assertThatThrownBy(() -> ServiceExecutor.of(null, this.services))
+                .hasCauseExactlyInstanceOf(InstantiationException.class);
     }
 
     /**
@@ -62,12 +83,7 @@ public class ServiceExecutorTest {
      */
     @Test
     public void testStartService() {
-        System.out.println("startService");
-        Service service = null;
-        ServiceExecutor instance = null;
-        instance.startService(service);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        Assertions.fail("The test case is a prototype.");
     }
 
     /**
@@ -75,12 +91,7 @@ public class ServiceExecutorTest {
      */
     @Test
     public void testStopService() {
-        System.out.println("stopService");
-        Service service = null;
-        ServiceExecutor instance = null;
-        instance.stopService(service);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        Assertions.fail("The test case is a prototype.");
     }
 
 }

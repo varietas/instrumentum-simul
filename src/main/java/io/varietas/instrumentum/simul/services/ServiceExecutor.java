@@ -25,6 +25,7 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.stream.Collectors;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -50,6 +51,7 @@ public class ServiceExecutor {
      * @return Instance of the executor service.
      */
     public static ServiceExecutor of(final List<Service> services) {
+
         return ServiceExecutor.of(Executors.newScheduledThreadPool(services.size()), services);
     }
 
@@ -60,7 +62,16 @@ public class ServiceExecutor {
      * @param services                 Services that are managed by this executer
      * @return Instance of the executor service.
      */
+    @SneakyThrows
     public static ServiceExecutor of(final ScheduledExecutorService scheduledExecutorService, final List<Service> services) {
+
+        if (Objects.isNull(services) || services.isEmpty()) {
+            throw new InstantiationException("A service executor requires 1...N services.");
+        }
+
+        if (Objects.isNull(scheduledExecutorService)) {
+            throw new InstantiationException("A service executor requires a executor service instance.");
+        }
 
         ServiceExecutor.scheduledExecutorService = scheduledExecutorService;
 

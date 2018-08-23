@@ -25,6 +25,7 @@ package io.varietas.instrumentum.simul.io;
 import io.varietas.instrumentum.simul.io.containers.FolderInformation;
 import io.varietas.instrumentum.simul.io.listeners.OnFileChangeListener;
 import io.varietas.instrumentum.simul.services.Service;
+import io.varietas.instrumentum.simul.io.utils.FileUtil;
 import java.io.IOException;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
@@ -117,18 +118,6 @@ public class SimpleDirectoryWatchService implements Service, DirectoryWatchServi
         return Collections.newSetFromMap(newConcurrentMap());
     }
 
-    public static PathMatcher matcherForGlobExpression(final String globPattern) {
-        return FileSystems.getDefault().getPathMatcher("glob:" + globPattern);
-    }
-
-    public static boolean matches(final Path input, final PathMatcher pattern) {
-        return pattern.matches(input);
-    }
-
-    public static boolean matchesAny(final Path input, final Set<PathMatcher> patterns) {
-        return patterns.stream().anyMatch((pattern) -> (matches(input, pattern)));
-    }
-
     private Path getDirPath(final WatchKey key) {
         return watchKeyToDirPathMap.get(key);
     }
@@ -144,7 +133,7 @@ public class SimpleDirectoryWatchService implements Service, DirectoryWatchServi
     private Set<OnFileChangeListener> matchedListeners(final Path dir, final Path file) {
         return getListeners(dir)
                 .stream()
-                .filter(listener -> matchesAny(file, getPatterns(listener)))
+                .filter(listener -> FileUtil.matchesAny(file, getPatterns(listener)))
                 .collect(Collectors.toSet());
     }
 
@@ -212,11 +201,11 @@ public class SimpleDirectoryWatchService implements Service, DirectoryWatchServi
         Set<PathMatcher> patterns = newConcurrentSet();
 
         for (String globPattern : globPatterns) {
-            patterns.add(matcherForGlobExpression(globPattern));
+            patterns.add(FileUtil.matcherForGlobExpression(globPattern));
         }
 
         if (patterns.isEmpty()) {
-            patterns.add(matcherForGlobExpression("*")); // Match everything if no filter is found
+            patterns.add(FileUtil.matcherForGlobExpression("*")); // Match everything if no filter is found
         }
 
         listenerToFilePatternsMap.put(listener, patterns);

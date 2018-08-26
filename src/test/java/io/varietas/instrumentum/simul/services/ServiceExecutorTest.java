@@ -23,11 +23,14 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.JUnit4;
 
 /**
  *
  * @author Michael Rhöse
  */
+@RunWith(JUnit4.class)
 public class ServiceExecutorTest {
 
     private final List<Service> services;
@@ -65,7 +68,8 @@ public class ServiceExecutorTest {
 
         ScheduledExecutorService executor = Executors.newScheduledThreadPool(0);
         Assertions.assertThatThrownBy(() -> ServiceExecutor.of(executor, null))
-                .hasCauseExactlyInstanceOf(InstantiationException.class);
+                .isInstanceOf(InstantiationException.class)
+                .hasMessage("A service executor requires 1...N services.");
     }
 
     /**
@@ -75,21 +79,22 @@ public class ServiceExecutorTest {
     public void testOf_ScheduledExecutorService_ListFailsNullExecutorService() throws IOException {
 
         Assertions.assertThatThrownBy(() -> ServiceExecutor.of(null, this.services))
-                .hasCauseExactlyInstanceOf(InstantiationException.class);
+                .isInstanceOf(InstantiationException.class)
+                .hasMessage("A service executor requires a executor service instance.");
     }
 
     /**
-     * Test of startService method, of class ServiceExecutor.
+     * Test of startService method, of class ServiceExecutor. TODO: Think about tests
      */
-    @Test
+//    @Test
     public void testStartService() {
         Assertions.fail("The test case is a prototype.");
     }
 
     /**
-     * Test of stopService method, of class ServiceExecutor.
+     * Test of stopService method, of class ServiceExecutor. TODO: Think about tests
      */
-    @Test
+//    @Test
     public void testStopService() {
         Assertions.fail("The test case is a prototype.");
     }

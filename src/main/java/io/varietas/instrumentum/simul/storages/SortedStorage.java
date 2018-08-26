@@ -15,11 +15,11 @@
  */
 package io.varietas.instrumentum.simul.storages;
 
-import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
 
 /**
  * <h2>SortedStorage</h2>
@@ -29,7 +29,7 @@ import java.util.Optional;
  * @param <CODE> Generic code type.
  * @param <TYPE> Generic type for the value which is stored.
  */
-public interface SortedStorage<CODE extends Serializable, TYPE> extends Storage<TYPE> {
+public interface SortedStorage<CODE extends Comparable, TYPE> extends Storage<TYPE> {
 
     /**
      * Stores a class in the storage. Returns -1 if the class is not stored otherwise the current number of stored classes will be returned.
@@ -39,7 +39,7 @@ public interface SortedStorage<CODE extends Serializable, TYPE> extends Storage<
      *
      * @return Number of stored entries or -1 for an error.
      */
-    public int store(final TYPE entry, final CODE code);
+    int store(final TYPE entry, final CODE code);
 
     /**
      * Stores all classes from a given collection in the storage. Returns -1 if the classes are not stored otherwise the current number of stored classes will be returned.
@@ -49,7 +49,7 @@ public interface SortedStorage<CODE extends Serializable, TYPE> extends Storage<
      *
      * @return Number of stored entries or -1 for an error.
      */
-    public int storeAll(Collection<TYPE> entries, final CODE code);
+    int storeAll(Collection<TYPE> entries, final CODE code);
 
     /**
      * Gets the next entry for a code.
@@ -58,14 +58,14 @@ public interface SortedStorage<CODE extends Serializable, TYPE> extends Storage<
      *
      * @return Next entry.
      */
-    public Optional<TYPE> next(final CODE code);
+    Optional<TYPE> next(final CODE code);
 
     /**
      * All stored entries as list.
      *
      * @return
      */
-    public Map<CODE, List<TYPE>> getStorage();
+    Map<CODE, List<TYPE>> getStorage();
 
     /**
      * Checks if a list of stored entries for a code is empty.
@@ -74,5 +74,14 @@ public interface SortedStorage<CODE extends Serializable, TYPE> extends Storage<
      *
      * @return True if list is empty, otherwise false.
      */
-    public Boolean isEmpty(CODE code);
+    Boolean isEmpty(CODE code);
+
+    /**
+     * Adds exclusion predictions that are used to prevent the adding of entries that not matches any of the predictions. Every prediction is called for a given entry. If the first matches, the adding
+     * will be skipped.
+     *
+     * @param exclusion A prediction is used to prevent storing of an entry. If the method returns true, the given entry isn't stored.
+     * @return The instance of the sorted storage for fluent like usage.
+     */
+    SortedStorage addExclusion(Function<CODE, Boolean> exclusion);
 }

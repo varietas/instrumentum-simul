@@ -42,7 +42,7 @@ public class HTTPFileLoaderTest {
      */
     @Test
     public void testProcessedType() {
-        System.out.println("processedType");
+
         HTTPFileLoader instance = (HTTPFileLoader) HTTPFileLoader.of(dataSource);
         DataSource.Types expResult = DataSource.Types.HTTP;
         DataSource.Types result = instance.processedType();

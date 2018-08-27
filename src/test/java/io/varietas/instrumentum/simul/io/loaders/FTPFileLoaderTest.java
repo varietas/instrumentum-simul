@@ -42,7 +42,7 @@ public class FTPFileLoaderTest {
      */
     @Test
     public void testProcessedType() {
-        System.out.println("processedType");
+
         FTPFileLoader instance = (FTPFileLoader) FTPFileLoader.of(dataSource);
         DataSource.Types expResult = DataSource.Types.FTP;
         DataSource.Types result = instance.processedType();

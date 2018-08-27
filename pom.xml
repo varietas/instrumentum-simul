@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>io.varietas</groupId>
     <artifactId>instrumentum-simul</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>1.0.0.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <properties>
@@ -14,39 +14,25 @@
 
     <name>|VCI| simul - The common library</name>
     <description>The simul library contains all common interfaces and classes for the varietas projects.</description>
-    <url>https://varietas.io</url>
+    <url>https://team.varietas.io/project/view/4/</url>
 
-    <developers>
-        <developer>
-            <name>Michael Rhöse</name>
-            <email>michael.rhoese@varietas.io</email>
-            <roles>
-                <role>Project owner</role>
-                <role>Developer</role>
-                <role>Student</role>
-            </roles>
-        </developer>
-    </developers>
+    <inceptionYear>2018</inceptionYear>
+    <issueManagement>
+        <system>Github Issue System</system>
+        <url>https://github.com/varietas/instrumentum-simul/issues</url>
+    </issueManagement>
 
-    <licenses>
-        <license>
-            <name>Apache License, Version 2.0</name>
-            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
-            <distribution>repo</distribution>
-        </license>
-    </licenses>
+    <scm>
+        <connection>scm:git:git@github.com:varietas/instrumentum-simul.git</connection>
+        <developerConnection>scm:git:git@github.com:varietas/instrumentum-simul.git</developerConnection>
+        <url>https://github.com/varietas/instrumentum-simul/tree/master</url>
+    </scm>
 
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>io.varietas</groupId>
-                <artifactId>varietas-bom</artifactId>
-                <version>1.0.1</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
+    <parent>
+        <groupId>io.varietas</groupId>
+        <artifactId>varietas-bom</artifactId>
+        <version>1.0.1</version>
+    </parent>
 
     <dependencies>
         <!-- Framework to reducing boilerplate code. -->
@@ -91,35 +77,4 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
-
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.6.2</version>
-                <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
-                    <showDeprecation>true</showDeprecation>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <version>3.0.2</version>
-                <configuration>
-                    <archive>
-                        <addMavenDescriptor>false</addMavenDescriptor>
-                        <manifestEntries>
-                            <Archiver-Version/>
-                            <Created-By/>
-                            <Built-By/>
-                            <Build-Jdk/>
-                        </manifestEntries>
-                    </archive>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
 </project>

@@ -83,5 +83,5 @@ public interface SortedStorage<CODE extends Comparable, TYPE> extends Storage<TY
      * @param exclusion A prediction is used to prevent storing of an entry. If the method returns true, the given entry isn't stored.
      * @return The instance of the sorted storage for fluent like usage.
      */
-    SortedStorage addExclusion(Function<CODE, Boolean> exclusion);
+    SortedStorage addExclusion(Function<TYPE, Boolean> exclusion);
 }

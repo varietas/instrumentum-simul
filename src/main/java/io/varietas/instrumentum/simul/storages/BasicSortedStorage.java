@@ -20,6 +20,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -37,10 +38,10 @@ import lombok.RequiredArgsConstructor;
  * @param <TYPE> Generic type which is stored.
  */
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-public class SimpleSortedStorage<CODE extends Comparable, TYPE> implements SortedStorage<CODE, TYPE> {
+public class BasicSortedStorage<CODE extends Comparable, TYPE> implements SortedStorage<CODE, TYPE> {
 
     protected final Map<CODE, List<TYPE>> storage;
-    protected final List<Function<CODE, Boolean>> exclusionPredictions = new ArrayList<>();
+    protected final List<Function<TYPE, Boolean>> exclusionPredictions = new ArrayList<>();
 
     @Override
     public final Optional<TYPE> next() {
@@ -85,7 +86,11 @@ public class SimpleSortedStorage<CODE extends Comparable, TYPE> implements Sorte
     @Override
     public final int store(final TYPE entry, final CODE code) {
 
-        if (this.exclusionPredictions.stream().anyMatch(predicate -> predicate.apply(code))) {
+        if (!this.storage.containsKey(code)) {
+            throw new NullPointerException("Value(s) cannot be stored for key " + String.valueOf(code) + ".");
+        }
+
+        if (this.exclusionPredictions.stream().anyMatch(predicate -> predicate.apply(entry))) {
             return -1;
         }
 
@@ -127,11 +132,15 @@ public class SimpleSortedStorage<CODE extends Comparable, TYPE> implements Sorte
 
     @Override
     public final Boolean isEmpty() {
-        return this.getStorage().keySet().stream().filter(key -> this.isEmpty(key)).findFirst().isPresent();
+
+        return !this.storage.entrySet().stream()
+                .filter(entry -> (!entry.getValue().isEmpty()))
+                .findFirst()
+                .isPresent();
     }
 
     @Override
-    public final SortedStorage addExclusion(final Function<CODE, Boolean> exclusion) {
+    public final SortedStorage addExclusion(final Function<TYPE, Boolean> exclusion) {
         this.exclusionPredictions.add(exclusion);
         return this;
     }
@@ -139,14 +148,20 @@ public class SimpleSortedStorage<CODE extends Comparable, TYPE> implements Sorte
     /**
      * Creates an instance of a simple sorted storage by a given set of key. Predictions for exclusions can be added by the #addExclusion(...) method.
      *
+     * @param <CODE>
      * @param codes
      * @return
      */
-    public static SortedStorage initialiseStorage(final Object... codes) {
+    public static <CODE extends Comparable> SortedStorage of(final CODE... codes) {
+
+        if (Objects.isNull(codes) || (codes.length == 0)) {
+            throw new NullPointerException("Sorted storages requires codes for sorting entities.");
+        }
+
         final Map storage = Arrays.asList(codes)
                 .stream()
                 .collect(Collectors.toMap(code -> code, code -> new ArrayList<>()));
 
-        return new SimpleSortedStorage(storage);
+        return new BasicSortedStorage(storage);
     }
 }

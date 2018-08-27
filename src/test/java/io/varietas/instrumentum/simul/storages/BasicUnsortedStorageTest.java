@@ -27,15 +27,15 @@ import org.junit.runners.JUnit4;
  * @author Michael Rhöse
  */
 @RunWith(JUnit4.class)
-public class SimpleUnsortedStorageTest {
+public class BasicUnsortedStorageTest {
 
     /**
-     * Test of of method, of class SimpleUnsortedStorage.
+     * Test of of method, of class BasicUnsortedStorage.
      */
     @Test
     public void testOf_0args() {
 
-        UnsortedStorage result = SimpleUnsortedStorage.of();
+        UnsortedStorage result = BasicUnsortedStorage.of();
 
         Assertions.assertThat(result).isNotNull();
         Assertions.assertThat(result.getStorage()).isEmpty();
@@ -43,12 +43,12 @@ public class SimpleUnsortedStorageTest {
     }
 
     /**
-     * Test of of method, of class SimpleUnsortedStorage.
+     * Test of of method, of class BasicUnsortedStorage.
      */
     @Test
     public void testOf_int() {
 
-        UnsortedStorage result = SimpleUnsortedStorage.of(1);
+        UnsortedStorage result = BasicUnsortedStorage.of(1);
 
         Assertions.assertThat(result).isNotNull();
         Assertions.assertThat(result.getStorage()).isEmpty();
@@ -56,11 +56,11 @@ public class SimpleUnsortedStorageTest {
     }
 
     /**
-     * Test of next method, of class SimpleUnsortedStorage.
+     * Test of next method, of class BasicUnsortedStorage.
      */
     @Test
     public void testNext() {
-        UnsortedStorage result = SimpleUnsortedStorage.of(1);
+        UnsortedStorage result = BasicUnsortedStorage.of(1);
 
         Assertions.assertThat(result.next().isPresent()).isFalse();
         result.store(1);
@@ -69,11 +69,11 @@ public class SimpleUnsortedStorageTest {
     }
 
     /**
-     * Test of store method, of class SimpleUnsortedStorage.
+     * Test of store method, of class BasicUnsortedStorage.
      */
     @Test
     public void testStore() {
-        UnsortedStorage result = SimpleUnsortedStorage.of(1);
+        UnsortedStorage result = BasicUnsortedStorage.of(1);
 
         Assertions.assertThat(result.next().isPresent()).isFalse();
         result.store(1);
@@ -81,11 +81,11 @@ public class SimpleUnsortedStorageTest {
     }
 
     /**
-     * Test of storeAll method, of class SimpleUnsortedStorage.
+     * Test of storeAll method, of class BasicUnsortedStorage.
      */
     @Test
     public void testStoreAll() {
-        UnsortedStorage result = SimpleUnsortedStorage.of(1);
+        UnsortedStorage result = BasicUnsortedStorage.of(1);
 
         Assertions.assertThat(result.next().isPresent()).isFalse();
         List<Integer> integers = new ArrayList<>();
@@ -98,11 +98,11 @@ public class SimpleUnsortedStorageTest {
     }
 
     /**
-     * Test of storeAll method, of class SimpleUnsortedStorage.
+     * Test of storeAll method, of class BasicUnsortedStorage.
      */
     @Test
     public void testStoreAll_OnlyOneTime() {
-        UnsortedStorage result = SimpleUnsortedStorage.of(1);
+        UnsortedStorage result = BasicUnsortedStorage.of(1);
 
         Assertions.assertThat(result.next().isPresent()).isFalse();
         List<Integer> integers = new ArrayList<>();

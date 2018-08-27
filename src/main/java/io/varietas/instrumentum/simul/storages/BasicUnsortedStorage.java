@@ -36,16 +36,16 @@ import lombok.RequiredArgsConstructor;
  * @param <TYPE> Generic type for the value which is stored.
  */
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-public class SimpleUnsortedStorage<TYPE> implements UnsortedStorage<TYPE> {
+public class BasicUnsortedStorage<TYPE> implements UnsortedStorage<TYPE> {
 
     private final Set<TYPE> storage;
 
     public static final UnsortedStorage of() {
-        return SimpleUnsortedStorage.of(0);
+        return BasicUnsortedStorage.of(0);
     }
 
     public static final UnsortedStorage of(int listSize) {
-        return new SimpleUnsortedStorage(new HashSet<>(listSize));
+        return new BasicUnsortedStorage(new HashSet<>(listSize));
     }
 
     /**

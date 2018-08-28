@@ -16,13 +16,17 @@
 package io.varietas.instrumentum.simul.utils;
 
 import java.util.Objects;
+import lombok.experimental.UtilityClass;
 
 /**
  * <h2>StringUtil</h2>
  *
+ * A collection of useful methods to handle strings in a readable way.
+ *
  * @author Michael Rhöse
  * @version 1.0.0.0, 12/21/2017
  */
+@UtilityClass
 public class StringUtil {
 
     public static final boolean isNullOrEmpty(final String string) {

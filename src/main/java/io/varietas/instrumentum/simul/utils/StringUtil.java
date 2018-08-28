@@ -29,6 +29,12 @@ import lombok.experimental.UtilityClass;
 @UtilityClass
 public class StringUtil {
 
+    /**
+     * Checks if a given string is NULL or is empty.
+     *
+     * @param string Given string to check.
+     * @return True if the given string is null or empty, otherwise false.
+     */
     public static final boolean isNullOrEmpty(final String string) {
         return Objects.isNull(string) || string.isEmpty();
     }

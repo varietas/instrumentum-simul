@@ -42,8 +42,8 @@ public class HTTPFileLoaderTest {
 
     @Rule
     public WireMockRule wireMockRule = new WireMockRule(WireMockConfiguration.wireMockConfig()
-            .port(80)
-            .httpsPort(443));
+            .dynamicPort()
+            .dynamicHttpsPort());
 
     private final DataSource dataSource;
 

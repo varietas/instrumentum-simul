@@ -74,7 +74,7 @@ public class DataSource {
      *
      * Source type for loader instantiation.
      *
-     * @see io.varietas.instrumentum.simul.io.ResourceLoader#LoaderFactory()
+     * @see io.varietas.instrumentum.simul.io.ResourceLoader#of(io.varietas.instrumentum.simul.io.containers.DataSource)
      *
      * @author Michael Rhöse
      * @version 1.0.0.0, 11/17/2017

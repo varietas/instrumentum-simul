@@ -30,8 +30,9 @@ import io.varietas.instrumentum.simul.loaders.containers.LoadResult;
 public interface Loader<RESULT_TYPE extends LoadResult> {
 
     /**
-     * Performs the loading process and returns the 
-     * @return 
+     * Performs the loading process and returns them.
+     *
+     * @return Returns a loading result object that contains all informations.
      */
     RESULT_TYPE load();
 }

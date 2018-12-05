@@ -15,17 +15,15 @@
  */
 package io.varietas.instrumentum.simul.io.loaders;
 
-import io.varietas.instrumentum.simul.TestConstants;
 import io.varietas.instrumentum.simul.io.containers.DataSource;
 import io.varietas.instrumentum.simul.io.containers.FileLoadResult;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import org.assertj.core.api.Assertions;
-import org.junit.AfterClass;
 import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
@@ -38,25 +36,15 @@ import org.junit.runners.JUnit4;
 @RunWith(JUnit4.class)
 public class DirFileLoaderTest {
 
-    private static Path testFilePath;
-    private final DataSource dataSource;
+    private static DataSource DATA_SOURCE;
 
-    public DirFileLoaderTest() {
-
-        this.dataSource = DataSource.DIR(0, "", TestConstants.TEST_FOLDER_PATH, "dirLoadertest.txt");
-    }
+    @ClassRule
+    public static final TemporaryFolder FOLDER = new TemporaryFolder();
 
     @BeforeClass
     public static void setUp() throws IOException {
-        DirFileLoaderTest.testFilePath = Paths.get(TestConstants.TEST_FOLDER_PATH, "dirLoadertest.txt");
-
-        if (Files.notExists(Paths.get(TestConstants.TEST_FOLDER_PATH))) {
-            Files.createDirectory(Paths.get(TestConstants.TEST_FOLDER_PATH));
-        }
-
-        if (Files.notExists(DirFileLoaderTest.testFilePath)) {
-            Files.createFile(DirFileLoaderTest.testFilePath);
-        }
+        Path testFilePath = FOLDER.newFile("dirLoadertest.txt").toPath();
+        DATA_SOURCE = DataSource.DIR(0, "", testFilePath.getParent().toString(), "dirLoadertest.txt");
     }
 
     /**
@@ -64,7 +52,7 @@ public class DirFileLoaderTest {
      */
     @Test
     public void testProcessedType() {
-        DirFileLoader instance = (DirFileLoader) DirFileLoader.of(this.dataSource);
+        DirFileLoader instance = (DirFileLoader) DirFileLoader.of(DATA_SOURCE);
         DataSource.Types expResult = DataSource.Types.DIR;
         DataSource.Types result = instance.processedType();
         Assertions.assertThat(result).isEqualTo(expResult);
@@ -75,16 +63,10 @@ public class DirFileLoaderTest {
      */
     @Test
     public void testPerformLoading() {
-        DirFileLoader instance = (DirFileLoader) DirFileLoader.of(this.dataSource);
+        DirFileLoader instance = (DirFileLoader) DirFileLoader.of(DATA_SOURCE);
 
         FileLoadResult result = instance.performLoading();
         Assertions.assertThat(result.getStatusCode()).isEqualTo(200);
         Assertions.assertThat(result.mappedValue()).isPresent();
-    }
-
-    @AfterClass
-    public static void cleanUp() throws IOException {
-        Files.deleteIfExists(DirFileLoaderTest.testFilePath);
-        Files.deleteIfExists(Paths.get(TestConstants.TEST_FOLDER_PATH));
     }
 }

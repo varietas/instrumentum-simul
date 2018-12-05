@@ -15,17 +15,15 @@
  */
 package io.varietas.instrumentum.simul.io.loaders;
 
-import io.varietas.instrumentum.simul.TestConstants;
 import io.varietas.instrumentum.simul.io.containers.DataSource;
 import io.varietas.instrumentum.simul.io.containers.FileLoadResult;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import org.assertj.core.api.Assertions;
-import org.junit.AfterClass;
 import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
@@ -41,25 +39,20 @@ public class ResourceLoaderFactoryTest {
     private static Path testFilePath;
     private final DataSource ftpDataSource;
     private final DataSource httpDataSource;
-    private final DataSource dirDataSource;
+    private static DataSource DIR_DATA_SOURCE;
+
+    @ClassRule
+    public static final TemporaryFolder FOLDER = new TemporaryFolder();
 
     public ResourceLoaderFactoryTest() {
         this.ftpDataSource = DataSource.FTP(0, "", "speedtest.tele2.net", "100KB.zip");
         this.httpDataSource = DataSource.HTTP(0, "", "http://speedtest.tele2.net", "100KB.zip");;
-        this.dirDataSource = DataSource.DIR(0, "", TestConstants.TEST_FOLDER_PATH, "dirLoadertest.txt");
     }
 
     @BeforeClass
     public static void setUp() throws IOException {
-        ResourceLoaderFactoryTest.testFilePath = Paths.get(TestConstants.TEST_FOLDER_PATH, "dirLoadertest.txt");
-
-        if (Files.notExists(Paths.get(TestConstants.TEST_FOLDER_PATH))) {
-            Files.createDirectory(Paths.get(TestConstants.TEST_FOLDER_PATH));
-        }
-
-        if (Files.notExists(ResourceLoaderFactoryTest.testFilePath)) {
-            Files.createFile(ResourceLoaderFactoryTest.testFilePath);
-        }
+        Path testFilePath = FOLDER.newFile("dirLoadertest.txt").toPath();
+        DIR_DATA_SOURCE = DataSource.DIR(0, "", testFilePath.getParent().toString(), "dirLoadertest.txt");
     }
 
     /**
@@ -91,7 +84,7 @@ public class ResourceLoaderFactoryTest {
      */
     @Test
     public void testLoadDir() {
-        ResourceLoaderFactory instance = ResourceLoaderFactory.of(this.dirDataSource);
+        ResourceLoaderFactory instance = ResourceLoaderFactory.of(this.DIR_DATA_SOURCE);
         FileLoadResult result = instance.load();
 
         Assertions.assertThat(result).isNotNull();
@@ -105,7 +98,7 @@ public class ResourceLoaderFactoryTest {
     public void testOf() {
         Assertions.assertThat(ResourceLoaderFactory.of(this.ftpDataSource)).isNotNull();
         Assertions.assertThat(ResourceLoaderFactory.of(this.httpDataSource)).isNotNull();
-        Assertions.assertThat(ResourceLoaderFactory.of(this.dirDataSource)).isNotNull();
+        Assertions.assertThat(ResourceLoaderFactory.of(this.DIR_DATA_SOURCE)).isNotNull();
     }
 
     /**
@@ -116,11 +109,5 @@ public class ResourceLoaderFactoryTest {
         Assertions.assertThatThrownBy(() -> ResourceLoaderFactory.of(null).load())
                 .isInstanceOf(NullPointerException.class)
                 .hasMessage("Source is required and must be configured before calling #load().");
-    }
-
-    @AfterClass
-    public static void cleanUp() throws IOException {
-        Files.deleteIfExists(ResourceLoaderFactoryTest.testFilePath);
-        Files.deleteIfExists(Paths.get(TestConstants.TEST_FOLDER_PATH));
     }
 }

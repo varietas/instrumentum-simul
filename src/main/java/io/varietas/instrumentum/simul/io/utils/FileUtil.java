@@ -15,6 +15,7 @@
  */
 package io.varietas.instrumentum.simul.io.utils;
 
+import io.varietas.instrumentum.simul.utils.OSInfo;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
 import java.nio.file.PathMatcher;
@@ -36,10 +37,16 @@ public class FileUtil {
      * Utility method to generate a global matcher for a given expression. The matcher is used to find files/directory that match.
      *
      * @param globPattern Pattern which has to be used for generating a path matcher.
+     *
      * @return Global path matcher for a given expression.
      */
     public static PathMatcher matcherForGlobExpression(final String globPattern) {
-        return FileSystems.getDefault().getPathMatcher("glob:" + globPattern);
+
+        String used = globPattern;
+        if (OSInfo.getOs().equals(OSInfo.OS.WINDOWS)) {
+            used = used.replace("\\", "\\\\");
+        }
+        return FileSystems.getDefault().getPathMatcher("glob:" + used);
     }
 
     /**
@@ -47,6 +54,7 @@ public class FileUtil {
      *
      * @param input   Given path to check.
      * @param pattern Pattern that is used to check a given path.
+     *
      * @return True if the path matches the pattern, otherwise false.
      */
     public static boolean matches(final Path input, final PathMatcher pattern) {
@@ -58,6 +66,7 @@ public class FileUtil {
      *
      * @param input    Given path to check.
      * @param patterns Patterns that is used to check a given path.
+     *
      * @return True if the path matches any pattern, otherwise false.
      */
     public static boolean matchesAny(final Path input, final Set<PathMatcher> patterns) {

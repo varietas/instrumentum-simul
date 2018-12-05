@@ -29,5 +29,6 @@ import lombok.experimental.UtilityClass;
 @UtilityClass
 public class TestConstants {
 
-    public static final String TEST_FOLDER_PATH = System.getProperty("java.io.tmpdir") + File.separatorChar + "directory-utils-folder";
+    @Deprecated
+    public static final String INVALID_FOLDER_PATH = System.getProperty("java.io.tmpdir") + File.separatorChar + "directory-utils-folder";
 }

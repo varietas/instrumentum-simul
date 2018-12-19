@@ -50,41 +50,13 @@ public class OSInfo {
         }
     }
 
-    private static OS os = OS.OTHER;
+    private static OS INSTANCE;
 
     static {
         try {
-            String osName = System.getProperty("os.name");
-            if (osName == null) {
-                throw new IOException("os.name not found");
-            }
-            osName = osName.toLowerCase(Locale.ENGLISH);
-            if (osName.contains("windows")) {
-                os = OS.WINDOWS;
-            } else if (osName.contains("linux")
-                    || osName.contains("mpe/ix")
-                    || osName.contains("freebsd")
-                    || osName.contains("irix")
-                    || osName.contains("digital unix")
-                    || osName.contains("unix")) {
-                os = OS.UNIX;
-            } else if (osName.contains("mac os")) {
-                os = OS.MAC;
-            } else if (osName.contains("sun os")
-                    || osName.contains("sunos")
-                    || osName.contains("solaris")) {
-                os = OS.POSIX_UNIX;
-            } else if (osName.contains("hp-ux")
-                    || osName.contains("aix")) {
-                os = OS.POSIX_UNIX;
-            } else {
-                os = OS.OTHER;
-            }
-
+            INSTANCE = takeRightOS(System.getProperty("os.name"));
         } catch (IOException ex) {
-            os = OS.OTHER;
-        } finally {
-            os.setVersion(System.getProperty("os.version"));
+            INSTANCE = OS.OTHER;
         }
     }
 
@@ -94,6 +66,54 @@ public class OSInfo {
      * @return
      */
     public static OS getOs() {
-        return os;
+        return INSTANCE;
+    }
+
+    protected static OS takeRightOS(final String name) throws IOException {
+        if (StringUtil.isNullOrEmpty(name)) {
+            throw new IOException("'os.name' not found.");
+        }
+
+        final String osName = name.toLowerCase(Locale.ENGLISH);
+
+        switch (getOsByName(osName)) {
+            case 1:
+                return OS.WINDOWS;
+            case 2:
+                return OS.UNIX;
+            case 3:
+                return OS.MAC;
+            case 4:
+            case 5:
+                return OS.POSIX_UNIX;
+            case 0:
+            default:
+                return OS.OTHER;
+        }
+    }
+
+    private static short getOsByName(final String name) {
+
+        if (name.contains("windows")) {
+            return 1;
+        }
+
+        if (StringUtil.containsAny(name, "linux", "mpe/ix", "freebsd", "irix", "digital unix", "unix")) {
+            return 2;
+        }
+
+        if (name.contains("mac os")) {
+            return 3;
+        }
+
+        if (StringUtil.containsAny(name, "sun os", "sunos", "solaris")) {
+            return 4;
+        }
+
+        if (StringUtil.containsAny(name, "hp-ux", "aix")) {
+            return 5;
+        }
+
+        return 0;
     }
 }

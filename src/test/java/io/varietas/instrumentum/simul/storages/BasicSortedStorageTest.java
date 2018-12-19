@@ -16,6 +16,7 @@
 package io.varietas.instrumentum.simul.storages;
 
 import java.util.Arrays;
+import java.util.Collections;
 import org.assertj.core.api.Assertions;
 import org.junit.Before;
 import org.junit.Test;
@@ -33,6 +34,20 @@ public class BasicSortedStorageTest {
     @Before
     public void setUp() {
         this.instance = BasicSortedStorage.of(CODES);
+    }
+
+    @Test
+    public void testFactoryMethodFails() {
+        Assertions.assertThatThrownBy(() -> BasicSortedStorage.of(null))
+                .isInstanceOf(NullPointerException.class)
+                .hasMessage("Sorted storages requires codes for sorting entities.");
+
+        Assertions.assertThatThrownBy(() -> {
+            Integer[] args = {};
+            BasicSortedStorage.of(args);
+        })
+                .isInstanceOf(NullPointerException.class)
+                .hasMessage("Sorted storages requires codes for sorting entities.");
     }
 
     /**
@@ -154,10 +169,19 @@ public class BasicSortedStorageTest {
         Assertions.assertThat(this.instance.store(0, 1)).isEqualTo(-1);
         Assertions.assertThat(this.instance.store(1, 1)).isEqualTo(1);
 
+        Assertions.assertThat(this.instance.storeAll(Arrays.asList(0, 1), 1)).isEqualTo(-1);
+
         this.instance.addExclusion((entry) -> entry < 3);
         this.instance.addExclusion((entry) -> (entry % 2) != 0);
         Assertions.assertThat(this.instance.store(3, 1)).isEqualTo(-1);
         Assertions.assertThat(this.instance.store(2, 1)).isEqualTo(-1);
         Assertions.assertThat(this.instance.store(4, 1)).isEqualTo(2);
+    }
+
+    @Test
+    public void testStoreNullEntryFails() {
+        Assertions.assertThatThrownBy(() -> this.instance.store(null, 0))
+                .hasMessage("Value(s) cannot be stored for key 0.")
+                .isInstanceOf(NullPointerException.class);
     }
 }

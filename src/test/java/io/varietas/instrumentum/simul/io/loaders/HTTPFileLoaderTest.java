@@ -15,17 +15,9 @@
  */
 package io.varietas.instrumentum.simul.io.loaders;
 
-import com.github.tomakehurst.wiremock.client.WireMock;
-import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
-import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import io.varietas.instrumentum.simul.io.containers.DataSource;
 import io.varietas.instrumentum.simul.io.containers.FileLoadResult;
-import java.io.IOException;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.io.IOUtils;
 import org.assertj.core.api.Assertions;
-import org.junit.BeforeClass;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
@@ -36,28 +28,13 @@ import org.junit.runners.JUnit4;
  * @author Michael Rhöse
  * @version 1.0.0.0, 07/19/2018
  */
-@Slf4j
 @RunWith(JUnit4.class)
 public class HTTPFileLoaderTest {
 
-    @Rule
-    public WireMockRule wireMockRule = new WireMockRule(WireMockConfiguration.wireMockConfig()
-            .dynamicPort()
-            .dynamicHttpsPort());
-
     private final DataSource dataSource;
 
-    private static final String URL_AS_STRING = "http://speedtest.tele2.net";
-    private static final int STATUS_CODE_OK = 200;
-    private static byte[] RESPONSE_BODY;
-
-    @BeforeClass
-    public static void setupBeforeClass() throws IOException {
-        RESPONSE_BODY = IOUtils.toByteArray(HTTPFileLoaderTest.class.getResourceAsStream("/binaries/100KB.zip"));
-    }
-
     public HTTPFileLoaderTest() {
-        this.dataSource = DataSource.HTTP(0, "", URL_AS_STRING, "100KB.zip");
+        this.dataSource = DataSource.HTTP(0, "", "http://speedtest.tele2.net", "100KB.zip");
     }
 
     /**
@@ -65,11 +42,6 @@ public class HTTPFileLoaderTest {
      */
     @Test
     public void testProcessedType() {
-
-        WireMock.stubFor(WireMock.get(WireMock.urlEqualTo(URL_AS_STRING))
-                .willReturn(WireMock.aResponse()
-                        .withBody(RESPONSE_BODY)
-                        .withStatus(STATUS_CODE_OK)));
 
         HTTPFileLoader instance = (HTTPFileLoader) HTTPFileLoader.of(dataSource);
         DataSource.Types expResult = DataSource.Types.HTTP;
@@ -79,20 +51,13 @@ public class HTTPFileLoaderTest {
 
     /**
      * Test of performLoading method, of class HTTPFileLoader.
-     *
-     * @throws java.io.IOException
      */
     @Test
-    public void testPerformLoading() throws IOException {
-
-        WireMock.stubFor(WireMock.get(WireMock.urlEqualTo(URL_AS_STRING))
-                .willReturn(WireMock.aResponse()
-                        .withBody(RESPONSE_BODY)
-                        .withStatus(STATUS_CODE_OK)));
-
+    public void testPerformLoading() {
         HTTPFileLoader instance = (HTTPFileLoader) HTTPFileLoader.of(this.dataSource);
+
         FileLoadResult result = instance.performLoading();
-        Assertions.assertThat(result.getStatusCode()).isEqualTo(STATUS_CODE_OK);
+        Assertions.assertThat(result.getStatusCode()).isEqualTo(200);
         Assertions.assertThat(result.getMessage()).isEqualTo("OK");
         Assertions.assertThat(result.mappedValue()).isPresent();
     }

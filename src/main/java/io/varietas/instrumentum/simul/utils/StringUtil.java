@@ -16,11 +16,13 @@
 package io.varietas.instrumentum.simul.utils;
 
 import java.util.Objects;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 import lombok.experimental.UtilityClass;
 
 /**
  * <h2>StringUtil</h2>
- *
+ * <p>
  * A collection of useful methods to handle strings in a readable way.
  *
  * @author Michael Rhöse
@@ -33,6 +35,7 @@ public class StringUtil {
      * Checks if a given string is NULL or is empty.
      *
      * @param string Given string to check.
+     *
      * @return True if the given string is null or empty, otherwise false.
      */
     public static final boolean isNullOrEmpty(final String string) {
@@ -41,5 +44,26 @@ public class StringUtil {
 
     public static final boolean isNonNullOrEmpty(final String string) {
         return !Objects.isNull(string) && !string.isEmpty();
+    }
+
+    /**
+     * Checks if one contains one of the others. The method returns true for the first match, otherwise false.
+     *
+     * @param one    The string which is tested for matching any other string.
+     * @param others List of strings that potentially match the first string.
+     *
+     * @throws NullPointerException Thrown if one or both parameters are null or empty.
+     * @return True if the first element of the list is contained in the first parameter.
+     */
+    public boolean containsAny(final String one, final String... others) {
+        if (isNullOrEmpty(one)) {
+            throw new NullPointerException("String cannot be null or empty.");
+        }
+
+        if (Objects.isNull(others) || others.length == 0) {
+            throw new NullPointerException("Matches cannot be null or empty.");
+        }
+
+        return Stream.of(others).anyMatch(other -> one.equals(other));
     }
 }

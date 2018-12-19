@@ -1,0 +1,130 @@
+<html>
+	<head>
+	<title>Tele2 Speedtest Service</title>
+	<link rel="stylesheet" href="css/bootstrap.min.css">
+	<link rel="stylesheet" href="css/docs.min.css">
+</head>
+
+<body>
+	<div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+		<div class="container">
+			<div class="navbar-header">
+				<a class="navbar-brand" href="#">Tele2 Speedtest</a>
+			</div>
+			<div class="navbar-collapse collapse">
+				<ul class="nav navbar-nav navbar-right">
+					<li><a href="#http">HTTP</a></li>
+					<li><a href="#ftp">FTP</a></li>
+					<li><a href="#speedtest">speedtest.net</a></li>
+					<li><a href="#about">Technical details</a></li>
+					<li><a href="#contact">Contact</a></li>
+				</ul>
+			</div>
+		</div>
+	</div>
+	<div class="jumbotron" style="background-color: #FFF;">
+		<div class="container" style="padding-top: 30px">
+			<img border=0 src=Tele2-logo.jpg><br/>
+						You are connected via IPv4 from 109.40.128.113<br/>
+			To force the usage of IPv6, visit <a href="http://speedtest6.tele2.net">Speedtest6.Tele2.NET</a>.
+		</div>
+	</div>
+
+	<section id="intro">
+		<div class="container">
+			<h1 class="page-header">Tele2 Speedtest Service</h1>
+			<p>The Tele2 Speedtest Service helps you test your Internet connection speed through various methods and is available not only to customers of Tele2 but anyone with an Internet connection. Test your connection using <a href="#speedtest">speedtest.net's</a> tool, downloading a file via your <a href="#http">web browser (HTTP)</a> or downloading and uploading via <a href="#ftp">FTP</a>.</p>
+
+			<p>Speedtest is run on a number of fast servers in locations throughout Europe connected to Tele2's international IP core network with 10GE. The address <a href="http://speedtest.tele2.net">http://speedtest.tele2.net</a> is anycasted, meaning that you should automatically be served by the server closest (network wise) to your location. Read more about the <a href="#about">technical details</a> of this service.</p>
+
+			<p>You are currently being served by AMS-SPEEDTEST-1 located in Amsterdam, Netherlands.</p>
+
+		</div>
+	</section>
+
+	<section id="http">
+		<div class="container">
+			<h1 class="page-header">HTTP download</h1>
+			<p>We provide a variety of testfiles with different sizes, for your convenience.<br/>
+			<a href=100MB.zip>100MB</a> &nbsp;
+			<a href=1GB.zip>1GB</a> &nbsp;
+			<a href=10GB.zip>10GB</a> &nbsp;
+			<a href=50GB.zip>50GB</a> &nbsp;
+			<a href=100GB.zip>100GB</a> &nbsp;
+			<a href=1000GB.zip>1000GB</a><br/>
+			These are sparsefiles and so although they appear to be on disk, they are not limited by disk speed but rather by CPU. The Speedtest servers are able to sustain close to 10Gbps (~1GByte/s) of throughput. See <a href="#about">the technical details</a> to learn more about sparse files and the setup of the Tele2 Speedtest service.</p>
+			<p>To download on a Unix like system, try <kbd>wget -O /dev/null http://speedtest.tele2.net/10GB.zip</kbd></p>
+		</div>
+	</section>
+
+	<section id="ftp">
+		<div class="container">
+			<h1 class="page-header">FTP</h1>
+			<p>In addition to the files offered here via <a href="#http">HTTP</a>, there is also an FTP server setup to serve files, you'll reach it at <a href="ftp://speedtest.tele2.net">ftp://speedtest.tele2.net</a>. You can upload files to /upload. Uploaded files will be automatically removed as soon as the upload is complete.</p>
+		</div>
+	</section>
+
+	<section id="speedtest">
+		<div class="container">
+			<h1 class="page-header">speedtest.net</h1>
+			<p>speedtest.net is an easy to use web-based (Flash) test to test both upload and download speeds as well as latency to any of a long list of servers around the world. Tele2 Speedtest servers runs a speedtest.net server. Go to <a href="http://speedtest.net/?s=1337">speedtest.net</a> to test your connection. This server (AMS-SPEEDTEST-1) will automatically be picked for you. After the test you can choose a another server and location to perform further testing.</p>
+		</div>
+	</section>
+
+	<section id="locations">
+		<div class="container">
+			<h1 class="page-header">Locations</h1>
+			<p>
+			The Tele2 Speedtest service is distributed over multiple machines spread across locations in Europe and North America. By going to <a href="http://speedtest.tele2.net">http://speedtest.tele2.net</a> you will always end up on the closest location (network-wise) to you. You can specifically select another test node from the below list if you want to perform tests towards a particular location.
+			<ul>
+			<li><a href="http://wen1-speedtest-1.tele2.net">Austria, Vienna</a></li>
+			<li><a href="http://zgb-speedtest-1.tele2.net">Croatia, Zagreb</a></li>
+			<li><a href="http://fra36-speedtest-1.tele2.net">Germany, Frankfurt</a></li>
+			<li><a href="http://bks-speedtest-1.tele2.net">Latvia, Riga</a></li>
+			<li><a href="http://vln038-speedtest-1.tele2.net">Lithuania, Vilnius</a></li>
+			<li><a href="http://ams-speedtest-1.tele2.net">Netherlands, Amsterdam</a></li>
+			<li><a href="http://bck-speedtest-1.tele2.net">Sweden, Gothenburg</a></li>
+			<li><a href="http://kst5-speedtest-1.tele2.net">Sweden, Stockholm</a></li>
+			<li><a href="http://nyc9-speedtest-1.tele2.net">USA, New York</a></li>
+			</ul>
+			</p>
+		</div>
+	</section>
+
+	<section id="about">
+		<div class="container">
+			<h1 class="page-header">Technical details</h1>
+			<p>This page and the listed speedtest services are hosted on a number of servers spread through Europe and North America (see <a href="#locations">locations</a>). Each location consists of a 1U Supermicro server with an octacore Xeon E3-1240 V2 running at 3.4GHz, 32GB of RAM and an Intel 10GE NIC (82579LM chip). Debian Linux is the operating system used, Apache for serving web pages and sparse files via HTTP and vsftpd is used for FTP. A small script called <a href="https://github.com/plajjan/cleandir">cleandir</a> is used to clean the upload directory of the FTP server to avoid filling the file system with temporary uploaded files.</p>
+			<p>TCP windows have been slightly tweaked to support higher throughput.</p>
+			<p>Sparse files, such as the ones provided here via HTTP and FTP, can be created with something along the lines of:</p>
+			<kbd>dd if=/dev/zero of=my_large_file bs=1 count=0 seek=10G</kbd><br/><br/>
+			<p>Anycasting is a technique where a single IP address is used in multiple locations in a network and packets are sent to the closest server. Tele2 speedtest service utilizes this to send you to the closest location in our network. Do note how "closest" is not measured geographically but rather by what our networks thinks is the closest location. Our primary network metric is latency and therefore the closest network distance is typically the closest node geographically but there are situations where ineffecient fiber routing or cuts could lead to you being served by a node further away. In addition to simply serving users using the closest server, anycast also enables basic load balancing and redundancy as users in different areas are served by their closest server, spreading the load over all of our installations. If a server should fail, users would be served by the second closest server.</p>
+			<p>The servers can sustain throughput around 10Gbps, as an example, here is a wget from another host in Tele2's network:</p>
+			<kbd> 100%[================================================&gt;] 10,737,418,240  964M/s   in 11s<br/></kbd>
+
+		</div>
+	</section>
+
+
+	<section id="contact">
+		<div class="container">
+			<h1 class="page-header">Contact</h1>
+			<p>
+			If you are interested in performing more in-depth studies and high-performance measurements, please contact bgp4-adm _at_ tele2.net directly.
+			</p>
+		</div>
+	</section>
+
+	<footer class="bs-docs-footer navbar-inverse nipap-footer" style="padding-top: 0; padding-bottom: 0;" role="navigation">
+		<div class="container">
+			<ul class="bs-docs-footer-links">
+			<li>Copyright Tele2 AB</li>
+			</ul>
+		</div>
+	</footer>
+
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+	<script src="js/bootstrap.min.js"></script>
+	<script src="js/docs.min.js"></script>
+</body>
+</html>

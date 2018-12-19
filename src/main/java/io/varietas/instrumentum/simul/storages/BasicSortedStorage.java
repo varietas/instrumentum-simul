@@ -29,7 +29,7 @@ import lombok.RequiredArgsConstructor;
 
 /**
  * <h2>SortedStorageImpl</h2>
- *
+ * <p>
  * This entry represents a container to store all entries sorted by codes. Additionally there are a number of useful methods.
  *
  * @author Michael Rhöse
@@ -81,7 +81,8 @@ public class BasicSortedStorage<CODE extends Comparable, TYPE> implements Sorted
      *
      * @param entry Entry to be stored.
      * @param code  Annotation type code where the entry should be stored for.
-     * @return Number of stored entries or -1 for an error.
+     *
+     * @return Number of stored entries or -1 if an exclusion prediction prevents the storing.
      */
     @Override
     public final int store(final TYPE entry, final CODE code) {
@@ -94,9 +95,7 @@ public class BasicSortedStorage<CODE extends Comparable, TYPE> implements Sorted
             return -1;
         }
 
-        if (!this.storage.get(code).add(entry)) {
-            return -1;
-        }
+        this.storage.get(code).add(entry);
 
         return this.storage.get(code).size();
     }
@@ -106,7 +105,8 @@ public class BasicSortedStorage<CODE extends Comparable, TYPE> implements Sorted
      *
      * @param entries Entries to be stored.
      * @param code    Annotation type code where the entry should be stored for.
-     * @return Number of stored entries or -1 for an error.
+     *
+     * @return Number of stored entries or -1 if an exclusion prediction prevents the storing
      */
     @Override
     public final int storeAll(Collection<TYPE> entries, final CODE code) {
@@ -150,6 +150,7 @@ public class BasicSortedStorage<CODE extends Comparable, TYPE> implements Sorted
      *
      * @param <CODE>
      * @param codes
+     *
      * @return
      */
     public static <CODE extends Comparable> SortedStorage of(final CODE... codes) {

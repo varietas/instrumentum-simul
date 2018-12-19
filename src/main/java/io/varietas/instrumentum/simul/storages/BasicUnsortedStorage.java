@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import lombok.AccessLevel;
@@ -26,9 +27,9 @@ import lombok.RequiredArgsConstructor;
 
 /**
  * <h2>UnsortedStorageImpl</h2>
- *
+ * <p>
  * This entry represents a container to store all located, annotated entries. Additionally there are a number of useful methods.
- *
+ * <p>
  * Attention: Duplex values are only stored one time.
  *
  * @author Michael Rhöse
@@ -65,33 +66,37 @@ public class BasicUnsortedStorage<TYPE> implements UnsortedStorage<TYPE> {
     }
 
     /**
-     * Stores a entry in the storage. Returns -1 if the entry is not stored otherwise the current number of stored entries will be returned.
+     * Stores a entry in the storage. Returns current number of stored entries.
      *
      * @param entry Entry to be stored.
+     *
      * @return Number of stored entries or -1 for an error.
      */
     @Override
     public final int store(final TYPE entry) {
-        if (!this.storage.add(entry)) {
-            return this.storage.size();
-        } else {
-            return -1;
+        if (Objects.isNull(entry)) {
+            throw new NullPointerException("Storage cannot handle null objetcs.");
         }
+        this.storage.add(entry);
+        return this.storage.size();
     }
 
     /**
-     * Stores all entries from a given collection in the storage. Returns -1 if the entries are not stored otherwise the current number of stored entries will be returned.
+     * Stores all entries from a given collection in the storage. Returns -1 if the entries are empty otherwise the current number of stored entries will be returned.
      *
-     * @param enties Entries to be stored.
+     * @param entries Entries to be stored.
+     *
      * @return Number of stored entries or -1 for an error.
      */
     @Override
-    public final int storeAll(Collection<TYPE> enties) {
-        if (!this.storage.addAll(enties)) {
-            return this.storage.size();
-        } else {
+    public final int storeAll(Collection<TYPE> entries) {
+
+        if (entries.isEmpty()) {
             return -1;
         }
+
+        this.storage.addAll(entries);
+        return this.storage.size();
     }
 
     @Override

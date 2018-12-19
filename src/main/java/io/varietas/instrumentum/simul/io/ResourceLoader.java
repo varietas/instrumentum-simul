@@ -23,9 +23,9 @@ import io.varietas.instrumentum.simul.loaders.LoaderFactory;
 
 /**
  * <h2>ResourceLoader</h2>
- *
+ * <p>
  * The resource loader allows an easy access to the resource loading subsystem of simul. The usage is quite simple:
- *
+ * <p>
  * <pre>
  * <code>
  *   DataSource source;
@@ -40,7 +40,7 @@ import io.varietas.instrumentum.simul.loaders.LoaderFactory;
  */
 public interface ResourceLoader extends Loader<FileLoadResult> {
 
-    default LoaderFactory of(final DataSource source) {
+    static LoaderFactory of(final DataSource source) {
         return ResourceLoaderFactory.of(source);
     }
 }

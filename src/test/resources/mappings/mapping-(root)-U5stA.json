@@ -1,0 +1,20 @@
+{
+  "id" : "d2ffb983-b3c3-37b7-a981-e22b6f4b9a7c",
+  "request" : {
+    "url" : "/",
+    "method" : "GET"
+  },
+  "response" : {
+    "status" : 200,
+    "bodyFileName" : "body-(root)-U5stA.txt",
+    "headers" : {
+      "Date" : "Mon, 17 Dec 2018 17:35:54 GMT",
+      "Server" : "Apache",
+      "X-Powered-By" : "PHP/5.4.45-0+deb7u9",
+      "Vary" : "Accept-Encoding",
+      "Content-Type" : "text/html",
+      "Transfer-Encoding" : "chunked"
+    }
+  },
+  "uuid" : "d2ffb983-b3c3-37b7-a981-e22b6f4b9a7c"
+}

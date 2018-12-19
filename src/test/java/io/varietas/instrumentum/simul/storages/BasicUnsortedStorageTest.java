@@ -16,6 +16,7 @@
 package io.varietas.instrumentum.simul.storages;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
@@ -34,8 +35,7 @@ public class BasicUnsortedStorageTest {
      */
     @Test
     public void testOf_0args() {
-
-        UnsortedStorage result = BasicUnsortedStorage.of();
+        final UnsortedStorage result = BasicUnsortedStorage.of();
 
         Assertions.assertThat(result).isNotNull();
         Assertions.assertThat(result.getStorage()).isEmpty();
@@ -47,8 +47,7 @@ public class BasicUnsortedStorageTest {
      */
     @Test
     public void testOf_int() {
-
-        UnsortedStorage result = BasicUnsortedStorage.of(1);
+        final UnsortedStorage result = BasicUnsortedStorage.of(1);
 
         Assertions.assertThat(result).isNotNull();
         Assertions.assertThat(result.getStorage()).isEmpty();
@@ -60,7 +59,7 @@ public class BasicUnsortedStorageTest {
      */
     @Test
     public void testNext() {
-        UnsortedStorage result = BasicUnsortedStorage.of(1);
+        final UnsortedStorage result = BasicUnsortedStorage.of(1);
 
         Assertions.assertThat(result.next().isPresent()).isFalse();
         result.store(1);
@@ -73,7 +72,7 @@ public class BasicUnsortedStorageTest {
      */
     @Test
     public void testStore() {
-        UnsortedStorage result = BasicUnsortedStorage.of(1);
+        final UnsortedStorage result = BasicUnsortedStorage.of(1);
 
         Assertions.assertThat(result.next().isPresent()).isFalse();
         result.store(1);
@@ -81,11 +80,22 @@ public class BasicUnsortedStorageTest {
     }
 
     /**
+     * Test of store method, of class BasicUnsortedStorage.
+     */
+    @Test
+    public void testStoreNullFails() {
+        final UnsortedStorage result = BasicUnsortedStorage.of(1);
+        Assertions.assertThatThrownBy(() -> result.store(null))
+                .isInstanceOf(NullPointerException.class)
+                .hasMessage("Storage cannot handle null objetcs.");
+    }
+
+    /**
      * Test of storeAll method, of class BasicUnsortedStorage.
      */
     @Test
     public void testStoreAll() {
-        UnsortedStorage result = BasicUnsortedStorage.of(1);
+        final UnsortedStorage result = BasicUnsortedStorage.of(1);
 
         Assertions.assertThat(result.next().isPresent()).isFalse();
         List<Integer> integers = new ArrayList<>();
@@ -102,7 +112,7 @@ public class BasicUnsortedStorageTest {
      */
     @Test
     public void testStoreAll_OnlyOneTime() {
-        UnsortedStorage result = BasicUnsortedStorage.of(1);
+        final UnsortedStorage result = BasicUnsortedStorage.of(1);
 
         Assertions.assertThat(result.next().isPresent()).isFalse();
         List<Integer> integers = new ArrayList<>();
@@ -112,5 +122,24 @@ public class BasicUnsortedStorageTest {
         result.storeAll(integers);
 
         Assertions.assertThat(result.getStorage()).hasSize(1);
+    }
+
+    /**
+     * Test of storeAll method, of class BasicUnsortedStorage.
+     */
+    @Test
+    public void testStoreAllFails() {
+        final UnsortedStorage result = BasicUnsortedStorage.of(1);
+        Assertions.assertThatThrownBy(() -> result.storeAll(null))
+                .isInstanceOf(NullPointerException.class);
+    }
+
+    /**
+     * Test of storeAll method, of class BasicUnsortedStorage.
+     */
+    @Test
+    public void testStoreAllFailsForEmpty() {
+        final UnsortedStorage result = BasicUnsortedStorage.of(1);
+        Assertions.assertThat(result.storeAll(Collections.EMPTY_LIST)).isEqualTo(-1);
     }
 }

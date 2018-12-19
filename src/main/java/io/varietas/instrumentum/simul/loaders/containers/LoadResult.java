@@ -19,7 +19,7 @@ import java.util.Optional;
 
 /**
  * <h2>LoadResult</h2>
- *
+ * <p>
  * The load result is a container to store all important and required information of a loading process and its result.
  *
  * @author Michael Rhöse

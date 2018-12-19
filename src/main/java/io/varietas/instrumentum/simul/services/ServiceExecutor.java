@@ -31,8 +31,7 @@ import lombok.extern.slf4j.Slf4j;
 /**
  * <h2>ServiceExecuter</h2>
  * <p>
- * The service executer is the central handler of services. The instance takes 1...n Services and schedules them. There are two factory methods that manipulate what kind of
- * {@link ScheduledExecutorService} has to be used. The default executer service is initialized with a pool size equals to services count.
+ * The service executer is the central handler of services. The instance takes 1...n Services and schedules them. There are two factory methods that manipulate what kind of {@link ScheduledExecutorService} has to be used. The default executer service is initialized with a pool size equals to services count.
  *
  * @author Michael Rhöse
  * @version 1.0.0.0, 08/21/2018
@@ -48,6 +47,7 @@ public class ServiceExecutor {
      * Builder method to create a service executer instance by a list of services. The thread pool size is equals to number of given services.
      *
      * @param services Services that are managed by this executer.
+     *
      * @return Instance of the executor service.
      */
     public static ServiceExecutor of(final List<Service> services) {
@@ -60,6 +60,7 @@ public class ServiceExecutor {
      *
      * @param scheduledExecutorService External created executor service.
      * @param services                 Services that are managed by this executer
+     *
      * @return Instance of the executor service.
      */
     @SneakyThrows

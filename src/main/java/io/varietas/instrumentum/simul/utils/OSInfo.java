@@ -18,6 +18,7 @@ package io.varietas.instrumentum.simul.utils;
 import java.io.IOException;
 import java.util.Locale;
 import lombok.experimental.UtilityClass;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * <h2>OSInfo</h2>
@@ -29,8 +30,11 @@ import lombok.experimental.UtilityClass;
  * @author Michael Rhöse
  * @version 1.0.0.0, 12/05/2018
  */
+@Slf4j
 @UtilityClass
 public class OSInfo {
+
+    private static final String NOT_AVAILABLE = "N/A";
 
     public enum OS {
         WINDOWS,
@@ -42,23 +46,15 @@ public class OSInfo {
         private String version;
 
         public String getVersion() {
-            return version;
+            return this.version;
         }
 
-        public void setVersion(String version) {
+        protected void setVersion(final String version) {
             this.version = version;
         }
     }
 
-    private static OS INSTANCE;
-
-    static {
-        try {
-            INSTANCE = takeRightOS(System.getProperty("os.name"));
-        } catch (IOException ex) {
-            INSTANCE = OS.OTHER;
-        }
-    }
+    private static final OS INSTANCE = takeRightOS(System.getProperty("os.name"));
 
     /**
      * Gets the current OS information as an object which allows the easier access.
@@ -69,27 +65,42 @@ public class OSInfo {
         return INSTANCE;
     }
 
-    protected static OS takeRightOS(final String name) throws IOException {
+    protected static OS takeRightOS(final String name) {
+        OS current;
+
         if (StringUtil.isNullOrEmpty(name)) {
-            throw new IOException("'os.name' not found.");
+            current = OS.OTHER;
+            current.setVersion(NOT_AVAILABLE);
+
+            if (LOGGER.isErrorEnabled()) {
+                LOGGER.error("'os.name' not found.");
+            }
+
+            return current;
         }
 
-        final String osName = name.toLowerCase(Locale.ENGLISH);
-
-        switch (getOsByName(osName)) {
+        switch (getOsByName(name.toLowerCase(Locale.ENGLISH))) {
             case 1:
-                return OS.WINDOWS;
+                current = OS.WINDOWS;
+                break;
             case 2:
-                return OS.UNIX;
+                current = OS.UNIX;
+                break;
             case 3:
-                return OS.MAC;
+                current = OS.MAC;
+                break;
             case 4:
             case 5:
-                return OS.POSIX_UNIX;
+                current = OS.POSIX_UNIX;
+                break;
             case 0:
             default:
-                return OS.OTHER;
+                current = OS.OTHER;
+                break;
         }
+
+        current.setVersion(getOSVersion(current));
+        return current;
     }
 
     private static short getOsByName(final String name) {
@@ -115,5 +126,15 @@ public class OSInfo {
         }
 
         return 0;
+    }
+
+    private static String getOSVersion(final OS current) {
+        String version = System.getProperty("os.version");
+
+        if (current.equals(OS.OTHER) || StringUtil.isNullOrEmpty(version)) {
+            return NOT_AVAILABLE;
+        }
+
+        return version;
     }
 }

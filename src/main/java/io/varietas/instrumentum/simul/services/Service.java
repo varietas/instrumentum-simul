@@ -28,8 +28,7 @@ import lombok.AllArgsConstructor;
 /**
  * <h2>Service</h2>
  * <p>
- * Interface definition for services. This services are tasks that are manageable by {@link java.util.concurrent.ExecutorService} and give you a basic structure for implementing start and stop
- * routines.
+ * Interface definition for services. This services are tasks that are manageable by {@link java.util.concurrent.ExecutorService} and give you a basic structure for implementing start and stop routines.
  *
  * @author Hindol Adhya
  * @author Michael Rhöse

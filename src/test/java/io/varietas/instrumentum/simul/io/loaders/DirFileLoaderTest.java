@@ -69,4 +69,24 @@ public class DirFileLoaderTest {
         Assertions.assertThat(result.getStatusCode()).isEqualTo(200);
         Assertions.assertThat(result.mappedValue()).isPresent();
     }
+
+    @Test
+    public void testPerformLoadingFailsForNotExistingFolder() {
+        DirFileLoader instance = (DirFileLoader) DirFileLoader.of(DataSource.DIR(0, "", "notExisting", "dirLoadertest.txt"));
+
+        FileLoadResult result = instance.performLoading();
+        Assertions.assertThat(result.getStatusCode()).isEqualTo(500);
+        Assertions.assertThat(result.getMessage()).startsWith("FAILED");
+        Assertions.assertThat(result.mappedValue()).isNotPresent();
+    }
+
+    @Test
+    public void testPerformLoadingFailsForNotExistingFile() {
+        DirFileLoader instance = (DirFileLoader) DirFileLoader.of(DataSource.DIR(0, "", System.getProperty("user.home"), "dirLoadertest.txt"));
+
+        FileLoadResult result = instance.performLoading();
+        Assertions.assertThat(result.getStatusCode()).isEqualTo(500);
+        Assertions.assertThat(result.getMessage()).startsWith("FAILED: Couldn't find file");
+        Assertions.assertThat(result.mappedValue()).isNotPresent();
+    }
 }

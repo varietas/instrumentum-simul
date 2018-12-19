@@ -32,6 +32,7 @@ public interface SortedTypedStorage<CODE extends Serializable, TYPE> {
      * Searches for a given entry all available entries. If is no class available an empty list will returned.
      *
      * @param entry Equal entries searched for.
+     *
      * @return
      */
     public List<TYPE> findByTypes(final TYPE entry);
@@ -40,7 +41,8 @@ public interface SortedTypedStorage<CODE extends Serializable, TYPE> {
      * Searches for a given entry and {@link ClassMetaDataExtractionUtils.AnnotationCodes} all available entries. If is no class available an empty list will returned.
      *
      * @param entry Equal entries searched for.
-     * @param code Annotation code.
+     * @param code  Annotation code.
+     *
      * @return
      */
     public List<TYPE> findByTypesAndAnnotationCode(final TYPE entry, final CODE code);

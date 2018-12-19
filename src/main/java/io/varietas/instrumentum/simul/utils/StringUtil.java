@@ -64,6 +64,6 @@ public class StringUtil {
             throw new NullPointerException("Matches cannot be null or empty.");
         }
 
-        return Stream.of(others).anyMatch(other -> one.equals(other));
+        return Stream.of(others).anyMatch(other -> one.contains(other));
     }
 }

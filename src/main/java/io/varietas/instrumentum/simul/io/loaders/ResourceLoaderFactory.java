@@ -24,7 +24,7 @@ import lombok.RequiredArgsConstructor;
 
 /**
  * <h2>ResourceLoaderFactory</h2>
- *
+ * <p>
  * The resource loader factory is the loader factory implementation for resource loading. It is used to mask the instantiation of a specific file loader.
  *
  * @see LoaderFactory

@@ -53,14 +53,13 @@ public class ResourceLoaderFactoryTest {
 
     @BeforeClass
     public static void setUp() throws IOException {
-        Path testFilePath = FOLDER.newFile("dirLoadertest.txt").toPath();
+        testFilePath = FOLDER.newFile("dirLoadertest.txt").toPath();
         DIR_DATA_SOURCE = DataSource.DIR(0, "", testFilePath.getParent().toString(), "dirLoadertest.txt");
     }
 
     /**
      * Test of load method, of class ResourceLoaderFactory.
      */
-    @Ignore
     @Test
     public void testLoadFtp() {
         ResourceLoaderFactory instance = (ResourceLoaderFactory) ResourceLoader.of(this.ftpDataSource);
@@ -73,7 +72,6 @@ public class ResourceLoaderFactoryTest {
     /**
      * Test of load method, of class ResourceLoaderFactory.
      */
-    @Ignore
     @Test
     public void testLoadHttp() {
         ResourceLoaderFactory instance = (ResourceLoaderFactory) ResourceLoader.of(this.httpDataSource);

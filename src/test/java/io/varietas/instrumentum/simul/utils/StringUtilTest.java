@@ -27,9 +27,6 @@ import org.junit.runners.JUnit4;
 @RunWith(JUnit4.class)
 public class StringUtilTest {
 
-    /**
-     * Test of isNullOrEmpty method, of class StringUtil.
-     */
     @Test
     public void testIsNullOrEmpty() {
         Assertions.assertThat(StringUtil.isNullOrEmpty("")).isTrue();
@@ -37,9 +34,6 @@ public class StringUtilTest {
         Assertions.assertThat(StringUtil.isNullOrEmpty("valid")).isFalse();
     }
 
-    /**
-     * Test of isNonNullOrEmpty method, of class StringUtil.
-     */
     @Test
     public void testIsNonNullOrEmpty() {
         Assertions.assertThat(StringUtil.isNonNullOrEmpty("")).isFalse();
@@ -47,4 +41,48 @@ public class StringUtilTest {
         Assertions.assertThat(StringUtil.isNonNullOrEmpty("valid")).isTrue();
     }
 
+    @Test
+    public void testContainsAnyReturnsTrue() {
+        final String one = "This is the test string with fancy 123";
+
+        Assertions.assertThat(StringUtil.containsAny(one, "is")).isTrue();
+        Assertions.assertThat(StringUtil.containsAny(one, "not", "other not", "is")).isTrue();
+    }
+
+    @Test
+    public void testContainsAnyReturnsFalse() {
+        final String one = "This is the test string with fancy 123";
+
+        Assertions.assertThat(StringUtil.containsAny(one, "not", "other not")).isFalse();
+    }
+
+    @Test
+    public void testContainsAnyFailsForNullString() {
+        Assertions.assertThatThrownBy(() -> StringUtil.containsAny(null, "not null"))
+                .isInstanceOf(NullPointerException.class)
+                .hasMessage("String cannot be null or empty.");
+    }
+
+    @Test
+    public void testContainsAnyFailsForEmptyString() {
+        Assertions.assertThatThrownBy(() -> StringUtil.containsAny("", "not null"))
+                .isInstanceOf(NullPointerException.class)
+                .hasMessage("String cannot be null or empty.");
+    }
+
+    @Test
+    public void testContainsAnyFailsForNullMatches() {
+        String[] nullMatches = null;
+        Assertions.assertThatThrownBy(() -> StringUtil.containsAny("not empty", nullMatches))
+                .isInstanceOf(NullPointerException.class)
+                .hasMessage("Matches cannot be null or empty.");
+    }
+
+    @Test
+    public void testContainsAnyFailsForEmptyMatches() {
+        String[] emptyMatches = {};
+        Assertions.assertThatThrownBy(() -> StringUtil.containsAny("not empty", emptyMatches))
+                .isInstanceOf(NullPointerException.class)
+                .hasMessage("Matches cannot be null or empty.");
+    }
 }

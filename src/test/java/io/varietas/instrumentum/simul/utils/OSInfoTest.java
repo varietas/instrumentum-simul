@@ -31,13 +31,7 @@ import org.junit.runners.JUnit4;
 public class OSInfoTest {
 
     private void assertThatAllNamesLeadsToOS(final OSInfo.OS expected, final String... names) {
-        Stream.of(names).forEach(name -> assertThatNameLeadsToOs(() -> {
-            try {
-                return OSInfo.takeRightOS(name).equals(expected);
-            } catch (IOException ex) {
-                throw new RuntimeException("No OS found for '{}'.", ex);
-            }
-        }));
+        Stream.of(names).forEach(name -> assertThatNameLeadsToOs(() -> OSInfo.takeRightOS(name).equals(expected)));
     }
 
     private void assertThatNameLeadsToOs(final Supplier<Boolean> function) {
@@ -55,6 +49,8 @@ public class OSInfoTest {
 
     /**
      * Test of takeRightOS method, of class OSInfo.
+     *
+     * @throws java.lang.Exception
      */
     @Test
     public void testTakeRightOS() throws Exception {
@@ -63,13 +59,20 @@ public class OSInfoTest {
         assertThatAllNamesLeadsToOS(OSInfo.OS.UNIX, "linux", "mpe/ix", "freebsd", "irix", "digital unix", "unix");
         assertThatAllNamesLeadsToOS(OSInfo.OS.MAC, "mac os");
         assertThatAllNamesLeadsToOS(OSInfo.OS.POSIX_UNIX, "sun os", "sunos", "solaris", "hp-ux", "aix");
-        assertThatAllNamesLeadsToOS(OSInfo.OS.OTHER, "any thing else");
+        assertThatAllNamesLeadsToOS(OSInfo.OS.OTHER, "any thing else", null);
     }
 
     @Test
-    public void testExceptionForEmptyName() {
-        Assertions.assertThatThrownBy(() -> OSInfo.takeRightOS(null))
-                .isInstanceOf(IOException.class)
-                .hasMessage("'os.name' not found.");
+    public void testGetOSVersion() throws IOException {
+
+        OSInfo.OS current = OSInfo.getOs();
+        String expected;
+        if (current.equals(OSInfo.OS.OTHER) || StringUtil.isNullOrEmpty(System.getProperty("os.version"))) {
+            expected = "N/A";
+        } else {
+            expected = System.getProperty("os.version");
+        }
+
+        Assertions.assertThat(OSInfo.getOs().getVersion()).isEqualTo(expected);
     }
 }

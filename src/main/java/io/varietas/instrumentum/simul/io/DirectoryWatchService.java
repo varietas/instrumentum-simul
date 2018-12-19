@@ -47,8 +47,7 @@ public interface DirectoryWatchService extends Service {
      * Suppress Exception
      */
     /**
-     * Notifies the implementation of <em>this</em> interface that <code>dirPath</code> should be monitored for file system events. If the changed file matches any of the <code>globPatterns</code>,
-     * <code>listener</code> should be notified.
+     * Notifies the implementation of <em>this</em> interface that <code>dirPath</code> should be monitored for file system events. If the changed file matches any of the <code>globPatterns</code>, <code>listener</code> should be notified.
      *
      * @param listener     The listener.
      * @param dirPath      The directory path.
@@ -62,8 +61,7 @@ public interface DirectoryWatchService extends Service {
      * Suppress Exception
      */
     /**
-     * Notifies the implementation of <em>this</em> interface that <code>dirPath</code> should be monitored for file system events. If the changed file matches any of the <code>globPatterns</code>,
-     * <code>listener</code> should be notified.
+     * Notifies the implementation of <em>this</em> interface that <code>dirPath</code> should be monitored for file system events. If the changed file matches any of the <code>globPatterns</code>, <code>listener</code> should be notified.
      * <p>
      * Possible patterns:
      * <ul>
@@ -86,8 +84,7 @@ public interface DirectoryWatchService extends Service {
      * Suppress Exception
      */
     /**
-     * Notifies the implementation of <em>this</em> interface that <code>dirPath</code> should be monitored for file system events. If the changed file matches any of the <code>globPatterns</code>,
-     * <code>listener</code> should be notified.
+     * Notifies the implementation of <em>this</em> interface that <code>dirPath</code> should be monitored for file system events. If the changed file matches any of the <code>globPatterns</code>, <code>listener</code> should be notified.
      * <p>
      * Possible patterns:
      * <ul>

@@ -28,7 +28,7 @@ import org.apache.commons.io.IOUtils;
 
 /**
  * <h2>HTTPFileLoader</h2>
- *
+ * <p>
  * The HTTP file loader is inspired by the post <a href="http://www.codejava.net/java-se/networking/use-httpurlconnection-to-download-file-from-an-http-url">here</a>.
  *
  * @author Michael Rhöse

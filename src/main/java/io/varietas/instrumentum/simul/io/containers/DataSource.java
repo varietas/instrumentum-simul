@@ -22,9 +22,8 @@ import lombok.experimental.NonFinal;
 
 /**
  * <h2>DataSource</h2>
- *
- * The data source is a container for data repositories located elsewhere. It contains all necessary information to connect to and load files from a repository. The required values depend on the
- * repository type and its settings.
+ * <p>
+ * The data source is a container for data repositories located elsewhere. It contains all necessary information to connect to and load files from a repository. The required values depend on the repository type and its settings.
  *
  * @see io.varietas.instrumentum.simul.io.ResourceLoader
  *
@@ -71,7 +70,7 @@ public class DataSource {
 
     /**
      * <h2>Types</h2>
-     *
+     * <p>
      * Source type for loader instantiation.
      *
      * @see io.varietas.instrumentum.simul.io.ResourceLoader#of(io.varietas.instrumentum.simul.io.containers.DataSource)

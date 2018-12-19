@@ -26,7 +26,7 @@ import lombok.experimental.FieldDefaults;
 
 /**
  * <h2>AbstractLoadResult</h2>
- *
+ * <p>
  * The abstract load result contains the basic properties and functionality of load results.
  *
  * @author Michael Rhöse

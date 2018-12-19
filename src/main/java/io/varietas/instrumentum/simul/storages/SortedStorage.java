@@ -77,10 +77,10 @@ public interface SortedStorage<CODE extends Comparable, TYPE> extends Storage<TY
     Boolean isEmpty(CODE code);
 
     /**
-     * Adds exclusion predictions that are used to prevent the adding of entries that not matches any of the predictions. Every prediction is called for a given entry. If the first matches, the adding
-     * will be skipped.
+     * Adds exclusion predictions that are used to prevent the adding of entries that not matches any of the predictions. Every prediction is called for a given entry. If the first matches, the adding will be skipped.
      *
      * @param exclusion A prediction is used to prevent storing of an entry. If the method returns true, the given entry isn't stored.
+     *
      * @return The instance of the sorted storage for fluent like usage.
      */
     SortedStorage addExclusion(Function<TYPE, Boolean> exclusion);

@@ -19,9 +19,8 @@ import io.varietas.instrumentum.simul.loaders.containers.LoadResult;
 
 /**
  * <h2>Loader</h2>
- *
- * The loader API is used to abstract the loading of anything from anywhere. Simul uses the loader API for handling the resources from different locations. But it is also possible to use it for
- * explicit objects.
+ * <p>
+ * The loader API is used to abstract the loading of anything from anywhere. Simul uses the loader API for handling the resources from different locations. But it is also possible to use it for explicit objects.
  *
  * @author Michael Rhöse
  * @version 1.0.0.0, 11/17/2017

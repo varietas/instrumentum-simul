@@ -20,8 +20,10 @@ import java.util.Objects;
 import java.util.Optional;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NonNull;
+import lombok.ToString;
 import lombok.experimental.FieldDefaults;
 
 /**
@@ -33,6 +35,8 @@ import lombok.experimental.FieldDefaults;
  * @version 1.0.0.0, 05/16/2018
  * @param <TYPE> Generic type of the loading result.
  */
+@ToString
+@EqualsAndHashCode
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 @FieldDefaults(makeFinal = true)
 public abstract class AbstractLoadResult<TYPE> implements LoadResult<TYPE> {

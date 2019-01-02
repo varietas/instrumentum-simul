@@ -17,7 +17,9 @@ package io.varietas.instrumentum.simul.io.loaders;
 
 import io.varietas.instrumentum.simul.io.containers.DataSource;
 import io.varietas.instrumentum.simul.io.containers.FileLoadResult;
+import lombok.extern.slf4j.Slf4j;
 import org.assertj.core.api.Assertions;
+import org.junit.ComparisonFailure;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
@@ -28,6 +30,7 @@ import org.junit.runners.JUnit4;
  * @author Michael Rhöse
  * @version 1.0.0.0, 07/19/2018
  */
+@Slf4j
 @RunWith(JUnit4.class)
 public class HTTPFileLoaderTest {
 
@@ -54,12 +57,18 @@ public class HTTPFileLoaderTest {
      */
     @Test
     public void testPerformLoading() {
-        HTTPFileLoader instance = (HTTPFileLoader) HTTPFileLoader.of(this.dataSource);
+        FileLoadResult result = null;
+        try {
+            HTTPFileLoader instance = (HTTPFileLoader) HTTPFileLoader.of(this.dataSource);
 
-        FileLoadResult result = instance.performLoading();
-        Assertions.assertThat(result.getStatusCode()).isEqualTo(200);
-        Assertions.assertThat(result.getMessage()).isEqualTo("OK");
-        Assertions.assertThat(result.mappedValue()).isPresent();
+            result = instance.performLoading();
+            Assertions.assertThat(result.getStatusCode()).isEqualTo(200);
+            Assertions.assertThat(result.getMessage()).isEqualTo("OK");
+            Assertions.assertThat(result.mappedValue()).isPresent();
+        } catch (ComparisonFailure cf) {
+            LOGGER.error(result.toString());
+            throw cf;
+        }
     }
 
 }

@@ -38,7 +38,7 @@ import lombok.RequiredArgsConstructor;
  * @param <TYPE> Generic type which is stored.
  */
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-public class BasicSortedStorage<CODE extends Comparable, TYPE> implements SortedStorage<CODE, TYPE> {
+public class BasicSortedStorage<CODE extends Comparable<?>, TYPE> implements SortedStorage<CODE, TYPE> {
 
     protected final Map<CODE, List<TYPE>> storage;
     protected final List<Function<TYPE, Boolean>> exclusionPredictions = new ArrayList<>();
@@ -140,7 +140,7 @@ public class BasicSortedStorage<CODE extends Comparable, TYPE> implements Sorted
     }
 
     @Override
-    public final SortedStorage addExclusion(final Function<TYPE, Boolean> exclusion) {
+    public final SortedStorage<CODE, TYPE> addExclusion(final Function<TYPE, Boolean> exclusion) {
         this.exclusionPredictions.add(exclusion);
         return this;
     }
@@ -153,13 +153,14 @@ public class BasicSortedStorage<CODE extends Comparable, TYPE> implements Sorted
      *
      * @return
      */
-    public static <CODE extends Comparable> SortedStorage of(final CODE... codes) {
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    public static <CODE extends Comparable<?>> SortedStorage<CODE, CODE> of(final CODE... codes) {
 
         if (Objects.isNull(codes) || (codes.length == 0)) {
             throw new NullPointerException("Sorted storages requires codes for sorting entities.");
         }
 
-        final Map storage = Arrays.asList(codes)
+        final Map<CODE, ?> storage = Arrays.asList(codes)
                 .stream()
                 .collect(Collectors.toMap(code -> code, code -> new ArrayList<>()));
 

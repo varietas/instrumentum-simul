@@ -56,6 +56,7 @@ public class HTTPFileLoaderTest {
      * Test of performLoading method, of class HTTPFileLoader.
      */
     @Test
+    @SuppressWarnings({"null", "rawtypes", "unchecked"})
     public void testPerformLoading() {
         FileLoadResult result = null;
         try {

@@ -41,12 +41,12 @@ public class BasicUnsortedStorage<TYPE> implements UnsortedStorage<TYPE> {
 
     private final Set<TYPE> storage;
 
-    public static final UnsortedStorage of() {
+    public static final <TYPE> UnsortedStorage<TYPE> of() {
         return BasicUnsortedStorage.of(0);
     }
 
-    public static final UnsortedStorage of(int listSize) {
-        return new BasicUnsortedStorage(new HashSet<>(listSize));
+    public static final <TYPE> UnsortedStorage<TYPE> of(int listSize) {
+        return new BasicUnsortedStorage<>(new HashSet<>(listSize));
     }
 
     /**

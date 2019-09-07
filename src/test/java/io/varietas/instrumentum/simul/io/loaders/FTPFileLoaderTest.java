@@ -29,6 +29,7 @@ import org.junit.runners.JUnit4;
  * @version 1.0.0.0, 07/19/2018
  */
 @RunWith(JUnit4.class)
+@SuppressWarnings({"rawtypes", "unchecked"})
 public class FTPFileLoaderTest {
 
     private final DataSource dataSource;

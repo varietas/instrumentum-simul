@@ -41,7 +41,7 @@ import lombok.extern.slf4j.Slf4j;
 public class ServiceExecutor {
 
     private static ScheduledExecutorService scheduledExecutorService;
-    private final List<Tuple2<Service, ScheduledFuture>> services;
+    private final List<Tuple2<Service, ScheduledFuture<?>>> services;
 
     /**
      * Builder method to create a service executer instance by a list of services. The thread pool size is equals to number of given services.
@@ -64,6 +64,7 @@ public class ServiceExecutor {
      * @return Instance of the executor service.
      */
     @SneakyThrows
+    @SuppressWarnings({"rawtypes", "unchecked"})
     public static ServiceExecutor of(final ScheduledExecutorService scheduledExecutorService, final List<Service> services) {
 
         if (Objects.isNull(services) || services.isEmpty()) {
@@ -89,7 +90,7 @@ public class ServiceExecutor {
      * @param service Service that has to be started.
      */
     public void startService(final Service service) {
-        final Tuple2<Service, ScheduledFuture> container = this.findServiceContainer(service, "START");
+        final Tuple2<Service, ScheduledFuture<?>> container = this.findServiceContainer(service, "START");
 
         if (Objects.nonNull(container.getV2())) {
             LOGGER.debug("Service '{}' already running.", service.configuration().serviceName);
@@ -106,7 +107,7 @@ public class ServiceExecutor {
      * @param service Service that has to be stopped.
      */
     public void stopService(final Service service) {
-        final Tuple2<Service, ScheduledFuture> container = this.findServiceContainer(service, "STOP");
+        final Tuple2<Service, ScheduledFuture<?>> container = this.findServiceContainer(service, "STOP");
 
         if (Objects.isNull(container.getV2())) {
             LOGGER.debug("Service '{}' already stopped.", container.getV1().configuration().serviceName);
@@ -116,7 +117,7 @@ public class ServiceExecutor {
         container.getV2().cancel(container.getV1().configuration().shutdownNow);
     }
 
-    private Tuple2<Service, ScheduledFuture> findServiceContainer(final Service service, final String mode) {
+    private Tuple2<Service, ScheduledFuture<?>> findServiceContainer(final Service service, final String mode) {
         final String name = service.getClass().getName();
         return this.services.stream()
                 .filter(serv -> serv.getClass().getName().equals(name))

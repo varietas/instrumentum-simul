@@ -16,7 +16,6 @@
 package io.varietas.instrumentum.simul.storages;
 
 import java.util.Arrays;
-import java.util.Collections;
 import org.assertj.core.api.Assertions;
 import org.junit.Before;
 import org.junit.Test;
@@ -38,6 +37,7 @@ public class BasicSortedStorageTest {
 
     @Test
     public void testFactoryMethodFails() {
+
         Assertions.assertThatThrownBy(() -> BasicSortedStorage.of(null))
                 .isInstanceOf(NullPointerException.class)
                 .hasMessage("Sorted storages requires codes for sorting entities.");
@@ -180,6 +180,7 @@ public class BasicSortedStorageTest {
 
     @Test
     public void testStoreNullEntryFails() {
+
         Assertions.assertThatThrownBy(() -> this.instance.store(null, 0))
                 .hasMessage("Value(s) cannot be stored for key 0.")
                 .isInstanceOf(NullPointerException.class);

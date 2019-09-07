@@ -48,7 +48,7 @@ public abstract class AbstractLoadResult<TYPE> implements LoadResult<TYPE> {
     @NonNull
     protected String message;
 
-    private Object value;
+    private TYPE value;
 
     @Override
     public Optional<TYPE> mappedValue() {
@@ -57,6 +57,6 @@ public abstract class AbstractLoadResult<TYPE> implements LoadResult<TYPE> {
             return Optional.empty();
         }
 
-        return Optional.of((TYPE) this.value);
+        return Optional.of(this.value);
     }
 }

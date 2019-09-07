@@ -29,7 +29,7 @@ import java.util.function.Function;
  * @param <CODE> Generic code type.
  * @param <TYPE> Generic type for the value which is stored.
  */
-public interface SortedStorage<CODE extends Comparable, TYPE> extends Storage<TYPE> {
+public interface SortedStorage<CODE extends Comparable<?>, TYPE> extends Storage<TYPE> {
 
     /**
      * Stores a class in the storage. Returns -1 if the class is not stored otherwise the current number of stored classes will be returned.
@@ -83,5 +83,5 @@ public interface SortedStorage<CODE extends Comparable, TYPE> extends Storage<TY
      *
      * @return The instance of the sorted storage for fluent like usage.
      */
-    SortedStorage addExclusion(Function<TYPE, Boolean> exclusion);
+    SortedStorage<CODE, TYPE> addExclusion(Function<TYPE, Boolean> exclusion);
 }

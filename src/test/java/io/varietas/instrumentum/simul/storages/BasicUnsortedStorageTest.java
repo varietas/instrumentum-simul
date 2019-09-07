@@ -28,6 +28,7 @@ import org.junit.runners.JUnit4;
  * @author Michael Rhöse
  */
 @RunWith(JUnit4.class)
+@SuppressWarnings({"rawtypes", "unchecked"})
 public class BasicUnsortedStorageTest {
 
     /**

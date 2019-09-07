@@ -15,35 +15,22 @@
  */
 package io.varietas.instrumentum.simul.io.utils;
 
-import io.varietas.instrumentum.simul.TestConstants;
-import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.PathMatcher;
 import java.util.HashSet;
 import java.util.Set;
 import org.assertj.core.api.Assertions;
-import org.junit.BeforeClass;
-import org.junit.ClassRule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
-import org.junit.runner.RunWith;
-import org.junit.runners.JUnit4;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 /**
  *
  * @author Michael Rhöse
  */
-@RunWith(JUnit4.class)
 public class FileUtilTest {
 
-    @ClassRule
-    public static final TemporaryFolder FOLDER = new TemporaryFolder();
-    private static Path PATH;
-
-    @BeforeClass
-    public static void setUp() throws IOException {
-        PATH = FOLDER.newFolder().toPath();
-    }
+    @TempDir
+    public static Path FOLDER;
 
     /**
      * Test of matcherForGlobExpression method, of class FileUtil.
@@ -51,8 +38,8 @@ public class FileUtilTest {
     @Test
     public void testMatcherForGlobExpressionTrue() {
 
-        PathMatcher result = FileUtil.matcherForGlobExpression(PATH.toFile().getPath());
-        Assertions.assertThat(FileUtil.matches(PATH, result)).isTrue();
+        PathMatcher result = FileUtil.matcherForGlobExpression(FOLDER.toFile().getPath());
+        Assertions.assertThat(FileUtil.matches(FOLDER, result)).isTrue();
     }
 
     /**
@@ -62,7 +49,7 @@ public class FileUtilTest {
     public void testMatcherForGlobExpressionFalse() {
 
         PathMatcher result = FileUtil.matcherForGlobExpression("/temp");
-        Assertions.assertThat(FileUtil.matches(PATH, result)).isFalse();
+        Assertions.assertThat(FileUtil.matches(FOLDER, result)).isFalse();
     }
 
     /**
@@ -71,11 +58,11 @@ public class FileUtilTest {
     @Test
     public void testMatches() {
 
-        PathMatcher result = FileUtil.matcherForGlobExpression(PATH.toString());
-        Assertions.assertThat(FileUtil.matches(PATH, result)).isTrue();
+        PathMatcher result = FileUtil.matcherForGlobExpression(FOLDER.toString());
+        Assertions.assertThat(FileUtil.matches(FOLDER, result)).isTrue();
 
         result = FileUtil.matcherForGlobExpression("/temp");
-        Assertions.assertThat(FileUtil.matches(PATH, result)).isFalse();
+        Assertions.assertThat(FileUtil.matches(FOLDER, result)).isFalse();
     }
 
     /**
@@ -91,10 +78,10 @@ public class FileUtilTest {
             }
         };
 
-        Assertions.assertThat(FileUtil.matchesAny(PATH, patterns)).isFalse();
+        Assertions.assertThat(FileUtil.matchesAny(FOLDER, patterns)).isFalse();
 
-        patterns.add(FileUtil.matcherForGlobExpression(PATH.toString()));
+        patterns.add(FileUtil.matcherForGlobExpression(FOLDER.toString()));
 
-        Assertions.assertThat(FileUtil.matchesAny(PATH, patterns)).isTrue();
+        Assertions.assertThat(FileUtil.matchesAny(FOLDER, patterns)).isTrue();
     }
 }

@@ -15,14 +15,14 @@
  */
 package io.varietas.instrumentum.simul.io.containers;
 
-import io.varietas.instrumentum.simul.io.containers.Tuple2;
-import io.varietas.instrumentum.simul.io.containers.TupleBuilder;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
+
 /**
  *
  * @author Michael Rhöse
  */
+@SuppressWarnings("rawtypes")
 public class TupleBuilderTest {
 
     /**

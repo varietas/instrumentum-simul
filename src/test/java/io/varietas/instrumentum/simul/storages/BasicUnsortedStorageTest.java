@@ -19,15 +19,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import org.assertj.core.api.Assertions;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.JUnit4;
+import org.junit.jupiter.api.Test;
 
 /**
  *
  * @author Michael Rhöse
  */
-@RunWith(JUnit4.class)
 @SuppressWarnings({"rawtypes", "unchecked"})
 public class BasicUnsortedStorageTest {
 

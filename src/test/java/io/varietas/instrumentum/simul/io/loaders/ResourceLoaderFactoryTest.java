@@ -19,15 +19,12 @@ import io.varietas.instrumentum.simul.io.ResourceLoader;
 import io.varietas.instrumentum.simul.io.containers.DataSource;
 import io.varietas.instrumentum.simul.io.containers.FileLoadResult;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import org.assertj.core.api.Assertions;
-import org.junit.BeforeClass;
-import org.junit.ClassRule;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
-import org.junit.runner.RunWith;
-import org.junit.runners.JUnit4;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 /**
  * <h2>ResourceLoaderFactoryTest</h2>
@@ -35,7 +32,6 @@ import org.junit.runners.JUnit4;
  * @author Michael Rhöse
  * @version 1.0.0.0, 08/20/2018
  */
-@RunWith(JUnit4.class)
 public class ResourceLoaderFactoryTest {
 
     private static Path testFilePath;
@@ -43,17 +39,22 @@ public class ResourceLoaderFactoryTest {
     private final DataSource httpDataSource;
     private static DataSource DIR_DATA_SOURCE;
 
-    @ClassRule
-    public static final TemporaryFolder FOLDER = new TemporaryFolder();
+    @TempDir
+    static Path FOLDER;
 
     public ResourceLoaderFactoryTest() {
         this.ftpDataSource = DataSource.FTP(0, "", "speedtest.tele2.net", "100KB.zip");
         this.httpDataSource = DataSource.HTTP(0, "", "http://speedtest.tele2.net", "100KB.zip");;
     }
 
-    @BeforeClass
+    @BeforeAll
     public static void setUp() throws IOException {
-        testFilePath = FOLDER.newFile("dirLoadertest.txt").toPath();
+        testFilePath = FOLDER.resolve("dirLoadertest.txt");
+
+        if (!Files.exists(testFilePath)) {
+            Files.createFile(testFilePath);
+        }
+
         DIR_DATA_SOURCE = DataSource.DIR(0, "", testFilePath.getParent().toString(), "dirLoadertest.txt");
     }
 

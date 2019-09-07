@@ -17,8 +17,8 @@ package io.varietas.instrumentum.simul.storages;
 
 import java.util.Arrays;
 import org.assertj.core.api.Assertions;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  *
@@ -30,7 +30,7 @@ public class BasicSortedStorageTest {
 
     private SortedStorage<Integer, Integer> instance;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         this.instance = BasicSortedStorage.of(CODES);
     }

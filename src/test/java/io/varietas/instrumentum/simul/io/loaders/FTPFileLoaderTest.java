@@ -18,9 +18,7 @@ package io.varietas.instrumentum.simul.io.loaders;
 import io.varietas.instrumentum.simul.io.containers.DataSource;
 import io.varietas.instrumentum.simul.io.containers.FileLoadResult;
 import org.assertj.core.api.Assertions;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.JUnit4;
+import org.junit.jupiter.api.Test;
 
 /**
  * <h2>FTPFileLoaderTest</h2>
@@ -28,7 +26,6 @@ import org.junit.runners.JUnit4;
  * @author Michael Rhöse
  * @version 1.0.0.0, 07/19/2018
  */
-@RunWith(JUnit4.class)
 @SuppressWarnings({"rawtypes", "unchecked"})
 public class FTPFileLoaderTest {
 

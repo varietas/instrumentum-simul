@@ -13,14 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.varietas.instrumentum.simul.io.container;
+package io.varietas.instrumentum.simul.io.containers;
 
 import lombok.NoArgsConstructor;
 
 /**
  * <h2>TupleBuilder</h2>
  * <p>
- * {description}
+ * The tuple builder represents a facade-like mechanism for creating n-tuple containers.
  *
  * @author Michael Rhöse
  * @version 1.0.0.0, 08/23/2018
@@ -28,10 +28,29 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class TupleBuilder {
 
+    /**
+     * Factory method for creation of a two-tuple container with one parameter. The second parameter will be null for lazy initializing.
+     *
+     * @param <VALUE1> Generic type of value one
+     * @param <VALUE2> Generic type of value two
+     * @param v1       Given value one for the tuple
+     *
+     * @return A valid {@link Tuple2} container with one value
+     */
     public static <VALUE1, VALUE2> Tuple2<VALUE1, VALUE2> of(final VALUE1 v1) {
         return new Tuple2<>(v1, null);
     }
 
+    /**
+     * Factory method for creation of a two-tuple container with two parameters.
+     *
+     * @param <VALUE1> Generic type of value one
+     * @param <VALUE2> Generic type of value two
+     * @param v1       Given value one for the tuple
+     * @param v2       Given value two for the tuple
+     *
+     * @return A valid {@link Tuple2} container with two values
+     */
     public static <VALUE1, VALUE2> Tuple2<VALUE1, VALUE2> of(final VALUE1 v1, final VALUE2 v2) {
         return new Tuple2<>(v1, v2);
     }

@@ -15,8 +15,8 @@
  */
 package io.varietas.instrumentum.simul.services;
 
-import io.varietas.instrumentum.simul.io.container.Tuple2;
-import io.varietas.instrumentum.simul.io.container.TupleBuilder;
+import io.varietas.instrumentum.simul.io.containers.Tuple2;
+import io.varietas.instrumentum.simul.io.containers.TupleBuilder;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.Executors;

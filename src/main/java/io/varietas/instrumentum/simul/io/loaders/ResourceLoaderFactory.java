@@ -15,9 +15,9 @@
  */
 package io.varietas.instrumentum.simul.io.loaders;
 
-import io.varietas.instrumentum.simul.loaders.Loader;
 import io.varietas.instrumentum.simul.io.containers.DataSource;
 import io.varietas.instrumentum.simul.io.containers.FileLoadResult;
+import io.varietas.instrumentum.simul.loaders.Loader;
 import io.varietas.instrumentum.simul.loaders.LoaderFactory;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
@@ -35,18 +35,18 @@ import lombok.RequiredArgsConstructor;
  * @version 1.0.0.0, 11/17/2017
  */
 @RequiredArgsConstructor(staticName = "of")
-public class ResourceLoaderFactory implements LoaderFactory<FileLoadResult> {
+public class ResourceLoaderFactory implements LoaderFactory<FileLoadResult<?>> {
 
     private final DataSource source;
 
     @Override
-    public FileLoadResult load() {
+    public FileLoadResult<?> load() {
 
         if (Objects.isNull(this.source)) {
             throw new NullPointerException("Source is required and must be configured before calling #load().");
         }
 
-        Loader<FileLoadResult> loader;
+        Loader<FileLoadResult<?>> loader;
 
         switch (source.getType()) {
             case FTP:

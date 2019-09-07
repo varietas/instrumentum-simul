@@ -13,18 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.varietas.instrumentum.simul.io.container;
+package io.varietas.instrumentum.simul.io.containers;
 
+import io.varietas.instrumentum.simul.io.containers.Tuple2;
+import io.varietas.instrumentum.simul.io.containers.TupleBuilder;
 import org.assertj.core.api.Assertions;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.JUnit4;
-
+import org.junit.jupiter.api.Test;
 /**
  *
  * @author Michael Rhöse
  */
-@RunWith(JUnit4.class)
 public class TupleBuilderTest {
 
     /**

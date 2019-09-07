@@ -64,7 +64,7 @@ public class DataSource {
      * Password for required authentication.
      */
     @NonFinal
-    @Setter()
+    @Setter
     @Accessors(chain = true)
     String password;
 

@@ -15,7 +15,6 @@
  */
 package io.varietas.instrumentum.simul.utils;
 
-import java.io.IOException;
 import java.util.Locale;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;

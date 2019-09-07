@@ -23,7 +23,6 @@ import io.varietas.instrumentum.simul.utils.StringUtil;
 import java.io.IOException;
 import java.util.Optional;
 import java.util.stream.Stream;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPFile;
@@ -34,14 +33,13 @@ import org.apache.commons.net.ftp.FTPFile;
  * @author Michael Rhöse
  * @version 1.0.0.0, 11/17/2017
  */
-@Slf4j
-final class FTPFileLoader extends AbstractLoader<FileLoadResult> {
+final class FTPFileLoader extends AbstractLoader<FileLoadResult<?>> {
 
     private FTPFileLoader(final DataSource source) {
         super(source);
     }
 
-    public static Loader of(final DataSource source) {
+    public static Loader<FileLoadResult<?>> of(final DataSource source) {
         return new FTPFileLoader(source);
     }
 
@@ -51,7 +49,7 @@ final class FTPFileLoader extends AbstractLoader<FileLoadResult> {
     }
 
     @Override
-    protected FileLoadResult performLoading() {
+    protected FileLoadResult<?> performLoading() {
         FileLoadResult.FileLoadResultBuilder<byte[]> resultBuilder = FileLoadResult.of();
 
         final FTPClient client = new FTPClient();
@@ -91,8 +89,11 @@ final class FTPFileLoader extends AbstractLoader<FileLoadResult> {
         } finally {
             try {
                 client.disconnect();
-            } catch (IOException e) {
-                LOGGER.error("Couldn't close connection to ftp server.");
+            } catch (IOException ex) {
+                resultBuilder
+                        .name(this.source.getName())
+                        .statusCode(500)
+                        .message("FAILED: Couldn't close connection to ftp server. " + ex.getLocalizedMessage());
             }
         }
 

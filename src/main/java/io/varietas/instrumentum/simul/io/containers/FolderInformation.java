@@ -22,8 +22,7 @@ import java.util.List;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
-import lombok.Singular;
+import lombok.Value;
 
 /**
  * <h2>FolderInformation</h2>
@@ -31,7 +30,7 @@ import lombok.Singular;
  * @author Michael Rhöse
  * @version 1.0.0.0, 10/1/2017
  */
-@Data
+@Value
 @Builder
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class FolderInformation {
@@ -40,7 +39,6 @@ public class FolderInformation {
 
     WatchService watchService;
 
-    @Singular
     List<WatchEvent.Kind<?>> watchEventKindes;
 
     /**

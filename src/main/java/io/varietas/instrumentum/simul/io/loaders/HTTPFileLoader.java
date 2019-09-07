@@ -35,13 +35,13 @@ import org.apache.commons.io.IOUtils;
  * @version 1.0.0.0, 11/19/2017
  */
 @Slf4j
-final class HTTPFileLoader extends AbstractLoader<FileLoadResult> {
+final class HTTPFileLoader extends AbstractLoader<FileLoadResult<?>> {
 
     private HTTPFileLoader(final DataSource source) {
         super(source);
     }
 
-    public static Loader of(final DataSource source) {
+    public static Loader<FileLoadResult<?>> of(final DataSource source) {
         return new HTTPFileLoader(source);
     }
 
@@ -51,7 +51,7 @@ final class HTTPFileLoader extends AbstractLoader<FileLoadResult> {
     }
 
     @Override
-    protected FileLoadResult performLoading() {
+    protected FileLoadResult<?> performLoading() {
 
         final FileLoadResult.FileLoadResultBuilder<byte[]> resultBuilder = FileLoadResult.of();
         HttpURLConnection httpConn = null;

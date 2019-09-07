@@ -20,9 +20,11 @@ import io.varietas.instrumentum.simul.io.containers.FileLoadResult;
 import io.varietas.instrumentum.simul.loaders.AbstractLoader;
 import io.varietas.instrumentum.simul.loaders.Loader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Objects;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
@@ -34,13 +36,13 @@ import org.apache.commons.io.IOUtils;
  * @version 1.0.0.0, 11/19/2017
  */
 @Slf4j
-final class DirFileLoader extends AbstractLoader<FileLoadResult> {
+final class DirFileLoader extends AbstractLoader<FileLoadResult<?>> {
 
     private DirFileLoader(final DataSource source) {
         super(source);
     }
 
-    public static Loader of(final DataSource source) {
+    public static Loader<FileLoadResult<?>> of(final DataSource source) {
         return new DirFileLoader(source);
     }
 
@@ -50,9 +52,10 @@ final class DirFileLoader extends AbstractLoader<FileLoadResult> {
     }
 
     @Override
-    protected FileLoadResult performLoading() {
+    protected FileLoadResult<?> performLoading() {
 
         FileLoadResult.FileLoadResultBuilder<byte[]> resultBuilder = FileLoadResult.of();
+        InputStream stream = null;
         try {
             Optional<Path> target = Files.list(Paths.get(this.source.getPath()))
                     .filter(path -> path.getFileName().endsWith(this.source.getTarget()))
@@ -62,7 +65,9 @@ final class DirFileLoader extends AbstractLoader<FileLoadResult> {
                 throw new NullPointerException("Couldn't find file '" + this.source.getTarget() + "' on repository '" + this.source.getId() + "'.");
             }
 
-            byte[] file = IOUtils.toByteArray(Files.newInputStream(target.get()));
+            stream = Files.newInputStream(target.get());
+
+            byte[] file = IOUtils.toByteArray(stream);
 
             resultBuilder
                     .name(this.source.getTarget())
@@ -75,6 +80,17 @@ final class DirFileLoader extends AbstractLoader<FileLoadResult> {
                     .name(this.source.getTarget())
                     .statusCode(500)
                     .message("FAILED: " + ex.getLocalizedMessage());
+        } finally {
+            try {
+                if (Objects.nonNull(stream)) {
+                    stream.close();
+                }
+            } catch (IOException ex) {
+                resultBuilder
+                        .name(this.source.getTarget())
+                        .statusCode(500)
+                        .message("FAILED: Couldn't close connection to ftp server. " + ex.getLocalizedMessage());
+            }
         }
 
         return resultBuilder.build();

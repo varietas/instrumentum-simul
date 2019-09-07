@@ -18,14 +18,12 @@ package io.varietas.instrumentum.simul.io.loaders;
 import io.varietas.instrumentum.simul.io.containers.DataSource;
 import io.varietas.instrumentum.simul.io.containers.FileLoadResult;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import org.assertj.core.api.Assertions;
-import org.junit.BeforeClass;
-import org.junit.ClassRule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
-import org.junit.runner.RunWith;
-import org.junit.runners.JUnit4;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 /**
  * <h2>DirFileLoaderTest</h2>
@@ -33,17 +31,21 @@ import org.junit.runners.JUnit4;
  * @author Michael Rhöse
  * @version 1.0.0.0, 07/19/2018
  */
-@RunWith(JUnit4.class)
 public class DirFileLoaderTest {
 
-    private static DataSource DATA_SOURCE;
+    private DataSource DATA_SOURCE;
 
-    @ClassRule
-    public static final TemporaryFolder FOLDER = new TemporaryFolder();
+    @TempDir
+    static Path FOLDER;
 
-    @BeforeClass
-    public static void setUp() throws IOException {
-        Path testFilePath = FOLDER.newFile("dirLoadertest.txt").toPath();
+    @BeforeEach
+    public void setUp() throws IOException {
+        Path testFilePath = FOLDER.resolve("dirLoadertest.txt");
+
+        if (!Files.exists(testFilePath)) {
+            Files.createFile(testFilePath);
+        }
+
         DATA_SOURCE = DataSource.DIR(0, "", testFilePath.getParent().toString(), "dirLoadertest.txt");
     }
 
@@ -58,9 +60,7 @@ public class DirFileLoaderTest {
         Assertions.assertThat(result).isEqualTo(expResult);
     }
 
-    /**
-     * Test of performLoading method, of class DirFileLoader.
-     */
+    @SuppressWarnings({"rawtypes", "unchecked"})
     @Test
     public void testPerformLoading() {
         DirFileLoader instance = (DirFileLoader) DirFileLoader.of(DATA_SOURCE);
@@ -70,6 +70,7 @@ public class DirFileLoaderTest {
         Assertions.assertThat(result.mappedValue()).isPresent();
     }
 
+    @SuppressWarnings({"rawtypes", "unchecked"})
     @Test
     public void testPerformLoadingFailsForNotExistingFolder() {
         DirFileLoader instance = (DirFileLoader) DirFileLoader.of(DataSource.DIR(0, "", "notExisting", "dirLoadertest.txt"));
@@ -80,6 +81,7 @@ public class DirFileLoaderTest {
         Assertions.assertThat(result.mappedValue()).isNotPresent();
     }
 
+    @SuppressWarnings({"rawtypes", "unchecked"})
     @Test
     public void testPerformLoadingFailsForNotExistingFile() {
         DirFileLoader instance = (DirFileLoader) DirFileLoader.of(DataSource.DIR(0, "", System.getProperty("user.home"), "dirLoadertest.txt"));

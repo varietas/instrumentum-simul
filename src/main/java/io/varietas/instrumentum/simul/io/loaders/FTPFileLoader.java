@@ -21,6 +21,7 @@ import io.varietas.instrumentum.simul.loaders.AbstractLoader;
 import io.varietas.instrumentum.simul.loaders.Loader;
 import io.varietas.instrumentum.simul.utils.StringUtil;
 import java.io.IOException;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Stream;
 import org.apache.commons.io.IOUtils;
@@ -45,14 +46,14 @@ final class FTPFileLoader extends AbstractLoader<FileLoadResult<?>> {
 
     @Override
     protected FileLoadResult<?> performLoading() {
-        FileLoadResult.FileLoadResultBuilder<byte[]> resultBuilder = FileLoadResult.of();
 
+        final FileLoadResult.FileLoadResultBuilder<byte[]> resultBuilder = FileLoadResult.of();
         final FTPClient client = new FTPClient();
 
         try {
             client.connect(this.source.getPath());
 
-            if (StringUtil.nonBlank(this.source.getUsername())) {
+            if (Objects.equals(this.source.getType(), DataSource.Types.SFTP) && StringUtil.nonBlank(this.source.getUsername())) {
                 client.login(this.source.getUsername(), this.source.getPassword());
             } else {
                 client.login("anonymous", "");
@@ -60,7 +61,7 @@ final class FTPFileLoader extends AbstractLoader<FileLoadResult<?>> {
 
             client.enterLocalPassiveMode();
 
-            Optional<FTPFile> remoteFile = Stream.of(client.listFiles()).filter(file -> file.getName().equals(this.source.getTarget())).findFirst();
+            final Optional<FTPFile> remoteFile = Stream.of(client.listFiles()).filter(file -> file.getName().equals(this.source.getTarget())).findFirst();
 
             if (!remoteFile.isPresent()) {
                 throw new NullPointerException("Couldn't find file '" + this.source.getTarget() + "' on repository '" + this.source.getId() + "'.");

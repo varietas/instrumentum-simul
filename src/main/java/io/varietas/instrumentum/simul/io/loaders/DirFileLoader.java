@@ -49,10 +49,11 @@ final class DirFileLoader extends AbstractLoader<FileLoadResult<?>> {
     @Override
     protected FileLoadResult<?> performLoading() {
 
-        FileLoadResult.FileLoadResultBuilder<byte[]> resultBuilder = FileLoadResult.of();
+        final FileLoadResult.FileLoadResultBuilder<byte[]> resultBuilder = FileLoadResult.of();
         InputStream stream = null;
+
         try {
-            Optional<Path> target = Files.list(Paths.get(this.source.getPath()))
+            final Optional<Path> target = Files.list(Paths.get(this.source.getPath()))
                     .filter(path -> path.getFileName().endsWith(this.source.getTarget()))
                     .findFirst();
 
@@ -62,7 +63,7 @@ final class DirFileLoader extends AbstractLoader<FileLoadResult<?>> {
 
             stream = Files.newInputStream(target.get());
 
-            byte[] file = IOUtils.toByteArray(stream);
+            final byte[] file = IOUtils.toByteArray(stream);
 
             resultBuilder
                     .name(this.source.getTarget())

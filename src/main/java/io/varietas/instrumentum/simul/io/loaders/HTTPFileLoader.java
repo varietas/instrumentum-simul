@@ -21,6 +21,7 @@ import io.varietas.instrumentum.simul.loaders.AbstractLoader;
 import io.varietas.instrumentum.simul.loaders.Loader;
 import java.io.IOException;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Objects;
 import lombok.extern.slf4j.Slf4j;
@@ -51,38 +52,7 @@ final class HTTPFileLoader extends AbstractLoader<FileLoadResult<?>> {
         final FileLoadResult.FileLoadResultBuilder<byte[]> resultBuilder = FileLoadResult.of();
         HttpURLConnection httpConn = null;
         try {
-            URL url = new URL(this.source.getPath());
-
-            httpConn = (HttpURLConnection) url.openConnection();
-            int responseCode = httpConn.getResponseCode();
-
-            if (responseCode == HttpURLConnection.HTTP_OK) {
-                String fileName = "";
-                String disposition = httpConn.getHeaderField("Content-Disposition");
-
-                if (disposition != null) {
-                    int index = disposition.indexOf("filename=");
-                    if (index > 0) {
-                        fileName = disposition.substring(index + 10, disposition.length() - 1);
-                    }
-                } else {
-                    fileName = this.source.getName();
-                }
-
-                byte[] file = IOUtils.toByteArray(httpConn);
-
-                resultBuilder
-                        .statusCode(200)
-                        .name(fileName)
-                        .message("OK")
-                        .value(file);
-            } else {
-                resultBuilder
-                        .statusCode(400)
-                        .name(this.source.getTarget())
-                        .message("No file to download. Server replied HTTP code: " + responseCode);
-            }
-
+            httpConn = test(resultBuilder);
         } catch (IOException ex) {
             resultBuilder
                     .statusCode(500)
@@ -95,5 +65,45 @@ final class HTTPFileLoader extends AbstractLoader<FileLoadResult<?>> {
         }
 
         return resultBuilder.build();
+    }
+
+    private HttpURLConnection test(final FileLoadResult.FileLoadResultBuilder<byte[]> resultBuilder) throws MalformedURLException, IOException {
+
+        final URL url = new URL(this.source.getPath());
+
+        final HttpURLConnection httpConn = (HttpURLConnection) url.openConnection();
+        final int responseCode = httpConn.getResponseCode();
+
+        if (responseCode != HttpURLConnection.HTTP_OK) {
+
+            resultBuilder
+                    .statusCode(400)
+                    .name(this.source.getTarget())
+                    .message("No file to download. Server replied HTTP code: " + responseCode);
+
+            return httpConn;
+        }
+
+        String fileName = "";
+        final String disposition = httpConn.getHeaderField("Content-Disposition");
+
+        if (Objects.nonNull(disposition)) {
+            int index = disposition.indexOf("filename=");
+            if (index > 0) {
+                fileName = disposition.substring(index + 10, disposition.length() - 1);
+            }
+        } else {
+            fileName = this.source.getName();
+        }
+
+        final byte[] file = IOUtils.toByteArray(httpConn);
+
+        resultBuilder
+                .statusCode(200)
+                .name(fileName)
+                .message("OK")
+                .value(file);
+
+        return httpConn;
     }
 }

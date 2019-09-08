@@ -47,11 +47,6 @@ final class DirFileLoader extends AbstractLoader<FileLoadResult<?>> {
     }
 
     @Override
-    public DataSource.Types processedType() {
-        return DataSource.Types.DIR;
-    }
-
-    @Override
     protected FileLoadResult<?> performLoading() {
 
         FileLoadResult.FileLoadResultBuilder<byte[]> resultBuilder = FileLoadResult.of();

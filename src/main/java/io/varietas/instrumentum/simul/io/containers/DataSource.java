@@ -80,7 +80,9 @@ public class DataSource {
      */
     public static enum Types {
         FTP,
+        SFTP,
         HTTP,
+        HTTPS,
         DIR
     }
 
@@ -93,7 +95,7 @@ public class DataSource {
     }
 
     public static DataSource SECURED_HTTP(final int id, final String name, final String path, final String target, final String username, final String password) {
-        return DataSource.of(id, name, path, target, DataSource.Types.HTTP, username, password);
+        return DataSource.of(id, name, path, target, DataSource.Types.HTTPS, username, password);
     }
 
     public static DataSource FTP(final int id, final String name, final String path, final String target) {
@@ -101,6 +103,6 @@ public class DataSource {
     }
 
     public static DataSource SECURED_FTP(final int id, final String name, final String path, final String target, final String username, final String password) {
-        return DataSource.of(id, name, path, target, DataSource.Types.FTP, username, password);
+        return DataSource.of(id, name, path, target, DataSource.Types.SFTP, username, password);
     }
 }

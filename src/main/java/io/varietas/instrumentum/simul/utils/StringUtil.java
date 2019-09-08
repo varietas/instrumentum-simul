@@ -17,7 +17,6 @@ package io.varietas.instrumentum.simul.utils;
 
 import java.util.Objects;
 import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 import lombok.experimental.UtilityClass;
 
 /**
@@ -38,11 +37,11 @@ public class StringUtil {
      *
      * @return True if the given string is null or empty, otherwise false.
      */
-    public static final boolean isNullOrEmpty(final String string) {
+    public static final boolean isBlank(final String string) {
         return Objects.isNull(string) || string.isEmpty();
     }
 
-    public static final boolean isNonNullOrEmpty(final String string) {
+    public static final boolean nonBlank(final String string) {
         return !Objects.isNull(string) && !string.isEmpty();
     }
 
@@ -56,7 +55,7 @@ public class StringUtil {
      * @return True if the first element of the list is contained in the first parameter.
      */
     public boolean containsAny(final String one, final String... others) {
-        if (isNullOrEmpty(one)) {
+        if (isBlank(one)) {
             throw new NullPointerException("String cannot be null or empty.");
         }
 

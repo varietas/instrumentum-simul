@@ -46,11 +46,6 @@ final class HTTPFileLoader extends AbstractLoader<FileLoadResult<?>> {
     }
 
     @Override
-    public DataSource.Types processedType() {
-        return DataSource.Types.HTTP;
-    }
-
-    @Override
     protected FileLoadResult<?> performLoading() {
 
         final FileLoadResult.FileLoadResultBuilder<byte[]> resultBuilder = FileLoadResult.of();

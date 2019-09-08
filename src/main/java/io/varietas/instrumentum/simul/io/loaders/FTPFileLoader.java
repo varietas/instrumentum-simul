@@ -44,11 +44,6 @@ final class FTPFileLoader extends AbstractLoader<FileLoadResult<?>> {
     }
 
     @Override
-    public DataSource.Types processedType() {
-        return DataSource.Types.FTP;
-    }
-
-    @Override
     protected FileLoadResult<?> performLoading() {
         FileLoadResult.FileLoadResultBuilder<byte[]> resultBuilder = FileLoadResult.of();
 
@@ -57,7 +52,7 @@ final class FTPFileLoader extends AbstractLoader<FileLoadResult<?>> {
         try {
             client.connect(this.source.getPath());
 
-            if (StringUtil.isNonNullOrEmpty(this.source.getUsername())) {
+            if (StringUtil.nonBlank(this.source.getUsername())) {
                 client.login(this.source.getUsername(), this.source.getPassword());
             } else {
                 client.login("anonymous", "");

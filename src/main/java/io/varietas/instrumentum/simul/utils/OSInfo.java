@@ -22,7 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 /**
  * <h2>OSInfo</h2>
  * <p>
- * This class is container for working with OS information easier.
+ * This class is a container for working with OS information easier.
  * <p>
  * Inspired by <a href="https://memorynotfound.com/detect-os-name-version-java/">Diggs Programming - Loves Java</a>
  *
@@ -67,7 +67,7 @@ public class OSInfo {
     protected static OS takeRightOS(final String name) {
         OS current;
 
-        if (StringUtil.isNullOrEmpty(name)) {
+        if (StringUtil.isBlank(name)) {
             current = OS.OTHER;
             current.setVersion(NOT_AVAILABLE);
 
@@ -104,23 +104,25 @@ public class OSInfo {
 
     private static short getOsByName(final String name) {
 
-        if (name.contains("windows")) {
+        final String usedName = name.toLowerCase();
+
+        if (usedName.contains("windows")) {
             return 1;
         }
 
-        if (StringUtil.containsAny(name, "linux", "mpe/ix", "freebsd", "irix", "digital unix", "unix")) {
+        if (StringUtil.containsAny(usedName, "linux", "mpe/ix", "freebsd", "irix", "digital unix", "unix")) {
             return 2;
         }
 
-        if (name.contains("mac os")) {
+        if (usedName.contains("mac os")) {
             return 3;
         }
 
-        if (StringUtil.containsAny(name, "sun os", "sunos", "solaris")) {
+        if (StringUtil.containsAny(usedName, "sun os", "sunos", "solaris")) {
             return 4;
         }
 
-        if (StringUtil.containsAny(name, "hp-ux", "aix")) {
+        if (StringUtil.containsAny(usedName, "hp-ux", "aix")) {
             return 5;
         }
 
@@ -130,7 +132,7 @@ public class OSInfo {
     private static String getOSVersion(final OS current) {
         String version = System.getProperty("os.version");
 
-        if (current.equals(OS.OTHER) || StringUtil.isNullOrEmpty(version)) {
+        if (current.equals(OS.OTHER) || StringUtil.isBlank(version)) {
             return NOT_AVAILABLE;
         }
 

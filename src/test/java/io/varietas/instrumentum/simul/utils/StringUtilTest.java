@@ -26,16 +26,16 @@ public class StringUtilTest {
 
     @Test
     public void testIsNullOrEmpty() {
-        Assertions.assertThat(StringUtil.isNullOrEmpty("")).isTrue();
-        Assertions.assertThat(StringUtil.isNullOrEmpty(null)).isTrue();
-        Assertions.assertThat(StringUtil.isNullOrEmpty("valid")).isFalse();
+        Assertions.assertThat(StringUtil.isBlank("")).isTrue();
+        Assertions.assertThat(StringUtil.isBlank(null)).isTrue();
+        Assertions.assertThat(StringUtil.isBlank("valid")).isFalse();
     }
 
     @Test
     public void testIsNonNullOrEmpty() {
-        Assertions.assertThat(StringUtil.isNonNullOrEmpty("")).isFalse();
-        Assertions.assertThat(StringUtil.isNonNullOrEmpty(null)).isFalse();
-        Assertions.assertThat(StringUtil.isNonNullOrEmpty("valid")).isTrue();
+        Assertions.assertThat(StringUtil.nonBlank("")).isFalse();
+        Assertions.assertThat(StringUtil.nonBlank(null)).isFalse();
+        Assertions.assertThat(StringUtil.nonBlank("valid")).isTrue();
     }
 
     @Test

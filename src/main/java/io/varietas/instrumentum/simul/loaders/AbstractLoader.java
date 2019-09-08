@@ -33,7 +33,9 @@ public abstract class AbstractLoader<RESULT_TYPE extends LoadResult> implements 
     @Getter
     protected final DataSource source;
 
-    public abstract DataSource.Types processedType();
+    public DataSource.Types processedType() {
+        return this.source.getType();
+    }
 
     @Override
     public final RESULT_TYPE load() {

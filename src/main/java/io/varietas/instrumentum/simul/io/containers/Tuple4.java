@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Michael Rhöse.
+ * Copyright 2019 Michael Rhöse.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,29 +15,34 @@
  */
 package io.varietas.instrumentum.simul.io.containers;
 
-import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 import lombok.Value;
-import lombok.experimental.NonFinal;
-import lombok.experimental.Wither;
 
 /**
- * <h2>Tuple2</h2>
+ * <h2>Tuple4</h2>
  * <p>
- * The tuple is a useful container to map an object or value to another one.
+ * {The tuple is a useful container to map an object or value to others.
  *
  * @author Michael Rhöse
  * @version 1.0.0.0, 08/23/2018
  * @param <VALUE1> Generic type of value 1.
  * @param <VALUE2> Generic type of value 2.
+ * @param <VALUE3> Generic type of value 3.
+ * @param <VALUE4> Generic type of value 4.
+ *
+ * @author Michael Rhöse
+ * @version 1.0.0.0, 09/26/2019
  */
 @Value
-@NonFinal
-@RequiredArgsConstructor(access = AccessLevel.PACKAGE)
-public class Tuple2<VALUE1, VALUE2> {
+@ToString(callSuper = true)
+@EqualsAndHashCode(callSuper = true)
+public class Tuple4<VALUE1, VALUE2, VALUE3, VALUE4> extends Tuple3<VALUE1, VALUE2, VALUE3> {
 
-    VALUE1 v1;
+    public Tuple4(final VALUE1 v1, final VALUE2 v2, final VALUE3 v3, final VALUE4 v4) {
+        super(v1, v2, v3);
+        this.v4 = v4;
+    }
 
-    @Wither
-    VALUE2 v2;
+    VALUE4 v4;
 }

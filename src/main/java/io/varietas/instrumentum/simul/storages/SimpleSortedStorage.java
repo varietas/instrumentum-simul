@@ -22,13 +22,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentMap;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 
 /**
- * <h2>SortedStorageImpl</h2>
+ * <h2>SimpleSortedStorage</h2>
  * <p>
  * This entry represents a container to store all entries sorted by codes. Additionally there are a number of useful methods.
  *
@@ -38,9 +39,9 @@ import lombok.RequiredArgsConstructor;
  * @param <TYPE> Generic type which is stored.
  */
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-public class BasicSortedStorage<CODE extends Comparable<?>, TYPE> implements SortedStorage<CODE, TYPE> {
+public class SimpleSortedStorage<CODE extends Comparable<?>, TYPE> implements SortedStorage<CODE, TYPE> {
 
-    protected final Map<CODE, List<TYPE>> storage;
+    protected final ConcurrentMap<CODE, List<TYPE>> storage;
     protected final List<Function<TYPE, Boolean>> exclusionPredictions = new ArrayList<>();
 
     @Override
@@ -146,24 +147,25 @@ public class BasicSortedStorage<CODE extends Comparable<?>, TYPE> implements Sor
     }
 
     /**
-     * Creates an instance of a simple sorted storage by a given set of key. Predictions for exclusions can be added by the #addExclusion(...) method.
+     * Creates an instance of a simple sorted storage by a given set of key.Predictions for exclusions can be added by the #addExclusion(...) method.
      *
-     * @param <CODE>
+     * @param <CODE> Generic code type.
+     * @param <TYPE> Generic type which is stored.
      * @param codes
      *
      * @return
      */
     @SuppressWarnings({"rawtypes", "unchecked"})
-    public static <CODE extends Comparable<?>> SortedStorage<CODE, CODE> of(final CODE... codes) {
+    public static <CODE extends Comparable<?>, TYPE> SortedStorage<CODE, TYPE> of(final CODE... codes) {
 
         if (Objects.isNull(codes) || (codes.length == 0)) {
             throw new NullPointerException("Sorted storages requires codes for sorting entities.");
         }
 
-        final Map<CODE, ?> storage = Arrays.asList(codes)
+        final ConcurrentMap<CODE, ?> storage = Arrays.asList(codes)
                 .stream()
-                .collect(Collectors.toMap(code -> code, code -> new ArrayList<>()));
+                .collect(Collectors.toConcurrentMap(code -> code, code -> new ArrayList<>()));
 
-        return new BasicSortedStorage(storage);
+        return new SimpleSortedStorage(storage);
     }
 }

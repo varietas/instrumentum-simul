@@ -54,4 +54,38 @@ public class TupleBuilder {
     public static <VALUE1, VALUE2> Tuple2<VALUE1, VALUE2> of(final VALUE1 v1, final VALUE2 v2) {
         return new Tuple2<>(v1, v2);
     }
+
+    /**
+     * Factory method for creation of a three-tuple container with three parameters.
+     *
+     * @param <VALUE1> Generic type of value one
+     * @param <VALUE2> Generic type of value two
+     * @param <VALUE3> Generic type of value three
+     * @param v1       Given value one for the tuple
+     * @param v2       Given value two for the tuple
+     * @param v3       Given value three for the tuple
+     *
+     * @return A valid {@link Tuple3} container with three values
+     */
+    public static <VALUE1, VALUE2, VALUE3> Tuple3<VALUE1, VALUE2, VALUE3> of(final VALUE1 v1, final VALUE2 v2, final VALUE3 v3) {
+        return new Tuple3<>(v1, v2, v3);
+    }
+
+    /**
+     * Factory method for creation of a three-tuple container with three parameters.
+     *
+     * @param <VALUE1> Generic type of value one
+     * @param <VALUE2> Generic type of value two
+     * @param <VALUE3> Generic type of value three
+     * @param <VALUE4> Generic type of value four
+     * @param v1       Given value one for the tuple
+     * @param v2       Given value two for the tuple
+     * @param v3       Given value three for the tuple
+     * @param v4       Given value four for the tuple
+     *
+     * @return A valid {@link Tuple4} container with four values
+     */
+    public static <VALUE1, VALUE2, VALUE3, VALUE4> Tuple4<VALUE1, VALUE2, VALUE3, VALUE4> of(final VALUE1 v1, final VALUE2 v2, final VALUE3 v3, final VALUE4 v4) {
+        return new Tuple4<>(v1, v2, v3, v4);
+    }
 }

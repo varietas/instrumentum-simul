@@ -29,11 +29,11 @@ import org.junit.jupiter.api.Test;
 public class BasicUnsortedStorageTest {
 
     /**
-     * Test of of method, of class BasicUnsortedStorage.
+     * Test of of method, of class SimpleUnsortedStorage.
      */
     @Test
     public void testOf_0args() {
-        final UnsortedStorage result = BasicUnsortedStorage.of();
+        final UnsortedStorage result = SimpleUnsortedStorage.of();
 
         Assertions.assertThat(result).isNotNull();
         Assertions.assertThat(result.getStorage()).isEmpty();
@@ -41,11 +41,11 @@ public class BasicUnsortedStorageTest {
     }
 
     /**
-     * Test of of method, of class BasicUnsortedStorage.
+     * Test of of method, of class SimpleUnsortedStorage.
      */
     @Test
     public void testOf_int() {
-        final UnsortedStorage result = BasicUnsortedStorage.of(1);
+        final UnsortedStorage result = SimpleUnsortedStorage.of(1);
 
         Assertions.assertThat(result).isNotNull();
         Assertions.assertThat(result.getStorage()).isEmpty();
@@ -53,11 +53,11 @@ public class BasicUnsortedStorageTest {
     }
 
     /**
-     * Test of next method, of class BasicUnsortedStorage.
+     * Test of next method, of class SimpleUnsortedStorage.
      */
     @Test
     public void testNext() {
-        final UnsortedStorage result = BasicUnsortedStorage.of(1);
+        final UnsortedStorage result = SimpleUnsortedStorage.of(1);
 
         Assertions.assertThat(result.next().isPresent()).isFalse();
         result.store(1);
@@ -66,11 +66,11 @@ public class BasicUnsortedStorageTest {
     }
 
     /**
-     * Test of store method, of class BasicUnsortedStorage.
+     * Test of store method, of class SimpleUnsortedStorage.
      */
     @Test
     public void testStore() {
-        final UnsortedStorage result = BasicUnsortedStorage.of(1);
+        final UnsortedStorage result = SimpleUnsortedStorage.of(1);
 
         Assertions.assertThat(result.next().isPresent()).isFalse();
         result.store(1);
@@ -78,22 +78,22 @@ public class BasicUnsortedStorageTest {
     }
 
     /**
-     * Test of store method, of class BasicUnsortedStorage.
+     * Test of store method, of class SimpleUnsortedStorage.
      */
     @Test
     public void testStoreNullFails() {
-        final UnsortedStorage result = BasicUnsortedStorage.of(1);
+        final UnsortedStorage result = SimpleUnsortedStorage.of(1);
         Assertions.assertThatThrownBy(() -> result.store(null))
                 .isInstanceOf(NullPointerException.class)
                 .hasMessage("Storage cannot handle null objetcs.");
     }
 
     /**
-     * Test of storeAll method, of class BasicUnsortedStorage.
+     * Test of storeAll method, of class SimpleUnsortedStorage.
      */
     @Test
     public void testStoreAll() {
-        final UnsortedStorage result = BasicUnsortedStorage.of(1);
+        final UnsortedStorage result = SimpleUnsortedStorage.of(1);
 
         Assertions.assertThat(result.next().isPresent()).isFalse();
         List<Integer> integers = new ArrayList<>();
@@ -106,11 +106,11 @@ public class BasicUnsortedStorageTest {
     }
 
     /**
-     * Test of storeAll method, of class BasicUnsortedStorage.
+     * Test of storeAll method, of class SimpleUnsortedStorage.
      */
     @Test
     public void testStoreAll_OnlyOneTime() {
-        final UnsortedStorage result = BasicUnsortedStorage.of(1);
+        final UnsortedStorage result = SimpleUnsortedStorage.of(1);
 
         Assertions.assertThat(result.next().isPresent()).isFalse();
         List<Integer> integers = new ArrayList<>();
@@ -123,21 +123,21 @@ public class BasicUnsortedStorageTest {
     }
 
     /**
-     * Test of storeAll method, of class BasicUnsortedStorage.
+     * Test of storeAll method, of class SimpleUnsortedStorage.
      */
     @Test
     public void testStoreAllFails() {
-        final UnsortedStorage result = BasicUnsortedStorage.of(1);
+        final UnsortedStorage result = SimpleUnsortedStorage.of(1);
         Assertions.assertThatThrownBy(() -> result.storeAll(null))
                 .isInstanceOf(NullPointerException.class);
     }
 
     /**
-     * Test of storeAll method, of class BasicUnsortedStorage.
+     * Test of storeAll method, of class SimpleUnsortedStorage.
      */
     @Test
     public void testStoreAllFailsForEmpty() {
-        final UnsortedStorage result = BasicUnsortedStorage.of(1);
+        final UnsortedStorage result = SimpleUnsortedStorage.of(1);
         Assertions.assertThat(result.storeAll(Collections.EMPTY_LIST)).isEqualTo(-1);
     }
 }

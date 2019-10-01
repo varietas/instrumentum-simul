@@ -29,7 +29,7 @@ public class TupleBuilderTest {
      * Test of of method, of class TupleBuilder.
      */
     @Test
-    public void testOf_GenericType() {
+    public void testOf_tuple2_oneParam() {
         Integer val1 = 1;
         Tuple2 result = TupleBuilder.of(val1);
         Assertions.assertThat(result.getV1()).isEqualTo(1);
@@ -40,11 +40,41 @@ public class TupleBuilderTest {
      * Test of of method, of class TupleBuilder.
      */
     @Test
-    public void testOf_GenericType_GenericType() {
+    public void testOf_tuple2() {
         Integer val1 = 1;
         Integer val2 = 2;
         Tuple2 result = TupleBuilder.of(val1, val2);
         Assertions.assertThat(result.getV1()).isEqualTo(1);
         Assertions.assertThat(result.getV2()).isEqualTo(2);
+    }
+
+    /**
+     * Test of of method, of class TupleBuilder.
+     */
+    @Test
+    public void testOf_tuple3() {
+        Integer val1 = 1;
+        Integer val2 = 2;
+        Integer val3 = 3;
+        Tuple3 result = TupleBuilder.of(val1, val2, val3);
+        Assertions.assertThat(result.getV1()).isEqualTo(1);
+        Assertions.assertThat(result.getV2()).isEqualTo(2);
+        Assertions.assertThat(result.getV3()).isEqualTo(3);
+    }
+
+    /**
+     * Test of of method, of class TupleBuilder.
+     */
+    @Test
+    public void testOf_tuple4() {
+        Integer val1 = 1;
+        Integer val2 = 2;
+        Integer val3 = 3;
+        Integer val4 = 4;
+        Tuple4 result = TupleBuilder.of(val1, val2, val3, val4);
+        Assertions.assertThat(result.getV1()).isEqualTo(1);
+        Assertions.assertThat(result.getV2()).isEqualTo(2);
+        Assertions.assertThat(result.getV3()).isEqualTo(3);
+        Assertions.assertThat(result.getV4()).isEqualTo(4);
     }
 }

@@ -26,7 +26,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 
 /**
- * <h2>UnsortedStorageImpl</h2>
+ * <h2>SimpleUnsortedStorage</h2>
  * <p>
  * This entry represents a container to store all located, annotated entries. Additionally there are a number of useful methods.
  * <p>
@@ -37,16 +37,16 @@ import lombok.RequiredArgsConstructor;
  * @param <TYPE> Generic type for the value which is stored.
  */
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-public class BasicUnsortedStorage<TYPE> implements UnsortedStorage<TYPE> {
+public class SimpleUnsortedStorage<TYPE> implements UnsortedStorage<TYPE> {
 
     private final Set<TYPE> storage;
 
     public static final <TYPE> UnsortedStorage<TYPE> of() {
-        return BasicUnsortedStorage.of(0);
+        return SimpleUnsortedStorage.of(0);
     }
 
     public static final <TYPE> UnsortedStorage<TYPE> of(int listSize) {
-        return new BasicUnsortedStorage<>(new HashSet<>(listSize));
+        return new SimpleUnsortedStorage<>(new HashSet<>(listSize));
     }
 
     /**

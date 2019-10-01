@@ -16,6 +16,7 @@
 package io.varietas.instrumentum.simul.services;
 
 import io.varietas.instrumentum.simul.io.SimpleDirectoryWatchService;
+import io.varietas.instrumentum.simul.io.errors.ServiceCreationException;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
@@ -32,7 +33,7 @@ public class ServiceExecutorTest {
 
     private final List<Service> services;
 
-    public ServiceExecutorTest() throws IOException {
+    public ServiceExecutorTest() throws ServiceCreationException {
         this.services = Collections.singletonList(new SimpleDirectoryWatchService());
     }
 

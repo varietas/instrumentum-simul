@@ -22,12 +22,11 @@
  */
 package io.varietas.instrumentum.simul.io;
 
-import io.varietas.instrumentum.simul.services.Service;
 import io.varietas.instrumentum.simul.io.containers.FolderInformation;
-import io.varietas.instrumentum.simul.io.listeners.OnFileChangeListener;
-import java.io.IOException;
+import io.varietas.instrumentum.simul.io.errors.ServiceRegistrationException;
+import io.varietas.instrumentum.simul.io.handlers.FileEventHandler;
+import io.varietas.instrumentum.simul.services.Service;
 import java.nio.file.Path;
-import java.nio.file.WatchEvent;
 
 /**
  * <h2>DirectoryWatchService</h2>
@@ -43,19 +42,18 @@ import java.nio.file.WatchEvent;
  */
 public interface DirectoryWatchService extends Service {
 
-    /*
-     * Suppress Exception
-     */
     /**
      * Notifies the implementation of <em>this</em> interface that <code>dirPath</code> should be monitored for file system events. If the changed file matches any of the <code>globPatterns</code>, <code>listener</code> should be notified.
      *
-     * @param listener     The listener.
+     * @param eventHandler The event handler.
      * @param dirPath      The directory path.
      * @param globPatterns Zero or more file patterns to be matched against file names. If none provided, matches <em>any</em> file.
      *
-     * @throws IOException If <code>dirPath</code> is not a directory.
+     * @return Instance of this service for a fluent like usage
+     *
+     * @throws ServiceRegistrationException If <code>dirPath</code> is not a directory.
      */
-    void register(OnFileChangeListener listener, String dirPath, String... globPatterns) throws IOException;
+    DirectoryWatchService register(FileEventHandler eventHandler, String dirPath, String... globPatterns) throws ServiceRegistrationException;
 
     /*
      * Suppress Exception
@@ -71,14 +69,15 @@ public interface DirectoryWatchService extends Service {
      * <li>As many patterns as you like</li>
      * </ul>
      *
-     * @param listener     The listener.
+     * @param eventHandler The event handler.
      * @param dirPath      The directory path.
-     * @param events       The events which are registered for the directory.
      * @param globPatterns Zero or more file patterns to be matched against file names. If none provided, matches <em>any</em> file.
      *
-     * @throws IOException If <code>dirPath</code> is not a directory.
+     * @return Instance of this service for a fluent like usage
+     *
+     * @throws ServiceRegistrationException If <code>dirPath</code> is not a directory.
      */
-    void register(OnFileChangeListener listener, Path dirPath, WatchEvent.Kind[] events, String... globPatterns) throws IOException;
+    DirectoryWatchService register(FileEventHandler eventHandler, Path dirPath, String... globPatterns) throws ServiceRegistrationException;
 
     /*
      * Suppress Exception
@@ -94,11 +93,13 @@ public interface DirectoryWatchService extends Service {
      * <li>As many patterns as you like</li>
      * </ul>
      *
-     * @param listener          The listener.
+     * @param eventHandler      The event handler.
      * @param folderInformation Container which holds all information for a single folder.
      * @param globPatterns      Zero or more file patterns to be matched against file names. If none provided, matches <em>any</em> file.
      *
-     * @throws IOException If <code>dirPath</code> is not a directory.
+     * @return Instance of this service for a fluent like usage
+     *
+     * @throws ServiceRegistrationException If <code>dirPath</code> is not a directory.
      */
-    void register(OnFileChangeListener listener, FolderInformation folderInformation, String... globPatterns) throws IOException;
+    DirectoryWatchService register(FileEventHandler eventHandler, FolderInformation folderInformation, String... globPatterns) throws ServiceRegistrationException;
 }

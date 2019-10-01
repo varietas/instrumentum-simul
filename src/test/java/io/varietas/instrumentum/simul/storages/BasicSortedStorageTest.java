@@ -32,26 +32,26 @@ public class BasicSortedStorageTest {
 
     @BeforeEach
     public void setUp() {
-        this.instance = BasicSortedStorage.of(CODES);
+        this.instance = SimpleSortedStorage.of(CODES);
     }
 
     @Test
     public void testFactoryMethodFails() {
 
-        Assertions.assertThatThrownBy(() -> BasicSortedStorage.of(null))
+        Assertions.assertThatThrownBy(() -> SimpleSortedStorage.of(null))
                 .isInstanceOf(NullPointerException.class)
                 .hasMessage("Sorted storages requires codes for sorting entities.");
 
         Assertions.assertThatThrownBy(() -> {
             Integer[] args = {};
-            BasicSortedStorage.of(args);
+            SimpleSortedStorage.of(args);
         })
                 .isInstanceOf(NullPointerException.class)
                 .hasMessage("Sorted storages requires codes for sorting entities.");
     }
 
     /**
-     * Test of next method, of class BasicSortedStorage.
+     * Test of next method, of class SimpleSortedStorage.
      */
     @Test
     public void testNext_0args() {
@@ -63,7 +63,7 @@ public class BasicSortedStorageTest {
     }
 
     /**
-     * Test of next method, of class BasicSortedStorage.
+     * Test of next method, of class SimpleSortedStorage.
      */
     @Test
     public void testNext_GenericType() {
@@ -78,7 +78,7 @@ public class BasicSortedStorageTest {
     }
 
     /**
-     * Test of store method, of class BasicSortedStorage.
+     * Test of store method, of class SimpleSortedStorage.
      */
     @Test
     public void testStore() {
@@ -90,7 +90,7 @@ public class BasicSortedStorageTest {
     }
 
     /**
-     * Test of store method, of class BasicSortedStorage.
+     * Test of store method, of class SimpleSortedStorage.
      */
     @Test
     public void testStore_Fails() {
@@ -101,7 +101,7 @@ public class BasicSortedStorageTest {
     }
 
     /**
-     * Test of storeAll method, of class BasicSortedStorage.
+     * Test of storeAll method, of class SimpleSortedStorage.
      */
     @Test
     public void testStoreAll() {
@@ -110,7 +110,7 @@ public class BasicSortedStorageTest {
     }
 
     /**
-     * Test of storeAll method, of class BasicSortedStorage.
+     * Test of storeAll method, of class SimpleSortedStorage.
      */
     @Test
     public void testStoreAll_Fails() {
@@ -121,7 +121,7 @@ public class BasicSortedStorageTest {
     }
 
     /**
-     * Test of getStorage method, of class BasicSortedStorage.
+     * Test of getStorage method, of class SimpleSortedStorage.
      */
     @Test
     public void testGetStorage() {
@@ -132,7 +132,7 @@ public class BasicSortedStorageTest {
     }
 
     /**
-     * Test of isEmpty method, of class BasicSortedStorage.
+     * Test of isEmpty method, of class SimpleSortedStorage.
      */
     @Test
     public void testIsEmpty_GenericType() {
@@ -149,7 +149,7 @@ public class BasicSortedStorageTest {
     }
 
     /**
-     * Test of isEmpty method, of class BasicSortedStorage.
+     * Test of isEmpty method, of class SimpleSortedStorage.
      */
     @Test
     public void testIsEmpty_0args() {
@@ -160,7 +160,7 @@ public class BasicSortedStorageTest {
     }
 
     /**
-     * Test of addExclusion method, of class BasicSortedStorage.
+     * Test of addExclusion method, of class SimpleSortedStorage.
      */
     @Test
     public void testAddExclusion() {

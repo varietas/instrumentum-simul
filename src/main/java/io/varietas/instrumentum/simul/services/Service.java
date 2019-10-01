@@ -22,8 +22,11 @@
  */
 package io.varietas.instrumentum.simul.services;
 
+import io.varietas.instrumentum.simul.io.errors.ServiceExecutionException;
 import java.util.concurrent.TimeUnit;
 import lombok.AllArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <h2>Service</h2>
@@ -41,7 +44,7 @@ public interface Service extends Runnable {
      *
      * @return The service configuration.
      */
-    public ServiceConfiguration configuration();
+    ServiceConfiguration configuration();
 
     /**
      * <h2>ServiceConfiguration</h2>
@@ -51,7 +54,7 @@ public interface Service extends Runnable {
      * @author Michael Rhöse
      * @version 1.0.0.0, 10/22/2017
      */
-    @AllArgsConstructor
+    @AllArgsConstructor(staticName = "of")
     public static class ServiceConfiguration {
 
         final String serviceName;
@@ -59,4 +62,29 @@ public interface Service extends Runnable {
         final TimeUnit unit;
         final boolean shutdownNow;
     }
+
+    @Override
+    default public void run() {
+
+        final Logger logger = LoggerFactory.getLogger(this.getClass());
+
+        try {
+            logger.debug("Starting service.");
+
+            this.execute();
+
+            logger.debug("Stopping service.");
+        } catch (final ServiceExecutionException ex) {
+            logger.error(ex.getLocalizedMessage(), ex);
+        }
+    }
+
+    /**
+     * When an object implementing interface <code>Service</code> is used to create a thread, starting the thread causes the object's <code>execute</code> method to be called in that separately executing thread.
+     * <p>
+     * The general contract of the method <code>execute</code> is that it may take any action whatsoever.
+     *
+     * @throws ServiceExecutionException
+     */
+    void execute() throws ServiceExecutionException;
 }

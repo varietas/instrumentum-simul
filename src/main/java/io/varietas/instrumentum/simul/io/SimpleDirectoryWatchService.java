@@ -1,31 +1,33 @@
 /*
- * The MIT License (MIT)
- * Copyright (c) 2015, Hindol Adhya
+ * Copyright 2019 Michael Rhöse.
  *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package io.varietas.instrumentum.simul.io;
 
 import io.varietas.instrumentum.simul.io.containers.FolderInformation;
-import io.varietas.instrumentum.simul.io.listeners.OnFileChangeListener;
-import io.varietas.instrumentum.simul.services.Service;
+import io.varietas.instrumentum.simul.io.containers.Tuple2;
+import io.varietas.instrumentum.simul.io.containers.Tuple3;
+import io.varietas.instrumentum.simul.io.containers.TupleBuilder;
+import io.varietas.instrumentum.simul.io.errors.ServiceCreationException;
+import io.varietas.instrumentum.simul.io.errors.ServiceExecutionException;
+import io.varietas.instrumentum.simul.io.errors.ServiceRegistrationException;
+import io.varietas.instrumentum.simul.io.handlers.FileCreateHandler;
+import io.varietas.instrumentum.simul.io.handlers.FileEventHandler;
+import io.varietas.instrumentum.simul.io.handlers.FileModifyHandler;
 import io.varietas.instrumentum.simul.io.utils.FileUtil;
+import io.varietas.instrumentum.simul.storages.SimpleSortedStorage;
+import io.varietas.instrumentum.simul.storages.SortedStorage;
 import java.io.IOException;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
@@ -33,15 +35,15 @@ import java.nio.file.Path;
 import java.nio.file.PathMatcher;
 import java.nio.file.Paths;
 import java.nio.file.StandardWatchEventKinds;
-
 import java.nio.file.WatchEvent;
 import java.nio.file.WatchKey;
 import java.nio.file.WatchService;
-import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
@@ -86,119 +88,134 @@ import lombok.extern.slf4j.Slf4j;
  * @version 1.0.0.0, 9/4/2015
  */
 @Slf4j
-public class SimpleDirectoryWatchService implements Service, DirectoryWatchService {
+public class SimpleDirectoryWatchService implements DirectoryWatchService {
 
     private final WatchService watchService;
-    private final ConcurrentMap<WatchKey, Path> watchKeyToDirPathMap;
-    private final ConcurrentMap<Path, Set<OnFileChangeListener>> dirPathToListenersMap;
-    private final ConcurrentMap<OnFileChangeListener, Set<PathMatcher>> listenerToFilePatternsMap;
+    private final SortedStorage<String, Tuple3<WatchKey, Path, Set<Tuple2<FileEventHandler, Set<PathMatcher>>>>> storage;
 
-    /**
-     * A simple no argument constructor for creating a <code>SimpleDirectoryWatchService</code>.
-     *
-     * @throws IOException If an I/O error occurs.
-     */
-    public SimpleDirectoryWatchService() throws IOException {
-        this.watchService = FileSystems.getDefault().newWatchService();
-        this.watchKeyToDirPathMap = newConcurrentMap();
-        this.dirPathToListenersMap = newConcurrentMap();
-        this.listenerToFilePatternsMap = newConcurrentMap();
+    public SimpleDirectoryWatchService() throws ServiceCreationException {
+        try {
+            this.watchService = FileSystems.getDefault().newWatchService();
+            this.storage = SimpleSortedStorage.of(
+                    StandardWatchEventKinds.ENTRY_CREATE.name(),
+                    StandardWatchEventKinds.ENTRY_MODIFY.name(),
+                    StandardWatchEventKinds.ENTRY_DELETE.name());
+        } catch (IOException ex) {
+            throw new ServiceCreationException(this.getClass(), ex);
+        }
     }
 
-    @SuppressWarnings("unchecked")
-    private static <T> WatchEvent<T> cast(WatchEvent<?> event) {
-        return (WatchEvent<T>) event;
+    public static DirectoryWatchService of() throws ServiceCreationException {
+        return new SimpleDirectoryWatchService();
     }
 
-    private static <K, V> ConcurrentMap<K, V> newConcurrentMap() {
-        return new ConcurrentHashMap<>();
+    @Override
+    public DirectoryWatchService register(final FileEventHandler eventHandler, final String dirPath, final String... globPatterns) throws ServiceRegistrationException {
+        return this.register(eventHandler, Paths.get(dirPath), globPatterns);
     }
 
-    private static <T> Set<T> newConcurrentSet() {
-        return Collections.newSetFromMap(newConcurrentMap());
+    @Override
+    public DirectoryWatchService register(final FileEventHandler eventHandler, final Path dirPath, final String... globPatterns) throws ServiceRegistrationException {
+
+        try {
+            final WatchEvent.Kind<Path> eventType = convertTypeToEventType(eventHandler);
+
+            if (!Files.isDirectory(dirPath)) {
+                throw new IllegalArgumentException(dirPath + " is not a directory.");
+            }
+
+            var existing = getExistingEntry(eventType, dirPath);
+
+            if (existing.isPresent()) {
+                existing.get().getV3().add(TupleBuilder.of(eventHandler, generatePathMatchers(globPatterns)));
+                return this;
+            }
+
+            final WatchKey key = dirPath.register(watchService, eventType);
+
+            final Set<Tuple2<FileEventHandler, Set<PathMatcher>>> handlers = newConcurrentSet();
+            handlers.add(TupleBuilder.of(eventHandler, generatePathMatchers(globPatterns)));
+
+            var pathConfig = TupleBuilder.of(key, dirPath, handlers);
+            this.storage.store(pathConfig, eventType.name());
+
+            return this;
+        } catch (IOException ex) {
+            throw new ServiceRegistrationException(this.getClass(), ex);
+        }
     }
 
-    private Path getDirPath(final WatchKey key) {
-        return watchKeyToDirPathMap.get(key);
+    @Override
+    public DirectoryWatchService register(final FileEventHandler eventHandler, final FolderInformation folderInformation, final String... globPatterns) throws ServiceRegistrationException {
+        return this.register(eventHandler, folderInformation.getFolderPath(), globPatterns);
     }
 
-    private Set<OnFileChangeListener> getListeners(final Path dir) {
-        return dirPathToListenersMap.get(dir);
+    @Override
+    public ServiceConfiguration configuration() {
+        return ServiceConfiguration.of("DirectoryWatchService", 1, TimeUnit.MILLISECONDS, false);
     }
 
-    private Set<PathMatcher> getPatterns(final OnFileChangeListener listener) {
-        return listenerToFilePatternsMap.get(listener);
-    }
+    @Override
+    public void execute() throws ServiceExecutionException {
 
-    private Set<OnFileChangeListener> matchedListeners(final Path dir, final Path file) {
-        return getListeners(dir)
-                .stream()
-                .filter(listener -> FileUtil.matchesAny(file, getPatterns(listener)))
-                .collect(Collectors.toSet());
-    }
+        try {
+            final WatchKey key = watchService.take();
 
-    private void notifyListeners(final WatchKey key) {
-        for (WatchEvent<?> event : key.pollEvents()) {
-            WatchEvent.Kind eventKind = event.kind();
-
-            // Overflow occurs when the watch event queue is overflown
-            // with events.
-            if (eventKind.equals(StandardWatchEventKinds.OVERFLOW)) {
-                // TODO: Notify all listeners.
+            if (Objects.isNull(key) && LOGGER.isDebugEnabled()) {
+                LOGGER.debug("Watch key not recognized.");
                 return;
             }
 
-            WatchEvent<Path> pathEvent = cast(event);
-            Path file = pathEvent.context();
+            for (WatchEvent<?> event : key.pollEvents()) {
+                final WatchEvent.Kind<?> eventKind = event.kind();
 
-            if (eventKind.equals(StandardWatchEventKinds.ENTRY_CREATE)) {
-                matchedListeners(getDirPath(key), file).forEach(listener -> listener.onFileCreate(file.toString()));
-                continue;
+                // Overflow occurs when the watch event queue is overflown
+                // with events.
+                if (eventKind.equals(StandardWatchEventKinds.OVERFLOW)) {
+                    // TODO: Notify all listeners.
+                    return;
+                }
+
+                @SuppressWarnings("unchecked")
+                final var pathEvent = (WatchEvent<Path>) event;
+
+                final var file = pathEvent.context();
+
+                final var tuple = this.storage.getStorage().get(eventKind.name()).stream()
+                        .filter(entry -> Objects.equals(entry.getV2(), file))
+                        .findFirst();
+
+                if (tuple.isEmpty()) {
+                    return;
+                }
+
+                tuple.get().getV3().stream()
+                        .filter(entry -> FileUtil.matchesAny(file, entry.getV2()))
+                        .forEach(entry -> entry.getV1().handle(file.toString()));
             }
-            if (eventKind.equals(StandardWatchEventKinds.ENTRY_MODIFY)) {
-                matchedListeners(getDirPath(key), file).forEach(listener -> listener.onFileModify(file.toString()));
-                continue;
+
+            // Reset key to allow further events for this key to be processed.
+            boolean valid = key.reset();
+            if (!valid) {
+
+                final var keysToDelete = this.storage.getStorage().values().stream()
+                        .flatMap(List::stream)
+                        .filter(entry -> Objects.equals(entry.getV1(), key))
+                        .collect(Collectors.toList());
+
+                this.storage.getStorage().entrySet().forEach(entry -> entry.getValue().removeAll(keysToDelete));
             }
-            if (eventKind.equals(StandardWatchEventKinds.ENTRY_DELETE)) {
-                matchedListeners(getDirPath(key), file).forEach(listener -> listener.onFileDelete(file.toString()));
-            }
+        } catch (final InterruptedException ex) {
+            throw new ServiceExecutionException(this.getClass(), "Service interrupted", ex);
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void register(final OnFileChangeListener listener, final String dirPath, final String... globPatterns) throws IOException {
-        Path dir = Paths.get(dirPath);
-        this.register(
-                listener,
-                dir,
-                new WatchEvent.Kind[]{StandardWatchEventKinds.ENTRY_CREATE, StandardWatchEventKinds.ENTRY_MODIFY, StandardWatchEventKinds.ENTRY_DELETE},
-                globPatterns);
+    private static <T> Set<T> newConcurrentSet() {
+        return Collections.newSetFromMap(new ConcurrentHashMap<>());
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void register(final OnFileChangeListener listener, final Path dirPath, final WatchEvent.Kind[] events, final String... globPatterns) throws IOException {
-
-        if (!Files.isDirectory(dirPath)) {
-            throw new IllegalArgumentException(dirPath + " is not a directory.");
-        }
-
-        if (!dirPathToListenersMap.containsKey(dirPath)) {
-            // May throw
-            WatchKey key = dirPath.register(watchService, events);
-
-            watchKeyToDirPathMap.put(key, dirPath);
-            dirPathToListenersMap.put(dirPath, newConcurrentSet());
-        }
-
-        getListeners(dirPath).add(listener);
-
-        Set<PathMatcher> patterns = newConcurrentSet();
+    private Set<PathMatcher> generatePathMatchers(final String[] globPatterns) {
+        final Set<PathMatcher> patterns = newConcurrentSet();
 
         for (String globPattern : globPatterns) {
             patterns.add(FileUtil.matcherForGlobExpression(globPattern));
@@ -208,53 +225,24 @@ public class SimpleDirectoryWatchService implements Service, DirectoryWatchServi
             patterns.add(FileUtil.matcherForGlobExpression("*")); // Match everything if no filter is found
         }
 
-        listenerToFilePatternsMap.put(listener, patterns);
-
-        LOGGER.debug("Watching files matching {} under {} for changes.", Arrays.toString(globPatterns), dirPath);
+        return patterns;
     }
 
-    @Override
-    public void register(OnFileChangeListener listener, FolderInformation folderInformation, final String... globPatterns) throws IOException {
-        WatchEvent.Kind[] events = new WatchEvent.Kind[folderInformation.getWatchEventKindes().size()];
-        this.register(listener, folderInformation.getFolderPath(), folderInformation.getWatchEventKindes().toArray(events), globPatterns);
+    private WatchEvent.Kind<Path> convertTypeToEventType(final FileEventHandler handler) {
+
+        if (FileCreateHandler.class.isInstance(handler.getClass())) {
+            return StandardWatchEventKinds.ENTRY_CREATE;
+        }
+        if (FileModifyHandler.class.isInstance(handler.getClass())) {
+            return StandardWatchEventKinds.ENTRY_MODIFY;
+        }
+
+        return StandardWatchEventKinds.ENTRY_DELETE;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void run() {
-        LOGGER.debug("Starting file watcher service.");
-
-        WatchKey key;
-        try {
-            key = watchService.take();
-        } catch (InterruptedException ex) {
-            LOGGER.debug(DirectoryWatchService.class.getSimpleName() + " service interrupted.");
-            return;
-        }
-
-        if (null == getDirPath(key)) {
-            LOGGER.debug("Watch key not recognized.");
-            return;
-        }
-
-        notifyListeners(key);
-
-        // Reset key to allow further events for this key to be processed.
-        boolean valid = key.reset();
-        if (!valid) {
-            watchKeyToDirPathMap.remove(key);
-            if (watchKeyToDirPathMap.isEmpty()) {
-                return;
-            }
-        }
-
-        LOGGER.debug("Stopping file watcher service.");
-    }
-
-    @Override
-    public ServiceConfiguration configuration() {
-        return new ServiceConfiguration("DirectoryWatchService", 1, TimeUnit.MILLISECONDS, false);
+    private Optional<Tuple3<WatchKey, Path, Set<Tuple2<FileEventHandler, Set<PathMatcher>>>>> getExistingEntry(final WatchEvent.Kind<Path> eventType, final Path dirPath) {
+        return this.storage.getStorage().get(eventType.name()).stream()
+                .filter(entry -> entry.getV2().equals(dirPath))
+                .findFirst();
     }
 }

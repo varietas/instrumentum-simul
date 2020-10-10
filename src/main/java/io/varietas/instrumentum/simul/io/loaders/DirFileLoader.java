@@ -82,10 +82,12 @@ final class DirFileLoader extends AbstractLoader<FileLoadResult<?>> {
                     stream.close();
                 }
             } catch (IOException ex) {
+                String message = "FAILED: Couldn't close file." + (Objects.nonNull(ex.getLocalizedMessage()) ? ex.getLocalizedMessage() : "");
+
                 resultBuilder
                         .name(this.source.getTarget())
                         .statusCode(500)
-                        .message("FAILED: Couldn't close connection to ftp server. " + ex.getLocalizedMessage());
+                        .message(message);
             }
         }
 

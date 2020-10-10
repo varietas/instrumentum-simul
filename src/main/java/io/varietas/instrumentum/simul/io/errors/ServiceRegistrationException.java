@@ -20,38 +20,24 @@ import io.varietas.instrumentum.simul.services.Service;
 /**
  * <h2>ServiceRegistrationException</h2>
  * <p>
- * {description}
+ * Signals an error while registration of a service by the executor. The reasons can be each custom error.
  *
  * @author Michael Rhöse
  * @version 1.0.0.0, 09/25/2019
  */
-public class ServiceRegistrationException extends Exception {
+public class ServiceRegistrationException extends CommonServiceException {
 
     private static final long serialVersionUID = 5941172734762639270L;
 
-    private final Class<? extends Service> serviceType;
-
     public ServiceRegistrationException(final Class<? extends Service> serviceType) {
-        this.serviceType = serviceType;
+        super("Registration", serviceType);
     }
 
     public ServiceRegistrationException(final Class<? extends Service> serviceType, final String message) {
-        super(message);
-        this.serviceType = serviceType;
+        super("Registration", serviceType, message);
     }
 
     public ServiceRegistrationException(final Class<? extends Service> serviceType, final String message, final Throwable cause) {
-        super(message, cause);
-        this.serviceType = serviceType;
-    }
-
-    public ServiceRegistrationException(final Class<? extends Service> serviceType, final Throwable cause) {
-        super(cause);
-        this.serviceType = serviceType;
-    }
-
-    @Override
-    public String getLocalizedMessage() {
-        return super.getLocalizedMessage(); //TODO: implement custom msg
+        super("Registration", serviceType, message, cause);
     }
 }

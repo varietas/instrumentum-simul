@@ -52,7 +52,7 @@ final class HTTPFileLoader extends AbstractLoader<FileLoadResult<?>> {
         final FileLoadResult.FileLoadResultBuilder<byte[]> resultBuilder = FileLoadResult.of();
         HttpURLConnection httpConn = null;
         try {
-            httpConn = test(resultBuilder);
+            httpConn = this.performLoadingAndGetConnection(resultBuilder);
         } catch (IOException ex) {
             resultBuilder
                     .statusCode(500)
@@ -67,15 +67,14 @@ final class HTTPFileLoader extends AbstractLoader<FileLoadResult<?>> {
         return resultBuilder.build();
     }
 
-    private HttpURLConnection test(final FileLoadResult.FileLoadResultBuilder<byte[]> resultBuilder) throws MalformedURLException, IOException {
+    private HttpURLConnection performLoadingAndGetConnection(final FileLoadResult.FileLoadResultBuilder<byte[]> resultBuilder) throws MalformedURLException, IOException {
 
         final URL url = new URL(this.source.getPath());
 
         final HttpURLConnection httpConn = (HttpURLConnection) url.openConnection();
         final int responseCode = httpConn.getResponseCode();
 
-        if (responseCode != HttpURLConnection.HTTP_OK) {
-
+        if (!Objects.equals(responseCode, HttpURLConnection.HTTP_OK)) {
             resultBuilder
                     .statusCode(400)
                     .name(this.source.getTarget())

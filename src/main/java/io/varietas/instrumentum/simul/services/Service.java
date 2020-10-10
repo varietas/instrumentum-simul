@@ -58,7 +58,7 @@ public interface Service extends Runnable {
     public static class ServiceConfiguration {
 
         final String serviceName;
-        final int perios;
+        final int periods;
         final TimeUnit unit;
         final boolean shutdownNow;
     }
@@ -68,14 +68,14 @@ public interface Service extends Runnable {
 
         final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-        try {
-            logger.debug("Starting service.");
+        if (logger.isDebugEnabled()) {
+            logger.debug("Execute service.");
+        }
 
-            this.execute();
+        this.execute();
 
-            logger.debug("Stopping service.");
-        } catch (final ServiceExecutionException ex) {
-            logger.error(ex.getLocalizedMessage(), ex);
+        if (logger.isDebugEnabled()) {
+            logger.debug("Execute service finished.");
         }
     }
 

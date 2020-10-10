@@ -60,4 +60,28 @@ public class HTTPFileLoaderTest {
         Assertions.assertThat(result.getMessage()).isEqualTo("OK");
         Assertions.assertThat(result.mappedValue()).isPresent();
     }
+
+    @Test
+    @SuppressWarnings({"null", "rawtypes", "unchecked", "unchecked"})
+    public void testPerformLoadingFailsForNotExistingUrl() {
+
+        HTTPFileLoader instance = (HTTPFileLoader) HTTPFileLoader.of(DataSource.HTTP(0, "", "http://notexisting.tele2.net", "100KB.zip"));
+
+        FileLoadResult result = instance.performLoading();
+        Assertions.assertThat(result.getStatusCode()).isEqualTo(500);
+        Assertions.assertThat(result.getMessage()).isEqualTo("Error while closing client connection: notexisting.tele2.net");
+        Assertions.assertThat(result.mappedValue()).isNotPresent();
+    }
+
+    @Test
+    @SuppressWarnings({"null", "rawtypes", "unchecked", "unchecked"})
+    public void testPerformLoadingFailsForNotExistingFile() {
+
+        HTTPFileLoader instance = (HTTPFileLoader) HTTPFileLoader.of(DataSource.HTTP(0, "", "https://source.varietas.io/mrhoese/twitter-mongodb/blob/master/", "pom.xml"));
+
+        FileLoadResult result = instance.performLoading();
+        Assertions.assertThat(result.getStatusCode()).isEqualTo(400);
+        Assertions.assertThat(result.getMessage()).isEqualTo("No file to download. Server replied HTTP code: 401");
+        Assertions.assertThat(result.mappedValue()).isNotPresent();
+    }
 }

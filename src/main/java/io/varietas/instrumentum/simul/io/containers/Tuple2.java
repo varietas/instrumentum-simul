@@ -15,11 +15,8 @@
  */
 package io.varietas.instrumentum.simul.io.containers;
 
-import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
 import lombok.Value;
 import lombok.experimental.NonFinal;
-import lombok.experimental.Wither;
 
 /**
  * <h2>Tuple2</h2>
@@ -33,11 +30,19 @@ import lombok.experimental.Wither;
  */
 @Value
 @NonFinal
-@RequiredArgsConstructor(access = AccessLevel.PACKAGE)
 public class Tuple2<VALUE1, VALUE2> {
 
     VALUE1 v1;
 
-    @Wither
+    @NonFinal
     VALUE2 v2;
+
+    Tuple2(VALUE1 v1, VALUE2 v2) {
+        this.v1 = v1;
+        this.v2 = v2;
+    }
+
+    public void withV2(final VALUE2 v2) {
+        this.v2 = v2;
+    }
 }

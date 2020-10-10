@@ -28,9 +28,9 @@ public class OSInfoTest {
      * Test of getOs method, of class OSInfo.
      */
     @Test
-    public void testGetOs() {
+    public void test_getOs() {
 
-        OSInfo.OS result = OSInfo.getOs();
+        final OSInfo.OS result = OSInfo.getOs();
         Assertions.assertThat(result).isNotNull();
     }
 
@@ -38,10 +38,10 @@ public class OSInfoTest {
      * Test of takeRightOS method, of class OSInfo.
      */
     @Test
-    public void testTakeRightOSResultsInWindows() {
+    public void test_takeRightOSResultsInWindows() {
 
-        OSInfo.OS expected = OSInfo.OS.WINDOWS;
-        OSInfo.OS result = OSInfo.takeRightOS("windows 10");
+        final OSInfo.OS expected = OSInfo.OS.WINDOWS;
+        final OSInfo.OS result = OSInfo.takeRightOS("windows 10");
         Assertions.assertThat(result).isNotNull().isEqualTo(expected);
     }
 
@@ -49,10 +49,10 @@ public class OSInfoTest {
      * Test of takeRightOS method, of class OSInfo.
      */
     @Test
-    public void testTakeRightOSResultsInUnix() {
+    public void test_takeRightOSResultsInUnix() {
 
-        OSInfo.OS expected = OSInfo.OS.UNIX;
-        OSInfo.OS result = OSInfo.takeRightOS("linux");
+        final OSInfo.OS expected = OSInfo.OS.UNIX;
+        final OSInfo.OS result = OSInfo.takeRightOS("linux");
         Assertions.assertThat(result).isNotNull().isEqualTo(expected);
     }
 
@@ -60,10 +60,10 @@ public class OSInfoTest {
      * Test of takeRightOS method, of class OSInfo.
      */
     @Test
-    public void testTakeRightOSResultsInMac() {
+    public void test_takeRightOSResultsInMac() {
 
-        OSInfo.OS expected = OSInfo.OS.MAC;
-        OSInfo.OS result = OSInfo.takeRightOS("mac os");
+        final OSInfo.OS expected = OSInfo.OS.MAC;
+        final OSInfo.OS result = OSInfo.takeRightOS("mac os");
         Assertions.assertThat(result).isNotNull().isEqualTo(expected);
     }
 
@@ -71,10 +71,10 @@ public class OSInfoTest {
      * Test of takeRightOS method, of class OSInfo.
      */
     @Test
-    public void testTakeRightOSResultsInPosix1() {
+    public void test_takeRightOSResultsInPosix1() {
 
-        OSInfo.OS expected = OSInfo.OS.POSIX_UNIX;
-        OSInfo.OS result = OSInfo.takeRightOS("solaris");
+        final OSInfo.OS expected = OSInfo.OS.POSIX_UNIX;
+        final OSInfo.OS result = OSInfo.takeRightOS("solaris");
         Assertions.assertThat(result).isNotNull().isEqualTo(expected);
     }
 
@@ -82,10 +82,10 @@ public class OSInfoTest {
      * Test of takeRightOS method, of class OSInfo.
      */
     @Test
-    public void testTakeRightOSResultsInPosix2() {
+    public void test_takeRightOSResultsInPosix2() {
 
-        OSInfo.OS expected = OSInfo.OS.POSIX_UNIX;
-        OSInfo.OS result = OSInfo.takeRightOS("aix");
+        final OSInfo.OS expected = OSInfo.OS.POSIX_UNIX;
+        final OSInfo.OS result = OSInfo.takeRightOS("aix");
         Assertions.assertThat(result).isNotNull().isEqualTo(expected);
     }
 
@@ -93,10 +93,10 @@ public class OSInfoTest {
      * Test of takeRightOS method, of class OSInfo.
      */
     @Test
-    public void testTakeRightOSResultsInOther() {
+    public void test_takeRightOSResultsInOther() {
 
-        OSInfo.OS expected = OSInfo.OS.OTHER;
-        OSInfo.OS result = OSInfo.takeRightOS("what ever");
+        final OSInfo.OS expected = OSInfo.OS.OTHER;
+        final OSInfo.OS result = OSInfo.takeRightOS("what ever");
         Assertions.assertThat(result).isNotNull().isEqualTo(expected);
     }
 
@@ -104,10 +104,10 @@ public class OSInfoTest {
      * Test of takeRightOS method, of class OSInfo.
      */
     @Test
-    public void testTakeRightOSWithNullResultsOther() {
+    public void test_takeRightOSWithNullResultsOther() {
 
-        OSInfo.OS expected = OSInfo.OS.OTHER;
-        OSInfo.OS result = OSInfo.takeRightOS(null);
+        final OSInfo.OS expected = OSInfo.OS.OTHER;
+        final OSInfo.OS result = OSInfo.takeRightOS(null);
         Assertions.assertThat(result).isNotNull().isEqualTo(expected);
     }
 
@@ -115,10 +115,10 @@ public class OSInfoTest {
      * Test of takeRightOS method, of class OSInfo.
      */
     @Test
-    public void testTakeRightOSWithEmptyStringResultsOther() {
+    public void test_takeRightOSWithEmptyStringResultsOther() {
 
-        OSInfo.OS expected = OSInfo.OS.OTHER;
-        OSInfo.OS result = OSInfo.takeRightOS("");
+        final OSInfo.OS expected = OSInfo.OS.OTHER;
+        final OSInfo.OS result = OSInfo.takeRightOS("");
         Assertions.assertThat(result).isNotNull().isEqualTo(expected);
     }
 }

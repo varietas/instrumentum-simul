@@ -51,7 +51,7 @@ import lombok.extern.slf4j.Slf4j;
 /**
  * <h2>SimpleDirectoryWatchService</h2>
  * <p>
- * A simple class which can monitor files and notify interested parties (i.e. listeners) of file changes.</p>
+ * A simple class which can monitor files and notify interested parties (i.e. listeners) newInstance file changes.</p>
  * <p>
  * This class is kept lean by only keeping methods that are actually being called.</p>
  * <p>
@@ -93,20 +93,20 @@ public class SimpleDirectoryWatchService implements DirectoryWatchService {
     private final WatchService watchService;
     private final SortedStorage<String, Tuple3<WatchKey, Path, Set<Tuple2<FileEventHandler, Set<PathMatcher>>>>> storage;
 
-    public SimpleDirectoryWatchService() throws ServiceCreationException {
+    private SimpleDirectoryWatchService(final WatchService watchService, final String... watchKinds) throws ServiceCreationException {
+        this.watchService = watchService;
+        this.storage = SimpleSortedStorage.of(watchKinds);
+    }
+
+    public static DirectoryWatchService newInstance() throws ServiceCreationException {
         try {
-            this.watchService = FileSystems.getDefault().newWatchService();
-            this.storage = SimpleSortedStorage.of(
+            return new SimpleDirectoryWatchService(FileSystems.getDefault().newWatchService(),
                     StandardWatchEventKinds.ENTRY_CREATE.name(),
                     StandardWatchEventKinds.ENTRY_MODIFY.name(),
                     StandardWatchEventKinds.ENTRY_DELETE.name());
         } catch (IOException ex) {
-            throw new ServiceCreationException(this.getClass(), ex);
+            throw new ServiceCreationException(SimpleDirectoryWatchService.class, "An error occurs", ex);
         }
-    }
-
-    public static DirectoryWatchService of() throws ServiceCreationException {
-        return new SimpleDirectoryWatchService();
     }
 
     @Override
@@ -141,7 +141,7 @@ public class SimpleDirectoryWatchService implements DirectoryWatchService {
 
             return this;
         } catch (IOException ex) {
-            throw new ServiceRegistrationException(this.getClass(), ex);
+            throw new ServiceRegistrationException(this.getClass(), "An error occurs", ex);
         }
     }
 

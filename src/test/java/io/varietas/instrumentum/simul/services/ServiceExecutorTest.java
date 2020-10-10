@@ -3,7 +3,7 @@
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * You may obtain a copy newInstance the License at
  *
  *      http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -15,8 +15,8 @@
  */
 package io.varietas.instrumentum.simul.services;
 
-import io.varietas.instrumentum.simul.io.SimpleDirectoryWatchService;
 import io.varietas.instrumentum.simul.io.errors.ServiceCreationException;
+import io.varietas.instrumentum.simul.io.errors.ServiceExecutionException;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
@@ -24,6 +24,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 /**
  *
@@ -34,47 +35,47 @@ public class ServiceExecutorTest {
     private final List<Service> services;
 
     public ServiceExecutorTest() throws ServiceCreationException {
-        this.services = Collections.singletonList(new SimpleDirectoryWatchService());
+        this.services = Collections.singletonList(SimpleExecutionTimeRecorderService.of());
     }
 
     /**
-     * Test of of method, of class ServiceExecutor.
+     * Test newInstance newInstance method, newInstance class ServiceExecutor.
      */
     @Test
-    public void testOf_List() throws IOException {
+    public void test_list() throws IOException {
 
-        ServiceExecutor result = ServiceExecutor.of(this.services);
+        final ServiceExecutor result = ServiceExecutor.of(this.services);
         Assertions.assertThat(result).isNotNull();
     }
 
     /**
-     * Test of of method, of class ServiceExecutor.
+     * Test newInstance newInstance method, newInstance class ServiceExecutor.
      */
     @Test
-    public void testOf_ScheduledExecutorService_List() throws IOException {
+    public void test_scheduledExecutorService_List() throws IOException {
 
-        ScheduledExecutorService executor = Executors.newScheduledThreadPool(0);
-        ServiceExecutor result = ServiceExecutor.of(executor, this.services);
+        final ScheduledExecutorService executor = Executors.newScheduledThreadPool(0);
+        final ServiceExecutor result = ServiceExecutor.of(executor, this.services);
         Assertions.assertThat(result).isNotNull();
     }
 
     /**
-     * Test of of method, of class ServiceExecutor.
+     * Test newInstance newInstance method, newInstance class ServiceExecutor.
      */
     @Test
-    public void testOf_ScheduledExecutorService_ListFailsNullList() throws IOException {
+    public void test_scheduledExecutorService_ListFailsNullList() throws IOException {
 
-        ScheduledExecutorService executor = Executors.newScheduledThreadPool(0);
+        final ScheduledExecutorService executor = Executors.newScheduledThreadPool(0);
         Assertions.assertThatThrownBy(() -> ServiceExecutor.of(executor, null))
                 .isInstanceOf(InstantiationException.class)
                 .hasMessage("A service executor requires 1...N services.");
     }
 
     /**
-     * Test of of method, of class ServiceExecutor.
+     * Test newInstance newInstance method, newInstance class ServiceExecutor.
      */
     @Test
-    public void testOf_ScheduledExecutorService_ListFailsNullExecutorService() throws IOException {
+    public void test_scheduledExecutorService_ListFailsNullExecutorService() throws IOException {
 
         Assertions.assertThatThrownBy(() -> ServiceExecutor.of(null, this.services))
                 .isInstanceOf(InstantiationException.class)
@@ -82,19 +83,55 @@ public class ServiceExecutorTest {
     }
 
     /**
-     * Test of startService method, of class ServiceExecutor. TODO: Think about tests
+     * Test of startService and stopService method, of class ServiceExecutor.
      */
-//    @Test
-    public void testStartService() {
-        Assertions.fail("The test case is a prototype.");
+    @Test
+    public void test_startAndStopService() throws InterruptedException {
+
+        final ServiceExecutor executor = ServiceExecutor.of(this.services);
+        final SimpleExecutionTimeRecorderService service = SimpleExecutionTimeRecorderService.class.cast(this.services.get(0));
+
+        executor.startService(service);
+
+        Thread.sleep(99);
+
+        executor.stopService(service);
+
+        final int resultSize = service.getExecutionTimes().size();
+        Assertions.assertThat(resultSize).isGreaterThanOrEqualTo(4);
     }
 
     /**
-     * Test of stopService method, of class ServiceExecutor. TODO: Think about tests
+     * Test of startService and stopService method when service is already running, of class ServiceExecutor.
      */
-//    @Test
-    public void testStopService() {
-        Assertions.fail("The test case is a prototype.");
+    @Test
+    public void test_startAndStopService_noErrorWhenAlreadyRunning() throws InterruptedException {
+
+        final ServiceExecutor executor = ServiceExecutor.of(this.services);
+        final SimpleExecutionTimeRecorderService service = SimpleExecutionTimeRecorderService.class.cast(this.services.get(0));
+
+        executor.startService(service);
+        executor.startService(service);
+
+        Thread.sleep(50);
+
+        executor.stopService(service);
+        executor.stopService(service);
+
+        final int resultSize = service.getExecutionTimes().size();
+        Assertions.assertThat(resultSize).isGreaterThanOrEqualTo(1);
     }
 
+    @Test
+    public void test_run_anyErrorThrowsRSpecificRuntimeException() {
+
+        final SimpleExecutionTimeRecorderService service = Mockito.mock(SimpleExecutionTimeRecorderService.class);
+        Mockito.doCallRealMethod().when(service).run();
+        Mockito.when(service.configuration()).thenReturn(SimpleExecutionTimeRecorderService.of().configuration());
+        Mockito.doThrow(new ServiceExecutionException(SimpleExecutionTimeRecorderService.class)).when(service).execute();
+
+        Throwable result = Assertions.catchThrowable(() -> service.run());
+
+        Assertions.assertThat(result).isInstanceOf(ServiceExecutionException.class);
+    }
 }

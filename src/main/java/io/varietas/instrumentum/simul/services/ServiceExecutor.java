@@ -38,7 +38,7 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-public class ServiceExecutor {
+public final class ServiceExecutor {
 
     private static ScheduledExecutorService scheduledExecutorService;
     private final List<Tuple2<Service, ScheduledFuture<?>>> services;
@@ -96,8 +96,8 @@ public class ServiceExecutor {
             LOGGER.debug("Service '{}' already running.", service.configuration().serviceName);
             return;
         }
-
-        container.withV2(ServiceExecutor.scheduledExecutorService.scheduleAtFixedRate(service, 0, service.configuration().perios, service.configuration().unit));
+        final var task = ServiceExecutor.scheduledExecutorService.scheduleAtFixedRate(service, 0, service.configuration().periods, service.configuration().unit);
+        container.withV2(task);
         LOGGER.debug("Starting service '{}'.", container.getV1().configuration().serviceName);
     }
 
@@ -109,7 +109,7 @@ public class ServiceExecutor {
     public void stopService(final Service service) {
         final Tuple2<Service, ScheduledFuture<?>> container = this.findServiceContainer(service, "STOP");
 
-        if (Objects.isNull(container.getV2())) {
+        if (Objects.isNull(container.getV2()) || container.getV2().isCancelled()) {
             LOGGER.debug("Service '{}' already stopped.", container.getV1().configuration().serviceName);
             return;
         }
@@ -120,7 +120,7 @@ public class ServiceExecutor {
     private Tuple2<Service, ScheduledFuture<?>> findServiceContainer(final Service service, final String mode) {
         final String name = service.getClass().getName();
         return this.services.stream()
-                .filter(serv -> serv.getClass().getName().equals(name))
+                .filter(serv -> serv.getV1().getClass().getName().equals(name))
                 .findFirst().orElseThrow(() -> new NullPointerException("Service " + name + " not found for " + mode + "."));
     }
 }
